@@ -1,0 +1,6 @@
+[submodule "my-blog"]
+	path = my-blog
+	url = https://github.com/basco-git/my-blog.git
+[submodule "my-domain"]
+	path = my-domain
+	url = https://github.com/basco-git/my-domain.git
