@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>루이의 라면가게</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <!-- 상단 HUD -->
+  <header id="hud" class="hidden">
+    <div class="pill" id="timer-pill">⏱️ <b id="hud-time">3:00</b></div>
+    <div class="pill goal">
+      💰 <b id="hud-sales">0</b><small> / <span id="hud-goal">5000</span>원</small>
+      <div class="goal-bar"><div id="goal-fill"></div></div>
+    </div>
+    <div class="pill">📅 <b id="hud-day">1</b>일째</div>
+    <button id="btn-help" class="pill pill-btn" aria-label="방법 보기">❓</button>
+    <button id="btn-mute" class="pill pill-btn" aria-label="소리 켜기/끄기">🔊</button>
+  </header>
+
+  <!-- 주문서 -->
+  <section id="order-card" class="panel hidden">
+    <div class="order-head">
+      <span>📝 <b id="order-name">손님</b>의 주문</span>
+      <span id="order-mood">😊</span>
+    </div>
+    <ul id="order-list"></ul>
+    <div id="memory-bar"><div id="memory-fill"></div></div>
+    <button id="btn-peek" class="peek hidden">👀 다시 보기 <kbd>Q</kbd></button>
+    <div class="patience"><div id="patience-fill"></div></div>
+  </section>
+
+  <!-- 냄비 상태 -->
+  <section id="pot-panel" class="panel hidden">
+    <div class="gauge">
+      <span class="g-label">💧 물</span>
+      <div class="bar"><div class="zone" id="water-zone"></div><div class="fill water" id="water-fill"></div></div>
+    </div>
+    <div class="gauge">
+      <span class="g-label">🌡️ 온도</span>
+      <div class="bar"><div class="fill heat" id="temp-fill"></div></div>
+      <em id="temp-text">20°</em>
+    </div>
+    <div class="gauge">
+      <span class="g-label">🍜 익힘</span>
+      <div class="bar"><div class="zone" id="cook-zone"></div><div class="fill cook" id="cook-fill"></div></div>
+    </div>
+  </section>
+
+  <!-- 하단 조작 버튼 -->
+  <nav id="toolbar" class="hidden">
+    <button class="tool" data-act="pour" id="btn-pour">💧<span>물 붓기</span><kbd>1</kbd></button>
+    <button class="tool" data-act="fire" id="btn-fire">🔥<span>불 켜기</span><kbd>2</kbd></button>
+    <button class="tool" data-act="noodle" id="btn-noodle">🍜<span>면</span><kbd>3</kbd></button>
+    <button class="tool" data-act="soup" id="btn-soup">🧂<span>스프</span><kbd>4</kbd></button>
+    <div id="topping-btns"></div>
+    <button class="tool primary" data-act="serve" id="btn-serve">🥣<span>담아내기</span><kbd>Enter</kbd></button>
+    <button class="tool ghost" data-act="trash">🗑️<span>버리기</span><kbd>⌫</kbd></button>
+  </nav>
+
+  <!-- 루이 말풍선 / 손님 말풍선 -->
+  <div id="louis-talk" class="talk hidden"><span class="who">🐶 루이</span><p id="louis-text"></p></div>
+  <div id="bubble" class="hidden"></div>
+  <div id="float-layer"></div>
+  <div id="rotate-hint">📱 가로로 돌리면 더 크게 보여요</div>
+
+  <!-- 첫 화면 -->
+  <div id="title-screen" class="overlay">
+    <h1 class="logo">루이의 라면가게</h1>
+    <div class="menu-buttons">
+      <button id="btn-start" class="big">▶ 시작하기</button>
+      <button id="btn-howto" class="big alt">❓ 방법 보기</button>
+    </div>
+    <p class="best" id="best-text"></p>
+  </div>
+
+  <!-- 사용 방법 -->
+  <div id="howto-screen" class="overlay hidden">
+    <div class="howto-card">
+      <div class="howto-icon" id="howto-icon">💧</div>
+      <div class="dots" id="howto-dots"></div>
+      <div class="howto-row">
+        <button id="howto-prev" class="big alt small">◀ 이전</button>
+        <button id="howto-next" class="big small">다음 ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 영업 끝 -->
+  <div id="day-screen" class="overlay hidden">
+    <div class="result-card">
+      <div class="result-big" id="result-big">🎉</div>
+      <div class="result-sales">💰 <b id="result-sales">0</b>원 <small>/ 목표 <span id="result-goal">0</span>원</small></div>
+      <div class="result-bowls" id="result-bowls"></div>
+      <button id="btn-next" class="big">다음 날 ▶</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

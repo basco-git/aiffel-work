@@ -6,6 +6,7 @@ on:
     paths:
       - 'my-cargame/**'
       - 'my-game/**'
+      - 'Pair Quest-gmae/**'
       - '.github/workflows/deploy-cargame.yml'
   workflow_dispatch:
 
@@ -32,6 +33,8 @@ jobs:
           mkdir -p _site
           cp -r my-cargame _site/my-cargame
           cp -r my-game _site/my-game
+          mkdir -p _site/louis-ramen
+          cp "Pair Quest-gmae"/index.html "Pair Quest-gmae"/styles.css "Pair Quest-gmae"/script.js _site/louis-ramen/
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
