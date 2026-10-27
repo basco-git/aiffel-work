@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>햄스터 서바이벌</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===================== 시작 화면 ===================== -->
+  <section id="start-screen" class="screen">
+    <div class="start-inner">
+      <h1 class="title"><span class="title-icon">🐹</span> 햄스터 서바이벌</h1>
+      <p class="subtitle">오염된 도시에서 살아남는 귀여운 햄스터의 사냥 RPG</p>
+
+      <div class="story">
+        <p>어느 날, 도시가 <b class="toxic">정체불명의 오염</b>으로 뒤덮였어요. ☣️</p>
+        <p>모두가 떠나버린 거리에 남겨진 건 작은 햄스터 한 마리뿐.</p>
+        <p>버려진 무기와 방어구를 주워 오염된 몬스터들과 싸우고,
+          오염의 근원인 <b class="boss-text">'오염된 퍼실몹'</b>을 쓰러뜨려 도시를 정화하세요!</p>
+      </div>
+
+      <div id="continue-box" class="continue-box hidden">
+        <div id="continue-info" class="continue-info"></div>
+        <button id="btn-continue" class="btn btn-primary">▶ 이어하기</button>
+      </div>
+
+      <h2 class="choose-title">햄스터를 골라주세요</h2>
+      <div id="hamster-choices" class="hamster-choices"></div>
+      <button id="btn-new" class="btn btn-primary btn-big" disabled>햄스터를 선택하세요</button>
+
+      <div class="howto">
+        <div><b>PC</b> WASD/방향키 이동 · 스페이스 공격 · I 장비 · K 스탯</div>
+        <div><b>모바일</b> 왼쪽 조이스틱 이동 · 오른쪽 ⚔️ 버튼 공격</div>
+        <div>⛺ 세이브 포인트 안에서만 저장할 수 있어요. 쓰러지면 마지막으로 저장한 ⛺에서 부활해요.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 필드 화면 ===================== -->
+  <section id="game" class="screen hidden">
+    <div id="viewport">
+      <div id="world"></div>
+      <div class="fog"></div>
+    </div>
+
+    <!-- 상단 HUD -->
+    <header id="hud">
+      <div class="lv-badge">Lv.<b id="hud-level">1</b></div>
+      <div class="hud-bars">
+        <div class="bar hp-bar hp-high" id="hud-hp"><i id="hud-hp-fill"></i><span id="hud-hp-text"></span></div>
+        <div class="bar exp-bar"><i id="hud-exp-fill"></i><span id="hud-exp-text"></span></div>
+      </div>
+      <canvas id="minimap" width="120" height="120" aria-label="미니맵"></canvas>
+    </header>
+
+    <div id="side-buttons">
+      <button id="btn-equip" class="side-btn" title="장비 (I)">🎒<small>장비</small></button>
+      <button id="btn-stat" class="side-btn" title="스탯 (K)">⭐<small>스탯</small><em id="stat-badge" class="badge hidden">0</em></button>
+      <button id="btn-save" class="side-btn" title="세이브">💾<small>세이브</small></button>
+    </div>
+
+    <div id="boss-bar" class="hidden">
+      <div class="boss-bar-name">👑 오염된 퍼실몹</div>
+      <div class="bar boss-hp"><i id="boss-hp-fill"></i><span id="boss-hp-text"></span></div>
+    </div>
+    <div id="boss-arrow" class="hidden"><span class="arrow">➤</span><span class="label">👑 보스</span></div>
+
+    <div id="save-prompt" class="hidden">⛺ <b id="save-prompt-name"></b> · 안전지대 — 💾 세이브 가능</div>
+    <div id="toasts"></div>
+
+    <div id="touch-controls">
+      <div id="joy-zone"></div>
+      <div id="joy-base"><div id="joy-knob"></div></div>
+      <button id="attack-btn">⚔️<small>공격</small></button>
+    </div>
+    <div id="key-hint">WASD/방향키 이동 · 스페이스 공격 · I 장비 · K 스탯</div>
+
+    <div id="test-panel" class="hidden">
+      <b>🧪 테스트</b>
+      <button data-test="lv1">+1 레벨</button>
+      <button data-test="lv5">+5 레벨</button>
+      <button data-test="heal">❤️ 회복</button>
+      <button data-test="item">🎁 장비</button>
+      <button data-test="boss">👑 보스 앞</button>
+    </div>
+
+    <!-- 장비 비교 창 (상자/드랍) -->
+    <div id="modal-compare" class="modal hidden">
+      <div class="modal-box">
+        <h3 id="compare-title"></h3>
+        <p class="modal-sub"><span id="compare-slot"></span> — 무기 1개, 방어구 1개만 장착할 수 있어요</p>
+        <div id="compare-cards" class="compare-cards"></div>
+        <div id="compare-diff" class="compare-diff"></div>
+        <div class="modal-actions">
+          <button id="btn-discard" class="btn">🗑️ 버리기</button>
+          <button id="btn-swap" class="btn btn-primary">🔁 교체하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 인벤토리 / 장비 창 -->
+    <div id="modal-equip" class="modal hidden">
+      <div class="modal-box">
+        <h3>🎒 장비</h3>
+        <div class="equip-layout">
+          <div id="equip-preview" class="equip-preview"></div>
+          <div id="equip-slots" class="equip-slots"></div>
+        </div>
+        <table id="equip-stats" class="stat-table"></table>
+        <div class="modal-actions">
+          <button class="btn btn-primary" data-close>닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스탯 배분 창 -->
+    <div id="modal-stat" class="modal hidden">
+      <div class="modal-box">
+        <h3>⭐ 스탯 배분</h3>
+        <p class="modal-sub">남은 포인트: <b id="stat-points" class="points">0</b> (레벨업마다 +3)</p>
+        <div id="stat-rows" class="stat-rows"></div>
+        <div class="modal-actions">
+          <button class="btn" data-close>나중에</button>
+          <button id="btn-stat-ok" class="btn btn-primary">확정</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기절 창 -->
+    <div id="modal-death" class="modal hidden">
+      <div class="modal-box death-box">
+        <div class="death-icon">😵</div>
+        <h3>햄스터가 기절했어요…</h3>
+        <p id="death-text"></p>
+        <div class="modal-actions">
+          <button id="btn-respawn" class="btn btn-primary">⛺ 부활하기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 엔딩 화면 ===================== -->
+  <section id="ending-screen" class="screen hidden">
+    <div class="ending-inner">
+      <div class="ending-icons">🌈🐹🌻</div>
+      <h1>게임 클리어!</h1>
+      <p class="ending-story">
+        오염의 근원 <b>'오염된 퍼실몹'</b>이 쓰러지자,<br>
+        회색 하늘이 걷히고 도시에 다시 맑은 햇살이 비쳤어요.<br>
+        작은 햄스터의 용기가 도시를 정화했답니다. 🌸
+      </p>
+      <p id="ending-stats" class="ending-stats"></p>
+      <button id="btn-restart" class="btn btn-primary btn-big">🔄 다시하기</button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
