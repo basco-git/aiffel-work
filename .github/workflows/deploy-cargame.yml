@@ -1,10 +1,11 @@
-name: Deploy my-cargame to GitHub Pages
+name: Deploy games to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
       - 'my-cargame/**'
+      - 'my-game/**'
       - '.github/workflows/deploy-cargame.yml'
   workflow_dispatch:
 
@@ -30,6 +31,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r my-cargame _site/my-cargame
+          cp -r my-game _site/my-game
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
