@@ -1,0 +1,57 @@
+{
+  "width": 100,
+  "height": 60,
+  "regions": [
+    {
+      "id": "mech_base", "name": "메카닉 거점", "kind": "base", "faction": "mechanic",
+      "rect": [2, 6, 16, 14], "tile": "metal", "contamination": 0,
+      "gate": { "side": "east", "from": 4, "to": 7 }
+    },
+    {
+      "id": "gen_base", "name": "유전공학 거점", "kind": "base", "faction": "genetic",
+      "rect": [2, 40, 16, 14], "tile": "flesh", "contamination": 0,
+      "gate": { "side": "east", "from": 4, "to": 7 }
+    },
+    {
+      "id": "jungle", "name": "정글", "kind": "field",
+      "rect": [18, 0, 38, 60], "tile": "jungle", "contamination": 0.3,
+      "obstacle": { "kind": "tree", "density": 0.075, "seed": 11 },
+      "clear": [[18, 9, 7, 8], [18, 43, 7, 8], [18, 27, 38, 6], [22, 9, 4, 40]]
+    },
+    {
+      "id": "tower_gate", "name": "탑 입구", "kind": "hub",
+      "rect": [56, 18, 10, 24], "tile": "towerstone", "contamination": 0
+    },
+    {
+      "id": "strait", "name": "해협", "kind": "field",
+      "rect": [66, 0, 34, 60], "tile": "sand", "contamination": 0.7,
+      "obstacle": { "kind": "deepwater", "density": 0.34, "seed": 5 },
+      "clear": [[66, 26, 34, 8], [66, 10, 4, 40]]
+    }
+  ],
+  "tower": { "x": 61, "y": 30, "radius": 2.2, "blocked": [59, 21, 5, 6] },
+  "npcs": {
+    "mechanic": { "x": 9.5, "y": 9.5 },
+    "genetic": { "x": 9.5, "y": 43.5 }
+  },
+  "respawn": {
+    "mechanic": { "x": 11.5, "y": 13.5 },
+    "genetic": { "x": 11.5, "y": 47.5 }
+  },
+  "points": [
+    { "id": "jungle_nest", "name": "거대꽃 둥지", "x": 47.5, "y": 51.5, "radius": 4 },
+    { "id": "strait_shore", "name": "해협 해안", "x": 69.5, "y": 30, "radius": 3 }
+  ],
+  "spawns": [
+    { "monster": "poison_ant", "rect": [26, 14, 10, 12], "count": 6 },
+    { "monster": "thorn_sprout", "rect": [26, 34, 10, 12], "count": 6 },
+    { "monster": "mutant_monkey", "rect": [36, 3, 16, 14], "count": 4 },
+    { "monster": "poison_spider", "rect": [36, 35, 12, 11], "count": 4 },
+    { "monster": "maneater_flower", "rect": [46, 51, 2, 2], "count": 1 },
+    { "monster": "mutant_crab", "rect": [70, 35, 12, 12], "count": 6 },
+    { "monster": "toxic_jelly", "rect": [70, 12, 12, 12], "count": 5 },
+    { "monster": "spike_eel", "rect": [84, 4, 13, 16], "count": 4 },
+    { "monster": "armored_turtle", "rect": [84, 38, 13, 14], "count": 4 },
+    { "monster": "mutant_shark", "rect": [91, 28, 4, 4], "count": 1 }
+  ]
+}

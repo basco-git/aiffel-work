@@ -1,0 +1,5 @@
+{
+  "grades": ["common", "advanced", "rare", "legendary"],
+  "gradeNames": { "common": "일반", "advanced": "고급", "rare": "희귀", "legendary": "전설" },
+  "gradeColors": { "common": "#c8c8c8", "advanced": "#5fd36a", "rare": "#4aa8ff", "legendary": "#ffb340" }
+}

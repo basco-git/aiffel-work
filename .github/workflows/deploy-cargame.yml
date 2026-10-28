@@ -7,6 +7,7 @@ on:
       - 'my-cargame/**'
       - 'my-game/**'
       - 'Pair Quest-gmae/**'
+      - 'my-game_rpg/**'
       - '.github/workflows/deploy-cargame.yml'
   workflow_dispatch:
 
@@ -28,6 +29,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build tower break (my-game_rpg)
+        working-directory: my-game_rpg
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test
+          pnpm build
+
       - name: Prepare site
         run: |
           mkdir -p _site
@@ -35,6 +51,7 @@ jobs:
           cp -r my-game _site/my-game
           mkdir -p _site/louis-ramen
           cp "Pair Quest-gmae"/index.html "Pair Quest-gmae"/styles.css "Pair Quest-gmae"/script.js _site/louis-ramen/
+          cp -r my-game_rpg/apps/client/dist _site/my-game_rpg
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5

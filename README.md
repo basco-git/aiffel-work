@@ -5,6 +5,7 @@
 3. [my-cargame](my-cargame/) — 3D 하늘을 나는 자동차 게임 ([플레이](https://basco-git.github.io/aiffel-work/my-cargame/))
 4. [my-game](my-game/) — 햄스터 서바이벌: 오염된 도시에서 몬스터를 사냥하는 햄스터 RPG ([플레이](https://basco-git.github.io/aiffel-work/my-game/))
 5. [루이의 라면가게](<Pair Quest-gmae/>) — 말티즈 루이와 3분 안에 주문대로 라면을 끓이는 3D 요리 게임 ([플레이](https://basco-git.github.io/aiffel-work/louis-ramen/))
+6. [my-game_rpg](my-game_rpg/) — 타워 브레이크(가제): 메카닉·유전공학 세력을 골라 부위를 강화하며 오염 지역과 탑 1~10층을 공략하는 픽셀 쿼터뷰 MMORPG 0단계 테스트 버전 ([플레이](https://basco-git.github.io/aiffel-work/my-game_rpg/))
 
 ## 회고
 my-cargame : 퍼실님과 같은 프롬프트로 명령했지만 다른 결과. (퍼실님 : 클로드 데스크탑 앱, 나 : 클로드 CLI / 터미널 차이인지 궁금) 

@@ -1,0 +1,25 @@
+{
+  "order": ["head", "arm", "torso", "leg", "weapon", "guard"],
+  "names": {
+    "mechanic": { "head": "머리", "arm": "팔", "torso": "몸통", "leg": "다리", "weapon": "무기 슬롯", "guard": "방어구 슬롯" },
+    "genetic": { "head": "머리", "arm": "팔", "torso": "몸통", "leg": "다리", "weapon": "손", "guard": "각반·발" }
+  },
+  "statsPerPoint": {
+    "mechanic": {
+      "head": { "crit": 0.0003 },
+      "arm": { "atk": 0.2 },
+      "torso": { "maxHp": 2 },
+      "leg": { "moveSpeedPct": 0.0005 },
+      "weapon": { "atk": 0.3 },
+      "guard": { "def": 0.15 }
+    },
+    "genetic": {
+      "head": { "crit": 0.0003 },
+      "arm": { "atk": 0.2 },
+      "torso": { "maxHp": 2 },
+      "leg": { "moveSpeedPct": 0.0005 },
+      "weapon": { "atk": 0.3, "attackSpeedPct": 0.0005 },
+      "guard": { "def": 0.15 }
+    }
+  }
+}

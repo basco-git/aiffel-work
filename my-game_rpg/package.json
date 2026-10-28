@@ -1,0 +1,17 @@
+{
+  "name": "tower-break",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @tb/client dev",
+    "build": "pnpm --filter @tb/client build",
+    "preview": "pnpm --filter @tb/client preview",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter @tb/shared test",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.52.0",
+    "typescript": "^5.8.3"
+  }
+}

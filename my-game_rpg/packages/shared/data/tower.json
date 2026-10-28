@@ -1,0 +1,52 @@
+{
+  "floors": [
+    { "floor": 1, "theme": "균사 온실", "monsterScale": 1.1,
+      "manager": { "name": "재배자 뮤른", "sizePx": 52, "hp": 350, "atk": 14, "def": 3, "speed": 2.0, "pattern": "shooter", "color": "#7fd36a" },
+      "mission": { "type": "hunt", "waves": [
+        [{ "monster": "poison_ant", "count": 5 }],
+        [{ "monster": "thorn_sprout", "count": 4 }, { "monster": "poison_ant", "count": 3 }],
+        [{ "monster": "mutant_monkey", "count": 2 }]
+      ] } },
+    { "floor": 2, "theme": "거울 미궁", "monsterScale": 1.2,
+      "manager": { "name": "반사자 이르", "sizePx": 52, "hp": 450, "atk": 17, "def": 4, "speed": 2.6, "pattern": "charger", "color": "#b8c8ff" },
+      "mission": { "type": "maze", "cellsW": 8, "cellsH": 8, "timeLimit": 120, "seed": 2,
+        "monsters": [{ "monster": "poison_spider", "count": 4 }, { "monster": "poison_ant", "count": 4 }] } },
+    { "floor": 3, "theme": "표본 보관실", "monsterScale": 1.3,
+      "manager": { "name": "수집가 오벨", "sizePx": 56, "hp": 560, "atk": 20, "def": 5, "speed": 2.0, "pattern": "shooter", "color": "#e0a050" },
+      "mission": { "type": "quest", "objective": { "kind": "destroy", "count": 4, "label": "표본 보존기", "hp": 80 },
+        "monsters": [{ "monster": "mutant_monkey", "count": 1 }, { "monster": "thorn_sprout", "count": 1 }], "spawnInterval": 6, "maxAlive": 6 } },
+    { "floor": 4, "theme": "산성 수조", "monsterScale": 1.15,
+      "manager": { "name": "사육사 카샤", "sizePx": 56, "hp": 700, "atk": 24, "def": 6, "speed": 2.0, "pattern": "summoner", "color": "#6ad3c8" },
+      "mission": { "type": "hunt", "waves": [
+        [{ "monster": "mutant_crab", "count": 5 }],
+        [{ "monster": "toxic_jelly", "count": 5 }],
+        [{ "monster": "spike_eel", "count": 2 }, { "monster": "mutant_crab", "count": 3 }]
+      ] } },
+    { "floor": 5, "theme": "뼈 회랑", "monsterScale": 1.25,
+      "manager": { "name": "조각가 브룸", "sizePx": 58, "hp": 850, "atk": 27, "def": 7, "speed": 2.8, "pattern": "charger", "color": "#e8e0c8" },
+      "mission": { "type": "maze", "cellsW": 10, "cellsH": 10, "timeLimit": 150, "seed": 5,
+        "monsters": [{ "monster": "spike_eel", "count": 4 }, { "monster": "mutant_crab", "count": 4 }] } },
+    { "floor": 6, "theme": "결정 채굴장", "monsterScale": 1.35,
+      "manager": { "name": "채굴관 데크", "sizePx": 60, "hp": 1000, "atk": 31, "def": 8, "speed": 2.0, "pattern": "shooter", "color": "#c070ff" },
+      "mission": { "type": "quest", "objective": { "kind": "collect", "count": 6, "label": "오염 결정" },
+        "monsters": [{ "monster": "armored_turtle", "count": 1 }, { "monster": "toxic_jelly", "count": 2 }], "spawnInterval": 6, "maxAlive": 7 } },
+    { "floor": 7, "theme": "번식장", "monsterScale": 1.5,
+      "manager": { "name": "번식관 니아르", "sizePx": 60, "hp": 1200, "atk": 35, "def": 9, "speed": 2.0, "pattern": "summoner", "color": "#ff7aa8" },
+      "mission": { "type": "hunt", "waves": [
+        [{ "monster": "poison_spider", "count": 4 }, { "monster": "mutant_monkey", "count": 2 }],
+        [{ "monster": "armored_turtle", "count": 2 }, { "monster": "spike_eel", "count": 2 }],
+        [{ "monster": "toxic_jelly", "count": 6 }, { "monster": "mutant_crab", "count": 4 }]
+      ] } },
+    { "floor": 8, "theme": "중력 미궁", "monsterScale": 1.6,
+      "manager": { "name": "설계자 볼타", "sizePx": 62, "hp": 1400, "atk": 39, "def": 10, "speed": 2.2, "pattern": "shooter", "color": "#5a8aff" },
+      "mission": { "type": "maze", "cellsW": 12, "cellsH": 12, "timeLimit": 180, "seed": 8,
+        "monsters": [{ "monster": "armored_turtle", "count": 4 }, { "monster": "spike_eel", "count": 5 }, { "monster": "poison_spider", "count": 4 }] } },
+    { "floor": 9, "theme": "관측실", "monsterScale": 1.75,
+      "manager": { "name": "관측자 세렌", "sizePx": 64, "hp": 1650, "atk": 44, "def": 12, "speed": 3.0, "pattern": "charger", "color": "#ffe066" },
+      "mission": { "type": "quest", "objective": { "kind": "destroy", "count": 5, "label": "관측 렌즈", "hp": 160 },
+        "monsters": [{ "monster": "spike_eel", "count": 1 }, { "monster": "mutant_monkey", "count": 1 }, { "monster": "toxic_jelly", "count": 1 }], "spawnInterval": 5, "maxAlive": 8 } },
+    { "floor": 10, "theme": "감독관의 옥좌", "monsterScale": 1.9,
+      "manager": { "name": "감독관 크세르", "sizePx": 88, "hp": 4000, "atk": 52, "def": 15, "speed": 2.2, "pattern": "boss", "color": "#ff4060" },
+      "mission": { "type": "boss", "summon": [{ "monster": "spike_eel", "count": 2 }, { "monster": "poison_spider", "count": 2 }] } }
+  ]
+}

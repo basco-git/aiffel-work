@@ -1,0 +1,12 @@
+{
+  "items": [
+    { "id": "rusty_railgun", "name": "녹슨 레일건", "slot": "weapon", "atk": 4, "def": 0, "tier": 1 },
+    { "id": "pulse_rifle", "name": "개조 펄스 소총", "slot": "weapon", "atk": 10, "def": 0, "tier": 2 },
+    { "id": "coil_launcher", "name": "코일 런처", "slot": "weapon", "atk": 18, "def": 0, "tier": 3 },
+    { "id": "alien_plasma", "name": "외계 기술 플라즈마 캐논", "slot": "weapon", "atk": 30, "def": 0, "tier": 4 },
+    { "id": "scrap_plate", "name": "고철 판갑", "slot": "armor", "atk": 0, "def": 3, "tier": 1 },
+    { "id": "composite_vest", "name": "복합 장갑 조끼", "slot": "armor", "atk": 0, "def": 7, "tier": 2 },
+    { "id": "reactive_armor", "name": "반응 장갑", "slot": "armor", "atk": 0, "def": 12, "tier": 3 },
+    { "id": "alien_shell", "name": "외계 기술 합금 외피", "slot": "armor", "atk": 0, "def": 20, "tier": 4 }
+  ]
+}

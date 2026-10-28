@@ -1,0 +1,114 @@
+{
+  "display": {
+    "baseHeight": 360,
+    "minWidth": 480,
+    "maxWidth": 800,
+    "tileWidth": 32,
+    "tileHeight": 16
+  },
+  "player": {
+    "baseHp": 100,
+    "baseAtk": 10,
+    "baseDef": 0,
+    "baseCrit": 0.05,
+    "critMultiplier": 1.6,
+    "baseMoveSpeed": 4,
+    "invulnAfterHit": 0.4,
+    "baseRegenPerSec": 30,
+    "radius": 0.35,
+    "outOfCombatDelay": 5,
+    "outOfCombatRegenPct": 0.02
+  },
+  "factions": {
+    "mechanic": {
+      "name": "메카닉",
+      "material": "부품",
+      "tagline": "몸을 기계로 대체한 원거리 전투 집단",
+      "attack": "ranged",
+      "attackInterval": 0.45,
+      "range": 7,
+      "projectileSpeed": 14,
+      "damageMultiplier": 1,
+      "canEquip": true
+    },
+    "genetic": {
+      "name": "유전공학",
+      "material": "세포",
+      "tagline": "몬스터 세포를 이식해 몸을 무기로 바꾼 근접 전투 집단",
+      "attack": "melee",
+      "attackInterval": 0.38,
+      "range": 1.7,
+      "arcDeg": 140,
+      "projectileSpeed": 0,
+      "damageMultiplier": 1.35,
+      "canEquip": false
+    }
+  },
+  "enhance": {
+    "pointsPerStage": 20,
+    "maxValue": 1000,
+    "breakpointEvery": 50,
+    "gain": {
+      "common": 1,
+      "advanced": 2,
+      "rare": 3,
+      "legendary": 5
+    },
+    "bands": [
+      {
+        "fromStage": 0,
+        "rate": 0.95,
+        "breakDrop": 1
+      },
+      {
+        "fromStage": 10,
+        "rate": 0.8,
+        "breakDrop": 2
+      },
+      {
+        "fromStage": 20,
+        "rate": 0.6,
+        "breakDrop": 3
+      },
+      {
+        "fromStage": 30,
+        "rate": 0.4,
+        "breakDrop": 5
+      },
+      {
+        "fromStage": 40,
+        "rate": 0.2,
+        "breakDrop": 8
+      }
+    ],
+    "rateBonusMultiplier": 1,
+    "rateCap": 0.99
+  },
+  "deathPenalty": {
+    "minPct": 0.01,
+    "maxPct": 0.05
+  },
+  "combat": {
+    "defenseConstant": 100,
+    "knockback": 0.35,
+    "monsterLeashRange": 14
+  },
+  "save": {
+    "autosaveSeconds": 5
+  },
+  "debug": {
+    "enabled": true,
+    "showButton": true,
+    "grantMaterials": {
+      "amount": 10,
+      "parts": "all",
+      "grades": [
+        "common",
+        "advanced",
+        "rare",
+        "legendary"
+      ]
+    },
+    "grantEquipment": true
+  }
+}
