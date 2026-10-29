@@ -5,7 +5,7 @@
 - **길 A** (`DB_BACKEND=sqlite`): 로컬 SQLite 파일 `todo.db` 하나에 저장. 로그인 없음.
 - **길 B** (`DB_BACKEND=supabase`): Supabase(PostgreSQL)에 저장. Supabase Auth 로그인, RLS로 내 할 일만 보임.
 
-화면 코드와 API는 두 길에서 같고, 백엔드의 저장소 모듈만 바뀐다. 과제 제출 내용은 [SUBMISSION.md](SUBMISSION.md), 요구사항은 [PRD.md](PRD.md).
+## 화면 코드와 API는 두 길에서 같고, 백엔드의 저장소 모듈만 바뀐다. 과제 제출 내용은 [SUBMISSION.md](SUBMISSION.md), 요구사항은 [PRD.md](PRD.md).
 
 ## 기능
 
