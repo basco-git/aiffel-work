@@ -26,6 +26,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0;
   background: var(--bg);
@@ -61,6 +62,14 @@ button.danger { color: var(--danger); }
 .add > button { justify-self: end; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .filters input { flex: 1; min-width: 180px; }
+
+header.sub { justify-content: flex-end; margin-bottom: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.mode { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 10px; border: 1px solid var(--line); color: var(--muted); }
+.mode.supabase { color: #16a34a; border-color: #16a34a; }
+.user { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.auth { max-width: 420px; margin: 40px auto; }
+.auth-form { display: grid; gap: 10px; margin-top: 12px; }
 
 .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
 .tab { border: 0; background: transparent; padding: 6px 12px; }

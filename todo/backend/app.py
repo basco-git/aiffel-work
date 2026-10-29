@@ -1,38 +1,59 @@
-"""Todo 앱 API 서버. 화면(frontend/)도 같이 내려준다. DB 접근은 db.py를 통해서만 한다."""
+"""Todo 앱 API 서버. 화면(frontend/)도 같이 내려준다.
+
+DB 접근은 저장소 모듈을 통해서만 한다. .env의 DB_BACKEND로 고른다.
+  sqlite   → store_sqlite.py   (길 A, 로그인 없음)
+  supabase → store_supabase.py (길 B, Supabase Auth 로그인 + RLS)
+"""
 import os
 import re
 import socket
 import sys
-from datetime import date
+from datetime import date, timedelta
 
 from flask import Flask, jsonify, request, send_from_directory
 
-import db
+from config import BASE_DIR, DB_BACKEND
+from errors import BadRequest, Conflict, NotFound, Unauthorized, Upstream
 
-FRONTEND_DIR = db.BASE_DIR / "frontend"
+if DB_BACKEND == "supabase":
+    import store_supabase as db
+else:
+    import store_sqlite as db
+
+FRONTEND_DIR = BASE_DIR / "frontend"
 COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 app = Flask(__name__, static_folder=str(FRONTEND_DIR), static_url_path="")
 app.json.ensure_ascii = False
 
-
-class BadRequest(Exception):
-    pass
-
-
-@app.errorhandler(BadRequest)
-def _bad_request(e):
-    return jsonify(error=str(e)), 400
-
-
-@app.errorhandler(db.NotFound)
-def _not_found(e):
-    return jsonify(error=str(e)), 404
+if DB_BACKEND == "supabase":
+    secret = os.getenv("FLASK_SECRET_KEY")
+    if not secret or len(secret) < 32:
+        raise SystemExit(".env에 FLASK_SECRET_KEY(32자 이상 임의 문자열)를 넣어 주세요.")
+    app.config.update(
+        SECRET_KEY=secret,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        PERMANENT_SESSION_LIFETIME=timedelta(days=7),
+    )
 
 
-@app.errorhandler(db.Conflict)
-def _conflict(e):
-    return jsonify(error=str(e)), 409
+def _error(status):
+    return lambda e: (jsonify(error=str(e)), status)
+
+
+for _exc, _status in ((BadRequest, 400), (Unauthorized, 401), (NotFound, 404),
+                      (Conflict, 409), (Upstream, 502)):
+    app.register_error_handler(_exc, _error(_status))
+
+
+@app.before_request
+def _require_login():
+    """길 B에서는 /api/auth/* 를 뺀 모든 API에 로그인이 필요하다."""
+    if DB_BACKEND == "supabase" and request.path.startswith("/api/") \
+            and not request.path.startswith("/api/auth/") and db.current_user() is None:
+        raise Unauthorized("로그인이 필요합니다.")
 
 
 # ---------- 입력 검사 ----------
@@ -94,6 +115,47 @@ def _tag_ids(data):
 @app.get("/")
 def index():
     return send_from_directory(FRONTEND_DIR, "index.html")
+
+
+# ---------- 로그인 (길 B) ----------
+
+@app.get("/api/auth/me")
+def auth_me():
+    if DB_BACKEND != "supabase":
+        return jsonify(mode="sqlite", auth=False, user=None)
+    return jsonify(mode="supabase", auth=True, user=db.current_user())
+
+
+def _credentials():
+    if DB_BACKEND != "supabase":
+        raise BadRequest("로컬(SQLite) 모드에는 로그인이 없습니다.")
+    data = _body()
+    email = _text(data, "email", required=True, max_len=254)
+    password = data.get("password")
+    if not EMAIL_RE.match(email):
+        raise BadRequest("이메일 형식을 확인해 주세요.")
+    if not isinstance(password, str) or not password:
+        raise BadRequest("비밀번호를 입력해 주세요.")
+    return email, password
+
+
+@app.post("/api/auth/login")
+def auth_login():
+    email, password = _credentials()
+    return jsonify(user=db.sign_in(email, password))
+
+
+@app.post("/api/auth/signup")
+def auth_signup():
+    email, password = _credentials()
+    return jsonify(db.sign_up(email, password)), 201
+
+
+@app.post("/api/auth/logout")
+def auth_logout():
+    if DB_BACKEND == "supabase":
+        db.sign_out()
+    return "", 204
 
 
 # ---------- 할 일 ----------
@@ -210,7 +272,7 @@ if __name__ == "__main__":
 
     # pythonw.exe(창 없이 실행)로 켜지면 출력할 곳이 없으므로 server.log에 남긴다
     if sys.stdout is None or sys.stderr is None:
-        log = open(db.BASE_DIR / "server.log", "a", encoding="utf-8", buffering=1)
+        log = open(BASE_DIR / "server.log", "a", encoding="utf-8", buffering=1)
         sys.stdout = sys.stderr = log
 
     # 이미 켜져 있으면 두 번째 서버를 띄우지 않는다

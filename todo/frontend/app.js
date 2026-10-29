@@ -19,9 +19,71 @@ async function api(method, path, body) {
   });
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && !path.startsWith("/auth/")) {
+    showAuth(data.error);              // 로그인이 풀렸으면 로그인 화면으로
+    throw new Error(data.error || "로그인이 필요합니다.");
+  }
   if (!res.ok) throw new Error(data.error || `요청 실패 (${res.status})`);
   return data;
 }
+
+// ---------- 로그인 (길 B: Supabase) ----------
+
+function showAuth(message) {
+  $("#app").hidden = true;
+  $("#user-box").hidden = true;
+  $("#auth").hidden = false;
+  authMessage(message);
+}
+
+function authMessage(text, isError = true) {
+  const el = $("#auth-msg");
+  el.textContent = text || "";
+  el.hidden = !text;
+  el.className = isError ? "error" : "muted";
+}
+
+function showApp(me) {
+  $("#auth").hidden = true;
+  $("#app").hidden = false;
+  $("#user-box").hidden = !me.user;
+  if (me.user) $("#user-email").textContent = me.user.email;
+}
+
+async function boot() {
+  const me = await api("GET", "/auth/me");
+  const badge = $("#mode-badge");
+  badge.hidden = false;
+  badge.textContent = me.mode === "supabase" ? "Supabase" : "로컬 SQLite";
+  badge.classList.toggle("supabase", me.mode === "supabase");
+  if (me.auth && !me.user) return showAuth();
+  showApp(me);
+  await refresh();
+}
+
+async function authSubmit(kind) {
+  const body = { email: $("#auth-email").value.trim(), password: $("#auth-password").value };
+  if (!body.email || !body.password) return authMessage("이메일과 비밀번호를 입력해 주세요.");
+  try {
+    const res = await api("POST", `/auth/${kind}`, body);
+    if (kind === "signup" && res.needs_confirmation) {
+      return authMessage("가입 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해 주세요.", false);
+    }
+    $("#auth-password").value = "";
+    authMessage("");
+    await boot();
+  } catch (err) {
+    authMessage(err.message);
+  }
+}
+
+$("#auth-form").addEventListener("submit", (e) => { e.preventDefault(); authSubmit("login"); });
+$("#signup").addEventListener("click", () => authSubmit("signup"));
+$("#logout").addEventListener("click", () => run(async () => {
+  await api("POST", "/auth/logout");
+  $("#list").replaceChildren();
+  showAuth();
+}));
 
 function showError(err) {
   const el = $("#error");
@@ -296,4 +358,4 @@ async function refresh() {
   await loadTodos();
 }
 
-run(refresh);
+run(boot);

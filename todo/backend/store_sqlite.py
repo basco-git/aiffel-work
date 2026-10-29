@@ -1,25 +1,16 @@
-"""SQLite 접근 계층. DB를 직접 다루는 코드는 이 파일에만 둔다."""
+"""길 A: SQLite(todo.db) 저장소. 이 모드에서 DB를 직접 다루는 코드는 이 파일에만 둔다."""
 import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
-from dotenv import load_dotenv
+from config import BASE_DIR
+from errors import Conflict, NotFound
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = BASE_DIR / "db" / "schema.sql"
 
-load_dotenv(BASE_DIR / ".env")
 _db_path = Path(os.getenv("DB_PATH", "./todo.db"))
 DB_PATH = _db_path if _db_path.is_absolute() else (BASE_DIR / _db_path).resolve()
-
-
-class NotFound(Exception):
-    pass
-
-
-class Conflict(Exception):
-    pass
 
 
 def get_conn():
