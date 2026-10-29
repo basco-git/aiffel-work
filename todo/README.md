@@ -2,10 +2,16 @@
 
 내 컴퓨터에서 도는 Todo(할 일) 앱. 브라우저에서 `http://localhost:5000`으로 연다.
 
+> [!IMPORTANT]
+> **📋 과제 제출 문서**
+>
+> - 📑 **[SUBMISSION.md](SUBMISSION.md)** — 확인 장면(로컬·Supabase), 클라우드 전환·RLS 확인 기록, 3분 시연 순서
+> - 📝 **[PRD.md](PRD.md)** — 요구사항 정의서
+
 - **길 A** (`DB_BACKEND=sqlite`): 로컬 SQLite 파일 `todo.db` 하나에 저장. 로그인 없음.
 - **길 B** (`DB_BACKEND=supabase`): Supabase(PostgreSQL)에 저장. Supabase Auth 로그인, RLS로 내 할 일만 보임.
 
-## 화면 코드와 API는 두 길에서 같고, 백엔드의 저장소 모듈만 바뀐다. 과제 제출 내용은 [SUBMISSION.md](SUBMISSION.md), 요구사항은 [PRD.md](PRD.md).
+화면 코드와 API는 두 길에서 같고, 백엔드의 저장소 모듈만 바뀐다.
 
 ## 기능
 
