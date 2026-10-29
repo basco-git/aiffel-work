@@ -1,6 +1,14 @@
+# 비밀값 / 로컬 설정
 .env
+
+# 로컬 DB
+todo.db
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
-data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc

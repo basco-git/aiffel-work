@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Todo</h1>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="today" role="tab">오늘</button>
+        <button class="tab" data-view="active" role="tab">진행 중</button>
+        <button class="tab" data-view="done" role="tab">완료</button>
+        <button class="tab" data-view="all" role="tab">전체</button>
+      </nav>
+    </header>
+
+    <form id="add-form" class="card add">
+      <input id="add-title" placeholder="할 일을 입력하세요" maxlength="200" required>
+      <div class="row">
+        <label>마감일 <input id="add-due" type="date"></label>
+        <input id="add-memo" placeholder="메모 (선택)" maxlength="2000">
+      </div>
+      <div id="add-tags" class="chips" aria-label="태그 선택"></div>
+      <button type="submit" class="primary">추가</button>
+    </form>
+
+    <section class="card filters">
+      <input id="search" type="search" placeholder="검색 (제목·메모·태그)">
+      <select id="tag-filter"><option value="">모든 태그</option></select>
+    </section>
+
+    <p id="error" class="error" hidden></p>
+    <p id="summary" class="muted"></p>
+    <ul id="list" class="list"></ul>
+
+    <details class="card tags-manage">
+      <summary>태그 관리</summary>
+      <form id="tag-form" class="row">
+        <input id="tag-name" placeholder="새 태그 이름" maxlength="30" required>
+        <input id="tag-color" type="color" value="#3b82f6" aria-label="태그 색">
+        <button type="submit">태그 추가</button>
+      </form>
+      <div id="tag-list" class="chips"></div>
+    </details>
+  </main>
+
+  <dialog id="resched-dialog">
+    <form id="resched-form" method="dialog">
+      <h2>기간 재설정</h2>
+      <p id="resched-title" class="muted"></p>
+      <label>새 마감일 <input id="resched-due" type="date" required></label>
+      <label>이유 (선택) <input id="resched-reason" maxlength="200"></label>
+      <h3>재설정 기록</h3>
+      <ul id="resched-history" class="history"></ul>
+      <div class="row end">
+        <button type="button" id="resched-cancel">닫기</button>
+        <button type="submit" class="primary">재설정</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="item-tpl">
+    <li class="item">
+      <input type="checkbox" class="done" aria-label="완료">
+      <div class="body">
+        <div class="title"></div>
+        <div class="memo muted"></div>
+        <div class="meta"></div>
+      </div>
+      <div class="actions">
+        <button class="pick" title="오늘 할 일로 고르기">☆</button>
+        <button class="resched">기간 재설정</button>
+        <button class="del danger">삭제</button>
+      </div>
+    </li>
+  </template>
+
+  <script src="/app.js"></script>
+</body>
+</html>
