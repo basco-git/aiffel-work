@@ -35,6 +35,8 @@ if DB_BACKEND == "supabase":
         SECRET_KEY=secret,
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
+        # 배포(HTTPS)에서는 쿠키를 HTTPS로만 보낸다. 로컬(http://localhost)은 끈 채로 둔다
+        SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE") == "1",
         PERMANENT_SESSION_LIFETIME=timedelta(days=7),
     )
 

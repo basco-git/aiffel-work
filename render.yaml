@@ -1,0 +1,25 @@
+# Render 배포 설정 (Blueprint). todo 앱을 길 B(Supabase)로 인터넷에 올린다.
+# 비밀값(sync: false)은 Render 대시보드에서 처음 만들 때 직접 입력한다. git에는 올리지 않는다.
+services:
+  - type: web
+    name: basco-todo
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: todo
+    buildCommand: pip install -r requirements.txt gunicorn==23.0.0
+    startCommand: gunicorn --chdir backend --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.5"
+      - key: DB_BACKEND
+        value: supabase
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
