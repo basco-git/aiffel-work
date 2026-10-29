@@ -12,3 +12,6 @@ todo.db
 .venv/
 __pycache__/
 *.pyc
+
+# 서버 로그 (start.bat / 자동 실행 시)
+server.log

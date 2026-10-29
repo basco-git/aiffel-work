@@ -1,6 +1,8 @@
 """Todo 앱 API 서버. 화면(frontend/)도 같이 내려준다. DB 접근은 db.py를 통해서만 한다."""
 import os
 import re
+import socket
+import sys
 from datetime import date
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -196,10 +198,25 @@ def delete_tag(tag_id):
     return "", 204
 
 
+def _port_in_use(host, port):
+    with socket.socket() as s:
+        s.settimeout(0.5)
+        return s.connect_ex((host, port)) == 0
+
+
 if __name__ == "__main__":
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", "5000"))
+
+    # pythonw.exe(창 없이 실행)로 켜지면 출력할 곳이 없으므로 server.log에 남긴다
+    if sys.stdout is None or sys.stderr is None:
+        log = open(db.BASE_DIR / "server.log", "a", encoding="utf-8", buffering=1)
+        sys.stdout = sys.stderr = log
+
+    # 이미 켜져 있으면 두 번째 서버를 띄우지 않는다
+    if _port_in_use(host, port):
+        print(f"이미 {host}:{port}에서 서버가 실행 중입니다.")
+        sys.exit(0)
+
     db.init_db()
-    app.run(
-        host=os.getenv("HOST", "127.0.0.1"),
-        port=int(os.getenv("PORT", "5000")),
-        debug=False,
-    )
+    app.run(host=host, port=port, debug=False)
