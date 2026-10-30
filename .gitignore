@@ -1,0 +1,11 @@
+# Claude Code 로컬 설정 / 작업 폴더 (개인 경로 포함, 공유하지 않음)
+.claude/
+
+# 비밀값
+.env
+.env.*
+!.env.example
+
+# 의존성 / 빌드 결과물
+node_modules/
+.next/
