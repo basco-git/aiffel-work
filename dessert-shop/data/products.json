@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "바닐라빈 마카롱",
+    "price": 2500,
+    "category": "마카롱",
+    "image": "",
+    "soldOut": false
+  },
+  {
+    "id": 2,
+    "name": "딸기 생크림 케이크",
+    "price": 32000,
+    "category": "케이크",
+    "image": "",
+    "soldOut": true
+  },
+  {
+    "id": 3,
+    "name": "버터 휘낭시에",
+    "price": 3000,
+    "category": "구움과자",
+    "image": "",
+    "soldOut": false
+  },
+  {
+    "id": 4,
+    "name": "말차 티라미수",
+    "price": 6500,
+    "category": "케이크",
+    "image": "",
+    "soldOut": false
+  },
+  {
+    "id": 5,
+    "name": "초코칩 쿠키",
+    "price": 2800,
+    "category": "쿠키",
+    "image": "",
+    "soldOut": true
+  },
+  {
+    "id": 6,
+    "name": "레몬 마들렌",
+    "price": 2700,
+    "category": "구움과자",
+    "image": "",
+    "soldOut": false
+  }
+]
