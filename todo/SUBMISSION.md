@@ -2,7 +2,7 @@
 
 - 저장소: https://github.com/basco-git/aiffel-work/tree/main/todo
 - PRD: [PRD.md](PRD.md)
-- 배포: 하지 않음 (로컬 서버 `http://localhost:5000` + 클라우드 DB)
+- 배포: https://basco-todo.onrender.com (Render 무료 플랜, 길 B·Supabase. 15분 동안 접속이 없으면 잠들어 첫 접속이 30초~1분 걸림)
 
 ## 기록 (한 줄씩)
 

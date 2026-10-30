@@ -7,7 +7,7 @@
 5. [루이의 라면가게](<Pair Quest-gmae/>) — 말티즈 루이와 3분 안에 주문대로 라면을 끓이는 3D 요리 게임 ([플레이](https://basco-git.github.io/aiffel-work/louis-ramen/))
 6. [my-game_rpg](my-game_rpg/) — 타워 브레이크(가제): 메카닉·유전공학 세력을 골라 부위를 강화하며 오염 지역과 탑 1~10층을 공략하는 픽셀 쿼터뷰 MMORPG 0단계 테스트 버전 ([플레이](https://basco-git.github.io/aiffel-work/my-game_rpg/))
 
-7. [todo](todo/) — 내 컴퓨터에서 도는 할 일 앱(마감일·태그·오늘의 할 일·검색·기간 재설정). 로컬 SQLite(길 A)로 완성한 뒤 Supabase + 로그인 + RLS(길 B)로 전환 ([과제 제출 문서](todo/SUBMISSION.md) · [PRD](todo/PRD.md))
+7. [todo](todo/) — 내 컴퓨터에서 도는 할 일 앱(마감일·태그·오늘의 할 일·검색·기간 재설정). 로컬 SQLite(길 A)로 완성한 뒤 Supabase + 로그인 + RLS(길 B)로 전환 ([실행](https://basco-todo.onrender.com) · [과제 제출 문서](todo/SUBMISSION.md) · [PRD](todo/PRD.md))
 
 ## 회고
 

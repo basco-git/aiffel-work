@@ -2,6 +2,8 @@
 
 내 컴퓨터에서 도는 Todo(할 일) 앱. 브라우저에서 `http://localhost:5000`으로 연다.
 
+배포본(길 B): **https://basco-todo.onrender.com** — 회원가입 후 사용. Render 무료 플랜이라 한동안 접속이 없으면 첫 접속이 30초~1분 걸린다.
+
 > [!IMPORTANT]
 > **📋 과제 제출 문서**
 >
@@ -53,6 +55,10 @@ copy .env.example .env
 6. RLS 확인: `.venv\Scripts\python scripts\check_rls.py` (계정 2개 필요). 결과는 `docs/rls-check-result.txt`.
 
 길 A로 돌아가려면 `DB_BACKEND=sqlite`로 바꾸고 서버를 다시 켜면 된다. 두 DB의 데이터는 서로 따로다.
+
+## 배포 (Render)
+
+저장소 맨 위의 [`render.yaml`](../render.yaml)로 길 B를 Render 무료 플랜에 올린다. Render에서 **New → Blueprint**로 이 저장소를 연결하고 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`를 입력하면 된다. `FLASK_SECRET_KEY`는 Render가 만든다. Supabase **Authentication → URL Configuration**의 Site URL을 배포 주소로 바꿔야 인증 메일 링크가 배포본으로 간다.
 
 ## 구조
 
