@@ -58,7 +58,23 @@ copy .env.example .env
 
 ## 배포 (Render)
 
-저장소 맨 위의 [`render.yaml`](../render.yaml)로 길 B를 Render 무료 플랜에 올린다. Render에서 **New → Blueprint**로 이 저장소를 연결하고 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`를 입력하면 된다. `FLASK_SECRET_KEY`는 Render가 만든다. Supabase **Authentication → URL Configuration**의 Site URL을 배포 주소로 바꿔야 인증 메일 링크가 배포본으로 간다.
+배포 주소: https://basco-todo.onrender.com (길 B, Render 무료 플랜)
+
+저장소 맨 위의 [`render.yaml`](../render.yaml)로 길 B를 Render 무료 플랜에 올린다.
+
+1. render.com에 GitHub 계정으로 로그인 → **New → Blueprint**.
+2. **Public Git Repository**에 `https://github.com/basco-git/aiffel-work`를 넣고 **Connect** (또는 GitHub 계정을 연결해 `aiffel-work` 선택).
+3. Branch `main`, Blueprint Path `render.yaml` 확인.
+4. `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`에 `.env`의 값을 넣는다. `FLASK_SECRET_KEY`는 Render가 만든다.
+5. **Deploy Blueprint**. 몇 분 뒤 배포 주소가 열린다.
+6. Supabase 대시보드 **Authentication → URL Configuration**에서 **Site URL**을 배포 주소(`https://basco-todo.onrender.com`)로 바꾸고 **Save**. 바꾸지 않으면 회원가입 인증 메일의 링크가 localhost로 간다. Redirect URLs는 그대로 둔다.
+   - 바로 가기: `https://supabase.com/dashboard/project/<프로젝트 ID>/auth/url-configuration` (프로젝트 ID는 `SUPABASE_URL`의 `https://` 뒤 부분)
+   - 이미 가입된 계정은 영향 없음. 로컬에서 가입해도 인증 링크는 배포 주소로 가지만, 같은 Supabase라 인증 후 로컬에서도 로그인된다.
+
+참고
+- 무료 플랜은 15분 동안 접속이 없으면 잠들어, 다음 첫 접속이 30초~1분 걸린다. 시연 전에 한 번 열어 둔다.
+- 공개 저장소 주소로 연결했다면 푸시해도 자동 배포되지 않는다. Render 화면에서 **Manual Deploy**를 누른다.
+- 배포에서는 로그인 쿠키를 HTTPS로만 보낸다(`SESSION_COOKIE_SECURE=1`, `render.yaml`에 설정).
 
 ## 구조
 
