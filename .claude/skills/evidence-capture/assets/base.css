@@ -1,0 +1,15 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0c0c0c; width: 100%; font-family: "Cascadia Mono", "D2Coding", Consolas, "Malgun Gothic", monospace; font-size: 14px; color: #e6e6e6; line-height: 1.6; }
+.title { background: #1f1f1f; color: #ddd; font-family: "Segoe UI", "Malgun Gothic", sans-serif; font-size: 12px; padding: 9px 14px; }
+.body { padding: 14px 18px 24px; }
+.prompt { color: #ccc; }
+.cmd { color: #fff; font-weight: bold; }
+.y { color: #f9f1a5; } .g { color: #16c60c; } .c { color: #61d6d6; } .dim { color: #888; } .b { font-weight: bold; color: #fff; }
+.user { background: #2a2a2a; border-left: 3px solid #888; padding: 4px 10px; margin-bottom: 14px; font-weight: bold; color: #fff; display: inline-block; }
+.dot { color: #16c60c; }
+.step { margin-top: 12px; }
+.out { padding-left: 16px; white-space: pre; }
+.box { border: 1px solid #c7a73c; border-radius: 4px; padding: 10px 14px; margin: 10px 0; white-space: pre; }
+.menu { border-top: 1px solid #444; margin-top: 10px; padding-top: 6px; white-space: pre; }
+.sel { background: #61d6d6; color: #000; }
+pre { font-family: inherit; white-space: pre; }
