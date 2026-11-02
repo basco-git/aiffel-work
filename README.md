@@ -10,6 +10,7 @@
 | 6 | my-game_rpg | 타워 브레이크(가제): 픽셀 쿼터뷰 MMORPG 0단계 테스트 버전 | [플레이](https://basco-git.github.io/aiffel-work/my-game_rpg/) | [폴더](my-game_rpg/) |
 | 7 | todo | 할 일 앱: 로컬 SQLite(길 A) → Supabase·로그인·RLS(길 B) 전환 | [실행](https://basco-todo.onrender.com) | [제출 문서](todo/SUBMISSION.md) |
 | 7-1 | todo-Subquest | todo 앱 AI 도구 연동: 터미널 명령 `todo`, 작업 규칙 `AGENTS.md`, 스킬 `todo-summary`, MCP 서버 `todo-files` | [사용법](todo/README.md#ai-도구-연동-터미널-명령--스킬--mcp) | [제출 문서 (길 C)](todo/SUBMISSION.md#길-c--ai-도구-연동-cli--스킬--mcp) |
+| 8 | skills | 반복하던 일을 Claude Code 스킬 3개로: 제출 전 점검, 확인 장면 캡처, 과제 정리 | - | [스킬 모음](.claude/skills/) |
 
 과제 진행 내용과 회고는 각 프로젝트 폴더의 README에 있습니다.
 
