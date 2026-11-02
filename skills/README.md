@@ -11,14 +11,18 @@
 
 세 스킬은 한 흐름으로 이어집니다: **캡처 만들기 → 과제 정리 → 제출 전 점검 → 커밋·PR**.
 
-## 설치 (다른 저장소에서 쓰려면)
+## 설치
 
-Claude Code는 `.claude/skills/<스킬 이름>/SKILL.md`를 스킬로 읽습니다.
+Claude Code는 `.claude/skills/<스킬 이름>/SKILL.md`를 스킬로 읽습니다. 이 폴더(`skills/`)가 원본이고, 설치 스크립트가 개인 스킬 폴더 `~/.claude/skills/`로 복사합니다. 개인 스킬 폴더에 두면 **모든 프로젝트**에서 발동합니다.
 
-- 이 저장소 안에서: 이미 등록되어 있습니다. Claude Code를 이 저장소에서 열면 됩니다.
-- 모든 프로젝트에서: 쓰고 싶은 스킬 폴더를 `~/.claude/skills/` 아래로 복사합니다.
+```bash
+python -I skills/install.py            # 전부 설치 (이미 있으면 덮어씀)
+python -I skills/install.py --check    # 설치본이 이 저장소와 같은지 확인
+```
 
-스크립트는 Python 3.9 이상(표준 라이브러리만), `evidence-capture`는 Chrome이나 Edge가 필요합니다.
+- 스킬을 고친 뒤에는 다시 설치해야 반영됩니다. `--check`가 "다름"을 알려 줍니다.
+- 한 프로젝트에서만 쓰려면 스킬 폴더를 그 프로젝트의 `.claude/skills/` 아래로 복사해도 됩니다.
+- 스크립트는 Python 3.9 이상(표준 라이브러리만), `evidence-capture`는 Chrome이나 Edge가 필요합니다.
 
 ## 발동 시험
 
