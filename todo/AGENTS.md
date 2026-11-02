@@ -41,4 +41,5 @@
 - `service_role`이나 `secret` 키를 쓰지 않고, 접속하려고 RLS 같은 접근 제한을 풀지 않는다.
 - `todo.db`나 Supabase 표를 SQL로 직접 고치지 않는다. 데이터는 todo 명령으로만 다룬다.
 - 실제 사용자 데이터로 시험하지 않는다.
+- MCP 서버 `todo-files`(`.mcp.json`)에는 `docs`, `frontend`, `backend`만 연다. `.env`나 `todo.db`가 든 폴더(todo 폴더 전체 포함)는 넣지 않는다.
 - `.bat` 파일을 LF 줄바꿈으로 저장하지 않는다. LF로 저장했더니 한글 주석 줄을 cmd가 명령으로 읽어 오류가 났다. 새 bat 파일은 CRLF로 저장한다.
