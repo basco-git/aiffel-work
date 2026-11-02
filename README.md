@@ -1,49 +1,26 @@
 # AIFFEL 에이전트 과정 과제 제출
 
-1. [my-blog](https://github.com/basco-git/my-blog) — 아이펠에서 배운 것을 기록하는 블로그 'AI 도전 일지' ([보기](https://basco-git.github.io/my-blog/))
-2. [my-domain](https://github.com/basco-git/my-domain) — 나의 도메인(HR 15년 차) 분석: 성과관리 제도 개편 설계 프롬프트
-3. [my-cargame](my-cargame/) — 3D 하늘을 나는 자동차 게임 ([플레이](https://basco-git.github.io/aiffel-work/my-cargame/))
-4. [my-game](my-game/) — 햄스터 서바이벌: 오염된 도시에서 몬스터를 사냥하는 햄스터 RPG ([플레이](https://basco-git.github.io/aiffel-work/my-game/))
-5. [루이의 라면가게](<Pair Quest-gmae/>) — 말티즈 루이와 3분 안에 주문대로 라면을 끓이는 3D 요리 게임 ([플레이](https://basco-git.github.io/aiffel-work/louis-ramen/))
-6. [my-game_rpg](my-game_rpg/) — 타워 브레이크(가제): 메카닉·유전공학 세력을 골라 부위를 강화하며 오염 지역과 탑 1~10층을 공략하는 픽셀 쿼터뷰 MMORPG 0단계 테스트 버전 ([플레이](https://basco-git.github.io/aiffel-work/my-game_rpg/))
+| # | 프로젝트 | 요약 | 실행 | 과제 |
+|---|---|---|---|---|
+| 1 | my-blog | 아이펠에서 배운 것을 기록하는 블로그 'AI 도전 일지' | [보기](https://basco-git.github.io/my-blog/) | [저장소](https://github.com/basco-git/my-blog) |
+| 2 | my-domain | 나의 도메인(HR 15년 차) 분석: 성과관리 제도 개편 설계 프롬프트 | - | [저장소](https://github.com/basco-git/my-domain) |
+| 3 | my-cargame | Sky Drive 3D: 하늘을 나는 자동차 게임 | [플레이](https://basco-git.github.io/aiffel-work/my-cargame/) | [폴더](my-cargame/) |
+| 4 | my-game | 햄스터 서바이벌: 오염된 도시에서 몬스터를 사냥하는 햄스터 RPG | [플레이](https://basco-git.github.io/aiffel-work/my-game/) | [폴더](my-game/) |
+| 5 | 루이의 라면가게 (pair quest) | 말티즈 루이와 3분 안에 주문대로 라면을 끓이는 3D 요리 게임 | [플레이](https://basco-git.github.io/aiffel-work/louis-ramen/) | [폴더](Pair%20Quest-gmae/) |
+| 6 | my-game_rpg | 타워 브레이크(가제): 픽셀 쿼터뷰 MMORPG 0단계 테스트 버전 | [플레이](https://basco-git.github.io/aiffel-work/my-game_rpg/) | [폴더](my-game_rpg/) |
+| 7 | todo | 할 일 앱: 로컬 SQLite(길 A) → Supabase·로그인·RLS(길 B) 전환 | [실행](https://basco-todo.onrender.com) | [제출 문서](todo/SUBMISSION.md) |
+| 7-1 | todo-Subquest | todo 앱 AI 도구 연동: 터미널 명령 `todo`, 작업 규칙 `AGENTS.md`, 스킬 `todo-summary`, MCP 서버 `todo-files` | [사용법](todo/README.md#ai-도구-연동-터미널-명령--스킬--mcp) | [제출 문서 (길 C)](todo/SUBMISSION.md#길-c--ai-도구-연동-cli--스킬--mcp) |
 
-7. [todo](todo/) — 내 컴퓨터에서 도는 할 일 앱(마감일·태그·오늘의 할 일·검색·기간 재설정). 로컬 SQLite(길 A)로 완성한 뒤 Supabase + 로그인 + RLS(길 B)로 전환 ([실행](https://basco-todo.onrender.com) · [과제 제출 문서](todo/SUBMISSION.md) · [PRD](todo/PRD.md))
+과제 진행 내용과 회고는 각 프로젝트 폴더의 README에 있습니다.
 
-## 회고
+## 7-1 todo-Subquest 제출 내용
 
-### my-cargame
-- 퍼실님과 같은 프롬프트로 명령했지만 다른 결과.
-- (퍼실님 : 클로드 데스크탑 앱, 나 : 클로드 CLI / 터미널 차이인지 궁금)
-- 간단한 게임들은 claude 에서 쉽게 구현 가능하고, 빠진 요건들도 추천해줌.
-- 명령 전 빠진 내용 들을 claude 에게 확인 후 진행하는 방법도 좋을 것 같음.
+AI 도구(Claude Code)도 웹 화면과 같은 입력 검사·로그인·RLS를 거쳐서만 할 일을 다루게 했다. 자세한 기록과 시연 순서는 [SUBMISSION.md](todo/SUBMISSION.md), 진행 과정과 회고는 [todo README](todo/README.md#7-1-subquest-진행-과정)에 있다.
 
-### pair quest
-- 3D 캐릭터를 제작 (사진 기반) 요청 하였는데 상당한 시간과 토큰이 소모됨.
-- 이후 작업 시에도 참고할 만한 경험 이였음.
-
-### my-game_rpg (타워 브레이크)
-- PRD를 먼저 정리하고 기준으로 삼은 뒤, 기술 스택·해상도·몬스터 크기·디자인 방향을 하나씩 확정하고 개발에 들어가니 중간에 방향이 흔들리지 않았음.
-- 초기 PRD로 쓴 프롬프트와 최신 PRD가 충돌하는 부분은 Claude가 먼저 표로 정리해 확인받고 진행해서, 내가 놓친 차이(저장 방식, 드롭 부위 등)도 바로잡을 수 있었음.
-- "마일스톤마다 자체 테스트 후 진행"을 요청하니 Claude가 브라우저 자동 테스트까지 만들어 탑 10층을 직접 공략해 봤고, 그 과정에서 사람이 플레이하다 늦게 발견했을 버그 2건(벽 속에 생긴 목표물, 미로에 갇힌 관리자)을 잡음.
-- 총 오류 10건 중 실제 게임 버그는 3건, 나머지는 테스트 코드·도구 문제.
-- 아쉬운 점은 밸런스를 디버그로 강화해서 테스트했다는 것. 실제로 사냥만으로 성장해 보는 플레이 테스트가 다음 숙제.
-- 결과물 보고서에 오류 횟수와 보완 방향을 같이 받으니 다음 단계 계획을 세우기가 수월했음.
-
-### todo (길 A → 길 B)
-- 코드보다 DB 구조(표·열·관계)를 먼저 구조도로 받고, "전체 계획 + 단계마다 확인할 것"을 요청하니 단계별로 무엇이 끝났는지 분명하게 확인하며 진행할 수 있었음.
-- "날짜는 날짜 형식으로"라고 요청했는데 SQLite에는 날짜 타입이 없어서 형식 검사(CHECK)로 해결. 처음 만든 검사는 잘못된 날짜도 통과시키는 구멍이 있었는데, 실제로 값을 넣어 보는 테스트에서 발견해 바로잡음.
-- 로컬 앱은 서버가 켜져 있어야 열린다는 걸 처음 알게 됨. 매번 켜기 불편해서 더블클릭 실행(start.bat)과 윈도우 시작 시 자동 실행까지 추가함.
-- 길 B 전환은 `.env` 한 줄(`DB_BACKEND`)로 바뀌게 만들어, 화면과 API 코드는 그대로 두고 DB 계층만 교체함.
-- Supabase 계정 생성·키 확인·회원가입은 Claude가 대신할 수 없어서 직접 해야 했음. 대시보드 화면이 안내와 달라(Confirm email 위치 등) 헤맸고, SQL Editor에 파일 내용 대신 파일 경로를 붙여넣어 오류가 나기도 함.
-- RLS SQL은 Supabase에 올리기 전에 내 컴퓨터의 PostgreSQL로 "다른 사용자의 할 일이 안 보이는지"를 먼저 검증받고 적용하니, Supabase에서는 한 번에 성공함.
-- 확인 장면 캡처 때 삭제 "확인창"만 찍고 삭제 "결과"는 안 찍어서 추가 캡처가 필요했음. 증빙은 결과가 보이는 화면으로 남겨야 함.
-- 공개 저장소에 올리는 캡처에 이메일이 보여서 앞부분만 가림 처리함. 올리기 전에 개인정보가 보이는지 확인하는 습관이 필요함.
-- 전체 흐름: 로컬 SQLite(길 A) → Supabase 클라우드 DB + 로그인 + RLS(길 B) → Render 배포(https://basco-todo.onrender.com) 순서로 단계별로 키워 감.
-- Supabase 연결은 프로젝트 생성 → SQL Editor에서 `schema.sql` 실행 → 공개용 키를 `.env`에 넣기 → `DB_BACKEND=supabase` 순서. service_role 키는 RLS를 우회하므로 쓰지 않음.
-- 처음 PRD에서는 배포를 범위 밖으로 뺐음. 다른 과제(게임·블로그)는 HTML만 있어 GitHub Pages에 바로 올라갔지만, todo는 Flask 서버가 계속 돌아야 해서 별도 서버 호스팅(Render)이 필요했음. 길 A(SQLite 파일)는 무료 호스팅에서 파일이 지워질 수 있어 길 B로만 배포함.
-- 배포 설정은 `render.yaml` 파일 하나로 정리하고, Supabase 키 같은 비밀값은 git이 아닌 Render 화면에서 직접 입력함.
-- Render의 저장소 연결 화면에서 막혔는데, 공개 저장소 주소를 붙여넣는 방법으로 해결함. 계정 가입·키 입력은 Claude가 대신할 수 없어 직접 해야 했음.
-- 배포 후 Claude가 주소로 직접 요청을 보내 화면 열림·Supabase 연결·비로그인 차단을 확인함.
-- 배포하면 Supabase의 Site URL도 배포 주소로 바꿔야 회원가입 인증 메일 링크가 localhost가 아닌 배포 앱으로 감. 코드 밖 설정도 같이 챙겨야 한다는 걸 배움.
-- Render 무료 플랜은 15분 동안 접속이 없으면 잠들어 첫 접속이 30초~1분 걸림. 시연 전에 미리 열어 둬야 함.
-- 작업 중 오류 4건(날짜 검사 구멍, 로컬 모드 로그인 500 오류, 로그아웃 버튼 숨김 안 됨, 서버 종료 스크립트 경로 문제)은 모두 테스트 단계에서 잡고 고침.
+| # | 확인 | 결과 | 캡처 |
+|---|---|---|---|
+| C1 | 터미널 명령 `todo` | `.\todo.bat list --today` → 오늘 할 일 2건 표시 | [C1](todo/docs/screenshots/C1-cli-today-list.png) |
+| C2 | 삭제 전 승인 (`AGENTS.md` 규칙) | 경로·크기·내용·git 추적 여부를 보여 주고 확인받은 뒤 그 파일 하나만 삭제 | [C2](todo/docs/screenshots/C2-approve-before-delete.png) |
+| C3 | 스킬 등록 | `/todo` 입력 시 `/todo-summary`가 목록에 나옴 | [C3](todo/docs/screenshots/C3-skill-registered.png) |
+| C4 | 스킬 실행 | `/todo-summary` → 오늘 완료 0건·남은 일 2건 정리 | [C4](todo/docs/screenshots/C4-skill-run-summary.png) |
+| C5 | MCP 서버 `todo-files` | 허용 폴더는 `docs`·`frontend`·`backend`뿐, `.env`·`todo.db`가 있는 todo 폴더는 `Access denied` | [C5](todo/docs/screenshots/C5-mcp-todo-files.png) |

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "todo-files": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/82109/Documents/aiffel_AIagent/aiffel-work/todo/docs",
+        "C:/Users/82109/Documents/aiffel_AIagent/aiffel-work/todo/frontend",
+        "C:/Users/82109/Documents/aiffel_AIagent/aiffel-work/todo/backend"
+      ]
+    }
+  }
+}
