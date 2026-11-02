@@ -7,7 +7,7 @@
 > [!IMPORTANT]
 > **📋 과제 제출 문서**
 >
-> - 📑 **[SUBMISSION.md](SUBMISSION.md)** — 확인 장면(로컬·Supabase), 클라우드 전환·RLS 확인 기록, 3분 시연 순서
+> - 📑 **[SUBMISSION.md](SUBMISSION.md)** — 확인 장면(로컬·Supabase·AI 도구 연동), 클라우드 전환·RLS·CLI·스킬·MCP 기록, 3분 시연 순서
 > - 📝 **[PRD.md](PRD.md)** — 요구사항 정의서
 
 - **길 A** (`DB_BACKEND=sqlite`): 로컬 SQLite 파일 `todo.db` 하나에 저장. 로그인 없음.
@@ -56,6 +56,33 @@ copy .env.example .env
 
 길 A로 돌아가려면 `DB_BACKEND=sqlite`로 바꾸고 서버를 다시 켜면 된다. 두 DB의 데이터는 서로 따로다.
 
+## AI 도구 연동 (터미널 명령 · 스킬 · MCP)
+
+AI 도구(Claude Code 등)가 할 일을 다룰 때도 DB를 직접 건드리지 않고 앱의 API를 거치게 했다. 규칙은 [`AGENTS.md`](AGENTS.md)에 있고, `CLAUDE.md`는 이 파일을 불러온다.
+
+### 터미널 명령 `todo`
+
+`backend/cli.py`는 Flask 앱의 API를 `test_client`로 부르는 얇은 진입점이다. 그래서 입력 검사, 저장소 선택(`DB_BACKEND`), 로그인과 RLS가 웹 화면과 똑같이 적용된다. todo 폴더에서 실행한다.
+
+| 하는 일 | PowerShell |
+|---|---|
+| 추가 | `.\todo.bat add "제목" --due 2026-11-03 --memo "메모"` |
+| 목록 | `.\todo.bat list` (`--status all\|active\|done`, `--today`) |
+| 완료 | `.\todo.bat done 3 5` (되돌리는 명령 없음) |
+| 오늘 완료 요약 | `.\todo.bat summary` |
+
+- 모든 명령에 `--json`을 붙이면 JSON으로 출력한다. 실패하면 `오류: ...`를 쓰고 종료 코드 1로 끝난다.
+- 길 B(Supabase)에서는 로그인 정보를 환경 변수 `TODO_CLI_EMAIL`, `TODO_CLI_PASSWORD`로만 받는다.
+- 마감일 변경과 삭제는 명령에 없다. 웹 화면에서 한다.
+
+### 스킬 `todo-summary`
+
+[`.claude/skills/todo-summary/SKILL.md`](.claude/skills/todo-summary/SKILL.md). Claude Code에서 `/todo-summary` 또는 "오늘 한 일 요약"이라고 하면 `todo summary --json` 결과를 커밋 메시지 형식으로 정리한다.
+
+### MCP 서버 `todo-files`
+
+[`.mcp.json`](.mcp.json)에 파일 MCP 서버(`@modelcontextprotocol/server-filesystem`)를 등록했다. 열린 폴더는 `docs`, `frontend`, `backend`뿐이다. `.env`와 `todo.db`가 있는 todo 폴더 자체는 열지 않으므로 MCP로 접근하면 `Access denied`가 난다. Claude Code를 처음 열 때 이 서버를 쓸지 묻는 창이 나오면 승인한다. Node.js(`npx`)가 필요하다.
+
 ## 배포 (Render)
 
 배포 주소: https://basco-todo.onrender.com (길 B, Render 무료 플랜)
@@ -84,6 +111,7 @@ todo/
 │  ├─ app.py             # Flask API 서버 + 화면 파일 제공, DB_BACKEND로 저장소 선택
 │  ├─ store_sqlite.py    # 길 A 저장소 (todo.db)
 │  ├─ store_supabase.py  # 길 B 저장소 + Supabase Auth 로그인
+│  ├─ cli.py             # 터미널 명령 todo (API를 test_client로 호출)
 │  ├─ config.py          # .env 로드
 │  └─ errors.py          # 공통 예외 → HTTP 상태 코드
 ├─ frontend/             # index.html, app.js, style.css — /api 만 호출
@@ -91,6 +119,10 @@ todo/
 ├─ supabase/schema.sql   # 길 B: PostgreSQL 표·트리거·RLS·RPC 함수
 ├─ scripts/check_rls.py  # 길 B RLS 확인
 ├─ docs/                 # ERD, 확인 장면 스크린샷, RLS 결과
+├─ .claude/skills/todo-summary/  # 오늘 완료 요약 스킬
+├─ AGENTS.md, CLAUDE.md  # AI 도구 작업 규칙
+├─ .mcp.json             # MCP 서버 todo-files (docs·frontend·backend만)
+├─ todo.bat              # todo 명령 실행 (PowerShell·cmd)
 ├─ PRD.md, SUBMISSION.md
 ├─ .env.example
 └─ requirements.txt

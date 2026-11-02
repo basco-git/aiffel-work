@@ -1,5 +1,7 @@
 # Claude Code 로컬 설정 / 작업 폴더 (개인 경로 포함, 공유하지 않음)
-.claude/
+**/.claude/*
+# 단, 프로젝트 스킬은 공유한다 (settings.local.json, worktrees 등은 계속 제외)
+!**/.claude/skills/
 
 # 비밀값
 .env
