@@ -26,5 +26,5 @@
 
 ## 이 스킬로 정리한 예
 
-- 저장소 맨 위 [README.md](../../../README.md): 과제 표 (1~7, 7-1)
-- [todo/README.md](../../../todo/README.md): "7-1 Subquest 진행 과정" 표와 "회고 (7-1 Subquest)"
+- 저장소 맨 위 [README.md](../../README.md): 과제 표 (1~7, 7-1)
+- [todo/README.md](../../todo/README.md): "7-1 Subquest 진행 과정" 표와 "회고 (7-1 Subquest)"
