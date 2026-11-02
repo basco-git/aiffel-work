@@ -4,7 +4,8 @@
     python -I submit_check.py [과제 폴더] [--base origin/main]
 
 점검 항목:
-  1. 링크: 과제 폴더의 .md 문서에 걸린 상대 경로 링크·이미지가 실제로 있고 git에 올라가 있는가
+  1. 링크: 과제 폴더의 .md 문서에 걸린 상대 경로 링크·이미지가 실제로 있고 git에 올라가 있는가,
+     링크의 #앵커가 대상 문서의 제목에 있는가
   2. 비밀값: 이번에 올라갈 파일에 키·토큰·비밀번호 형태의 문자열이 있는가 (값은 출력하지 않음)
   3. 이미지: 올라갈 이미지에 EXIF·위치 정보·텍스트 메타데이터가 있는가
   4. 목록: 저장소 맨 위 README.md에 과제 폴더가 링크되어 있는가
@@ -63,17 +64,59 @@ def md_files(target):
             yield p
 
 
+def github_slug(heading):
+    """GitHub이 제목에 붙이는 앵커 이름을 흉내 낸다 (예: '8. 스킬 만들기' → '8-스킬-만들기')."""
+    h = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", heading)       # 링크는 글자만 남김
+    h = re.sub(r"<[^>]+>", "", h).strip().lower()                # HTML 태그 제거
+    h = "".join(c for c in h if c.isalnum() or c in "-_ ")       # 문장부호·기호 제거 (한글은 남음)
+    return h.replace(" ", "-")
+
+
+def md_anchors(md, cache={}):
+    """문서의 제목 앵커 목록. 같은 제목이 또 나오면 GitHub처럼 -1, -2를 붙인다."""
+    if md not in cache:
+        text = re.sub(r"```.*?```", "", md.read_text(encoding="utf-8", errors="replace"), flags=re.S)
+        seen, found = {}, set(re.findall(r"""(?:id|name)\s*=\s*["']([^"']+)["']""", text))
+        for m in re.finditer(r"^#{1,6}\s+(.+?)\s*#*\s*$", text, flags=re.M):
+            s = github_slug(m.group(1))
+            found.add(f"{s}-{seen[s]}" if s in seen else s)
+            seen[s] = seen.get(s, 0) + 1
+        cache[md] = found
+    return cache[md]
+
+
+def links_in(md):
+    text = md.read_text(encoding="utf-8", errors="replace")
+    text = re.sub(r"```.*?```", "", text, flags=re.S)            # 코드 블록 안 예시는 빼고 본다
+    text = re.sub(r"`[^`\n]*`", "", text)                        # `인라인 코드` 안 예시도 뺀다
+    return [m.group(1).strip("<>") for m in LINK_RE.finditer(text)] + HTML_SRC_RE.findall(text)
+
+
+def anchor_problem(md, link, root):
+    """링크의 #앵커가 대상 .md 문서의 제목에 없으면 문제 문장을 돌려준다."""
+    if "#" not in link:
+        return None
+    path, frag = link.split("#", 1)
+    dest = (md.parent / unquote(path.split("?")[0])).resolve() if path else md.resolve()
+    if dest.is_dir():
+        dest = dest / "README.md"
+    frag = unquote(frag).lower()
+    if not frag or dest.suffix.lower() != ".md" or not dest.is_file():
+        return None                                              # 코드 파일 줄 번호(#L10) 등은 보지 않음
+    if frag in md_anchors(dest):
+        return None
+    return f"없는 제목 앵커: {rel(md, root)} → {link}"
+
+
 def check_links(target, root, tracked):
     problems, n = [], 0
     for md in md_files(target):
-        text = md.read_text(encoding="utf-8", errors="replace")
-        text = re.sub(r"```.*?```", "", text, flags=re.S)        # 코드 블록 안 예시는 빼고 본다
-        text = re.sub(r"`[^`\n]*`", "", text)                    # `인라인 코드` 안 예시도 뺀다
-        targets = [m.group(1) for m in LINK_RE.finditer(text)] + HTML_SRC_RE.findall(text)
-        for raw in targets:
-            link = raw.strip("<>")
-            if re.match(r"^[a-z][a-z0-9+.\-]*:", link, re.I) or link.startswith("#"):
-                continue                                         # http, mailto, 문서 안 앵커
+        for link in links_in(md):
+            if re.match(r"^[a-z][a-z0-9+.\-]*:", link, re.I):
+                continue                                         # http, mailto
+            bad = anchor_problem(md, link, root)
+            if bad:
+                problems.append(("문제", bad))
             path = unquote(link.split("#")[0].split("?")[0])
             if not path:
                 continue
@@ -172,9 +215,16 @@ def check_root_readme(target, root):
         return [("문제", "저장소 맨 위에 README.md가 없음")]
     text = unquote(readme.read_text(encoding="utf-8", errors="replace"))
     name = rel(target, root)
-    if f"({name}" in text or f"({name}/" in text or f"/{name}" in text:
-        return []
-    return [("문제", f"맨 위 README.md 목록에 {name} 링크가 없음")]
+    if not (f"({name}" in text or f"({name}/" in text or f"/{name}" in text):
+        return [("문제", f"맨 위 README.md 목록에 {name} 링크가 없음")]
+    # 맨 위 README에서 이 과제 폴더로 들어가는 링크의 #앵커도 확인
+    out = []
+    for link in links_in(readme):
+        if unquote(link).startswith(name + "/") or unquote(link).startswith(name + "#"):
+            bad = anchor_problem(readme, link, root)
+            if bad:
+                out.append(("문제", bad))
+    return out
 
 
 def check_state(target, root, base):

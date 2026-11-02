@@ -176,6 +176,18 @@ todo/
 - Render 무료 플랜은 15분 동안 접속이 없으면 잠들어 첫 접속이 30초~1분 걸림. 시연 전에 미리 열어 둬야 함.
 - 작업 중 오류 4건(날짜 검사 구멍, 로컬 모드 로그인 500 오류, 로그아웃 버튼 숨김 안 됨, 서버 종료 스크립트 경로 문제)은 모두 테스트 단계에서 잡고 고침.
 
+## 7-1 Subquest 제출 내용
+
+AI 도구(Claude Code)도 웹 화면과 같은 입력 검사·로그인·RLS를 거쳐서만 할 일을 다루게 했다. 자세한 기록과 시연 순서는 [SUBMISSION.md](SUBMISSION.md), 진행 과정과 회고는 [아래](#7-1-subquest-진행-과정)에 있다.
+
+| # | 확인 | 결과 | 캡처 |
+|---|---|---|---|
+| C1 | 터미널 명령 `todo` | `.\todo.bat list --today` → 오늘 할 일 2건 표시 | [C1](docs/screenshots/C1-cli-today-list.png) |
+| C2 | 삭제 전 승인 (`AGENTS.md` 규칙) | 경로·크기·내용·git 추적 여부를 보여 주고 확인받은 뒤 그 파일 하나만 삭제 | [C2](docs/screenshots/C2-approve-before-delete.png) |
+| C3 | 스킬 등록 | `/todo` 입력 시 `/todo-summary`가 목록에 나옴 | [C3](docs/screenshots/C3-skill-registered.png) |
+| C4 | 스킬 실행 | `/todo-summary` → 오늘 완료 0건·남은 일 2건 정리 | [C4](docs/screenshots/C4-skill-run-summary.png) |
+| C5 | MCP 서버 `todo-files` | 허용 폴더는 `docs`·`frontend`·`backend`뿐, `.env`·`todo.db`가 있는 todo 폴더는 `Access denied` | [C5](docs/screenshots/C5-mcp-todo-files.png) |
+
 ## 7-1 Subquest 진행 과정
 
 목표: AI 도구(Claude Code)가 할 일 데이터를 다룰 때도 웹 화면과 같은 입력 검사·로그인·RLS를 거치게 하고, 비밀값(`.env`)과 DB 파일(`todo.db`)에는 닿지 않게 한다. 확인 장면은 [SUBMISSION.md의 길 C](SUBMISSION.md#길-c--ai-도구-연동-cli--스킬--mcp)에 있다.
