@@ -48,10 +48,29 @@
     state.pollTimer = null;
   }
 
+  async function isMemberStillActive() {
+    if (!state.user) return false;
+    const { data, error } = await db
+      .from("members")
+      .select("status")
+      .eq("user_id", state.user.id)
+      .maybeSingle();
+    if (error) return true;
+    if (!data || data.status !== "active") {
+      showPending(
+        { user: state.user },
+        "승인이 종료되어 더 이상 HR 일정을 볼 수 없어요."
+      );
+      return false;
+    }
+    return true;
+  }
+
   function startPolling() {
     stopPolling();
-    state.pollTimer = window.setInterval(() => {
+    state.pollTimer = window.setInterval(async () => {
       if (document.hidden || !state.member || state.member.status !== "active") return;
+      if (!(await isMemberStillActive())) return;
       loadPositions(state.position && state.position.id);
       if (state.member.role === "admin") loadMembers();
     }, 5000);
@@ -438,6 +457,8 @@
             <button class="btn btn-primary btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">승인</button>
             <button class="btn btn-small" type="button" data-member-status="rejected" data-user-id="${esc(member.user_id)}">반려</button>
           </div>`;
+        } else if (member.status === "active" && !isSelf && member.role !== "admin") {
+          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="rejected" data-user-id="${esc(member.user_id)}">승인 취소</button></div>`;
         } else if (member.status === "rejected" && !isSelf) {
           actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button></div>`;
         }
@@ -553,8 +574,10 @@
     if (memberButton) {
       const next = memberButton.dataset.memberStatus;
       const userId = memberButton.dataset.userId;
-      const action = next === "active" ? "승인할까요?" : "반려할까요?";
-      if (!window.confirm(`이 회원을 ${action}`)) return;
+      const message = next === "active"
+        ? "이 회원을 승인할까요?"
+        : "이 회원의 앱 접근을 중지할까요?\n포지션·면접관·후보자·예약 데이터는 그대로 유지돼요.";
+      if (!window.confirm(message)) return;
       memberButton.disabled = true;
       const { error } = await db
         .from("members")
@@ -565,7 +588,7 @@
         APP.toast(APP.errorText(error, "회원 승인 상태를 바꾸지 못했어요."), true);
         return;
       }
-      APP.toast(next === "active" ? "회원을 승인했어요." : "회원을 반려했어요.");
+      APP.toast(next === "active" ? "회원을 승인했어요." : "회원의 앱 접근을 중지했어요.");
       await loadMembers();
     }
   });
