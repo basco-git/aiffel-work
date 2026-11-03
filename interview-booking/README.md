@@ -104,6 +104,7 @@ npm run test:rules
 | 5 | 화면 3개 구현 | 담당자·면접관·후보자 화면, 예약·체크·취소 흐름 (`4513054`) |
 | 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — **완료: R1~R9 21/21 통과** (2026-11-03, `docs/evidence-live-rules.txt`) |
 | 7 | 배포·다른 기기에서 한 바퀴 | 배포 주소 `https://basco-git.github.io/aiffel-work/interview-booking/` **2026-11-03 열림, HTTP 200 확인** |
+| 8 | 배포 주소에서 3개 화면 직접 확인 | 배포 주소에서 담당자 로그인·시간 추가·면접관 2명 체크·후보자 예약을 실제 클릭으로 검증, PRD 9장 성공 조건 1~3 기록 (`docs/evidence-deploy-ui.txt`) |
 
 ## 회고
 

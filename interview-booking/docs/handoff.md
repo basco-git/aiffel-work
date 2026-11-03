@@ -57,13 +57,11 @@ PSQL="$B/psql" bash supabase/local-test/run.sh
 1. **(사용자)** Supabase 프로젝트 생성 → `schema.sql` 실행 → Confirm email 끄기 + **가입 허용 켜기** → 시험용 담당자 A·B 계정 → `.env` 작성 → **Project URL과 공개 키 전달** (비밀 키는 절대 X) — 완료 (2026-11-03)
 2. **(공개 값 반영)** `assets/config.js`에 URL·Publishable key 반영 (`d6d88db`)
 3. **(시험 완료)** `npm run test:rules` → 실제 Supabase R1~R9 **21/21 통과**, 결과 `docs/evidence-live-rules.txt`, PRD 9장 R1~R9 통과로 기록 (2026-11-03)
-4. GitHub Pages 배포: PR #8을 main에 합치면 `https://basco-git.github.io/aiffel-work/interview-booking/` → Supabase Site URL 설정 → 다른 기기·시크릿 창에서 3개 화면 한 바퀴 → PRD 9장 성공 조건 1~3 기록 → **맨 위 README 9번 행의 실행 링크(-) 채우기**
-   - 담당자 로그인/회원가입 → 포지션 → 면접관·후보자 → 시간 3개 → 링크 복사
-   - 면접관 링크: 겹치는 시간 체크 → 후보자 링크에 열린 시간만 노출
-   - 후보자 예약 → 담당자 화면에 예약자 표시 → 예약 취소 → 다시 열림
-5. 마무리: 3분 시연 영상(`docs/demo-script.md` 대로), 제출 전 점검(`submit-check` 스킬), 구글폼에 저장소·배포 URL 제출
-6. 마감이 급하면 축소안: 면접관 체크 화면을 빼고 담당자가 면접관을 직접 지정 (PRD 4장 주석대로 progress.md에 기록)
-7. 푸시·PR: `interview-booking` 브랜치를 푸시하고 **PR #8**(https://github.com/basco-git/aiffel-work/pull/8)을 만들었어요(2026-11-03). 병합은 사용자가 직접 해요. **설정·시험 반영 커밋을 PR에 더한 뒤 병합하면 배포 주소가 바로 동작해요.**
+4. **(완료)** GitHub Pages 배포 주소에서 3개 화면을 실제로 클릭 검증(헤드리스 Chrome, 테스트 후보 생성 후 삭제) → PRD 9장 성공 조건 1~3 통과로 기록 → 맨 위 README 실행 링크 채우기
+   - 기록: `docs/evidence-deploy-ui.txt` (2026-11-03)
+   - 확인: 담당자 로그인, 시간 후보 추가+새로고침 유지, 면접관 2명 체크, 후보자 예약, 후보자 2명에게 마감 표시, 담당자 화면에 예약자 이름
+5. **(사용자)** Supabase **Authentication → URL Configuration**의 Site URL을 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)로 설정
+6. 마무리: 3분 시연 영상(`docs/demo-script.md` 대로), 제출 전 점검(`submit-check` 스킬), 구글폼에 저장소·배포 URL 제출
 
 ## 교안 1~8 반영 계획 (README에 쓸 표)
 | 교안 | 증거 |
