@@ -64,7 +64,7 @@ PSQL="$B/psql" bash supabase/local-test/run.sh
 4. GitHub Pages 배포: PR로 main에 합치면 `https://basco-git.github.io/aiffel-work/interview-booking/` (기존 과제와 같은 방식인지 확인) → Supabase Site URL 설정 → 다른 기기·시크릿 창에서 한 바퀴 → PRD 9장 → **맨 위 README 9번 행의 실행 링크(-) 채우기**
 5. 마무리: 3분 시연 영상(`docs/demo-script.md` 대로), 제출 전 점검(`submit-check` 스킬), 구글폼에 저장소·배포 URL 제출
 6. 마감이 급하면 축소안: 면접관 체크 화면을 빼고 담당자가 면접관을 직접 지정 (PRD 4장 주석대로 progress.md에 기록)
-7. 아직 푸시 안 함: 커밋만 쌓인 상태예요. 배포 전에 `git push -u origin interview-booking` → PR 생성
+7. 푸시·PR: `interview-booking` 브랜치를 푸시하고 **PR #8**(https://github.com/basco-git/aiffel-work/pull/8)을 만들었어요(2026-11-03). 병합은 사용자가 직접 해요. **키를 채운 커밋을 이 PR에 더한 뒤 병합하면 배포 주소가 바로 동작해요.**
 
 ## 교안 1~8 반영 계획 (README에 쓸 표)
 | 교안 | 증거 |
