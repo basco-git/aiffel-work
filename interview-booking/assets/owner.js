@@ -7,6 +7,8 @@
   const { $, esc } = APP;
   const db = APP.db;
 
+  const DETAIL_KEY = "ib:currentDetail";
+
   const state = {
     user: null,
     member: null,
@@ -31,6 +33,7 @@
     $("#app-view").hidden = true;
     $("#logout").hidden = true;
     $("#who").textContent = "";
+    sessionStorage.removeItem(DETAIL_KEY);
     if (message) showLoginError(message);
   }
 
@@ -91,11 +94,15 @@
     $("#login-error").hidden = true;
     showList(true);
     await loadPositions();
-    const positionId = safeParseHash();
-    if (positionId) {
-      const position = state.positions.find((p) => p.id === positionId);
-      if (position) await showEditor(position, true);
-      else setRouteSilently("list");
+    const lockedId = sessionStorage.getItem(DETAIL_KEY) || safeParseHash();
+    if (lockedId) {
+      const position = state.positions.find((p) => p.id === lockedId);
+      if (position) {
+        await showEditor(position, true);
+      } else {
+        sessionStorage.removeItem(DETAIL_KEY);
+        setRouteSilently("list");
+      }
     } else {
       setRouteSilently("list");
     }
@@ -472,6 +479,7 @@
     state.slots = [];
     state.availability = [];
     state.bookings = [];
+    sessionStorage.removeItem(DETAIL_KEY);
     $("#list-view").hidden = false;
     $("#editor-view").hidden = true;
     if (state.member && state.member.role === "admin") loadMembers();
@@ -483,6 +491,7 @@
 
   async function showEditor(position, fromPop = false) {
     state.position = position;
+    if (position && position.id) sessionStorage.setItem(DETAIL_KEY, position.id);
     $("#list-view").hidden = true;
     $("#editor-view").hidden = false;
     renderPositionSelect();
