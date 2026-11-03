@@ -6,6 +6,33 @@
 - 배포 주소: [https://basco-git.github.io/aiffel-work/interview-booking/](https://basco-git.github.io/aiffel-work/interview-booking/)
 - 기획 문서: [PRD.md](PRD.md) · 설계 이유: [docs/design.md](docs/design.md) · API: [docs/api.md](docs/api.md)
 - 회고: [retrospective.md](retrospective.md) · 진행 기록: [docs/progress.md](docs/progress.md)
+- 시연: 3분 영상 대신 [상황별 캡처 8장](#시연-상황별-캡처)
+
+## 시연 (상황별 캡처)
+
+> 2026-11-04 배포 주소에서 찍은 화면이에요. 시연용 포지션과 면접관·후보자 이름은 가상이고, 이메일은 가렸어요. 시연 데이터는 캡처 뒤 지웠어요.
+
+| # | 상황 | 화면 |
+|---|---|---|
+| 1 | 최초 접속: 담당자 로그인 | ![로그인](docs/screenshots/01-login.png) |
+| 2 | 담당자 회원가입 | ![회원가입](docs/screenshots/02-signup.png) |
+| 3 | 가입 직후: 관리자 승인 대기 (승인 전에는 일정을 볼 수 없음) | ![승인 대기](docs/screenshots/03-pending.png) |
+| 4 | 관리자의 회원 승인 목록 (대기 회원에 승인·반려, 승인 회원에 승인 취소) | ![회원 승인](docs/screenshots/04-approve.png) |
+| 5 | 반려·승인 취소된 회원을 다시 승인 | ![다시 승인](docs/screenshots/05-reapprove.png) |
+| 6 | 포지션 등록 뒤 면접일정 잡기: 면접관·후보자 링크, 시간 후보(15분 단위), 시간별 가능 면접관 수와 확정 예약 | ![포지션 일정](docs/screenshots/06-position-schedule.png) |
+| 7 | 면접관 링크: 가능한 시간 체크, 예약된 시간은 해제 불가 | ![면접관 링크](docs/screenshots/07-interviewer-link.png) |
+| 8 | 후보자 링크: 면접관이 모인 시간만 보이고, 예약된 시간은 마감 (면접관 1명뿐인 11:00은 안 보임) | ![후보자 링크](docs/screenshots/08-candidate-link.png) |
+
+## 사용한 AI 도구
+
+| 단계 | 도구 | 한 일 |
+|---|---|---|
+| 기초 | Claude Code | 주제 비교, PRD, 작업 규칙(AGENTS.md), 기술 선택, DB 스키마·로컬 규칙 시험 |
+| 개발 | opencode + DeepSeek v4.1 | 화면 3개, 실제 규칙 시험 스크립트, 제출 문서, 배포 |
+| 후속 개발 | opencode + Pules Alpha | 회원 승인·공유, 목록 개선, 브랜드, 확정 일정 표시, 승인 취소 |
+| 최종 확인 | Claude Code | 공유·승인 규칙 재검증(25/25), 제출 전 점검, 캡처, 회고 정리 |
+
+포지션 상세 화면이 저절로 목록으로 돌아가던 오류와, 그때 도구별로 겪은 차이는 [회고 4장](retrospective.md#4-가장-기억에-남는-오류--포지션-상세-화면이-저절로-목록으로-돌아감)에 정리했어요.
 
 ## 누가 쓰나
 
@@ -77,7 +104,7 @@ npm run test:rules
 | 1. PRD로 기획 | [PRD.md](PRD.md) — 문제(1장)·타겟 유저(2장)·MVP Must 3(4장)·화면 구성(10장)·데이터 구조(11장) |
 | 2. 프론트엔드 (2개 이상 화면) | 화면 3개. 체크·예약·취소가 서버에 저장되고 다시 그려지는 흐름. 담당자 회원가입·로그인 |
 | 3. 백엔드/API | Supabase(PostgREST)를 API 서버로 사용, 업무 규칙은 SQL 함수 4개(`interviewer_view`, `set_availability`, `candidate_view`, `book_slot`) — 요청·응답·오류는 [docs/api.md](docs/api.md) |
-| 4. DB 연동 | PostgreSQL 표 6개, 1:N·N:M·1:1, RLS, 배제 제약, 저장·조회 흐름 전부 화면과 연결 |
+| 4. DB 연동 | PostgreSQL 표 7개(회원 포함), 1:N·N:M·1:1, RLS, 배제 제약, 저장·조회 흐름 전부 화면과 연결 |
 | 5. 배포·새로운 시도 | [GitHub Pages 배포](https://basco-git.github.io/aiffel-work/interview-booking/) · **규칙을 DB에서 강제**(화면 우회 차단) · **회원 승인 + 공유 면접일정** · 동시 예약 10건 시험 · AGENTS.md 규칙 파일과 Claude Code 스킬로 작업 자동화 · 모바일 대응 |
 
 ## 교안 1~8 반영
@@ -88,10 +115,10 @@ npm run test:rules
 | 2 Git | 브랜치 `interview-booking`, 확인한 것만 커밋, main에는 PR로 | `git log`, `docs/progress.md` |
 | 3 세 겹 | HTML 구조·CSS·JS 동작을 나눠 화면 3개 | `index.html`, `assets/` |
 | 4 프레임워크 | 프레임워크 채택·기각 비교와 이유 | `docs/design.md` 1장 |
-| 5 백엔드·DB | 표 6개 설계, RLS, `.env`, 파라미터 대신 토큰 함수 | `supabase/schema.sql` |
+| 5 백엔드·DB | 표 7개 설계, RLS, `.env`, 파라미터 대신 토큰 함수 | `supabase/schema.sql` |
 | 6 네트워크·배포 | 공개 URL 배포, 요청·응답·상태 코드 정리, 입력 검증 | `docs/api.md` |
 | 7 에이전트 도구 | `AGENTS.md`·`CLAUDE.md` 규칙, 스킬(submit-check·evidence-capture·assignment-wrapup) | `AGENTS.md`, `CLAUDE.md` |
-| 8 메인 퀘스트 | 한 문장, Must 3·Won't 6, DB가 지키는 규칙 R1~R9, 검증 기록, 회고, 시연 | `PRD.md` 9장 |
+| 8 메인 퀘스트 | 한 문장, Must 3·Won't 6, DB가 지키는 규칙 R1~R9, 검증 기록, 회고, 상황별 캡처 | `PRD.md` 9장, 위 시연 캡처 |
 
 ## 진행 과정
 
@@ -102,16 +129,19 @@ npm run test:rules
 | 3 | 기술 후보 3개 비교 (Supabase+정적 / Node+SQLite / Firebase) | Supabase + 정적 화면 채택, 이유는 `docs/design.md` (`3178acc`) |
 | 4 | DB 스키마 6표 + RLS + 토큰 함수 4개 | 로컬 PostgreSQL에서 규칙 시험 **19/19 통과**, 동시 예약 10건 중 1건 성공 (`3178acc`) |
 | 5 | 화면 3개 구현 | 담당자·면접관·후보자 화면, 예약·체크·취소 흐름 (`4513054`) |
-| 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — **완료: R1~R9 21/21 통과** (2026-11-03, `docs/evidence-live-rules.txt`) |
+| 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — R1~R9 21/21 통과 (2026-11-03). 공유·승인으로 바꾼 뒤 R6를 다시 써서 **25/25 통과** (`docs/evidence-live-rules.txt`) |
 | 7 | 배포·다른 기기에서 한 바퀴 | 배포 주소 `https://basco-git.github.io/aiffel-work/interview-booking/` **2026-11-03 열림, HTTP 200 확인** |
 | 8 | 배포 주소에서 3개 화면 직접 확인 | 배포 주소에서 담당자 로그인·시간 추가·면접관 2명 체크·후보자 예약을 실제 클릭으로 검증, PRD 9장 성공 조건 1~3 기록 (`docs/evidence-deploy-ui.txt`) |
+| 9 | 후속 개발 (opencode + Pules Alpha) | 담당자 회원가입·관리자 승인·전원 공유, 확정 일정 표시, 승인 취소 (`cc01777`~`7e672c1`) |
+| 10 | 포지션 상세가 저절로 목록으로 가는 오류 | 증상만 막는 커밋 6개 뒤, 5초 자동 갱신이 `true`를 포지션 ID로 넘기던 원인을 찾아 3줄 수정 (`9554dad`) |
+| 11 | 최종 확인 (Claude Code) | 승인 규칙 R6 재검증 25/25 (`94a9099`), 제출 전 점검 모두 통과, 상황별 캡처 8장 |
 
 ## 회고
 
-- **범위를 먼저 잘랐음** → 구글 캘린더 연동·메일 자동 발송·평가표를 Won't로 두고, "일정이 모인 시간만 열린다" 하나에 집중함. 덕분에 하루 안에 DB 규칙까지 갈 수 있었음.
-- **규칙을 화면이 아니라 DB에 둠** → 화면 코드를 우회한 요청도 막히는 것을 로컬 시험 19개로 확인함. 대신 SQL 함수가 읽기 어려워져 함수마다 막는 규칙을 주석으로 답.
-- **시험이 엉뚱한 이유로 통과한 일** → 한글 인코딩·`\r` 문제로 "거부됨"이 통과로 찍혔음. 기대한 오류 문구가 있을 때만 통과로 바꾸니 진짜 결과가 보였음.
-- **AI에게 맡긴 일과 직접 확인한 일** → 화면·스키마·시험 스크립트는 AI가 썼고, PRD 결정과 Supabase 프로젝트 생성·계정은 직접 함. AI가 "됐다"고 한 것도 실제 요청 결과로 다시 확인해야 했음.
-- **다음에 다르게 할 점** → Supabase 프로젝트를 첫날 먼저 만들었으면 실제 DB 시험을 더 일찍 했을 것. 이번엔 화면을 가짜 데이터로만 확인해 실제 연결 검증이 뒤로 밀림.
+- **범위를 먼저 잘랐음** → 캘린더 연동·자동 발송·평가표를 Won't로 두고 "면접관이 모인 시간만 열린다" 하나에 집중함.
+- **규칙은 화면이 아니라 DB가 지킴** → 화면을 우회한 요청도 막히는 것을 실제 Supabase 시험 25개로 확인함.
+- **증상이 아니라 원인을 찾아야 함** → 포지션 상세 오류에 증상만 막는 커밋 6개를 쌓은 뒤, 직접 테스트와 검색으로 5초 자동 갱신이 원인임을 찾음. 원인 추적은 모델마다 차이가 컸음.
+- **도구를 바꿔도 이어 갈 수 있게** → 규칙은 `AGENTS.md` 한 곳, 진행 기록과 인수인계 문서를 커밋마다 남겨 Claude Code ↔ opencode를 오가도 같은 기준으로 작업함.
+- **기능을 바꾸면 시험과 기록도 함께** → 공유·승인 전환 뒤 옛 R6 "통과"가 남아 있던 일을 재검증으로 바로잡고 규칙으로 만듦.
 
 자세한 회고는 [retrospective.md](retrospective.md)에 있어요.
