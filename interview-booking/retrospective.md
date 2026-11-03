@@ -1,4 +1,6 @@
-# 회고 — at~once / interview-booking
+# 회고 — at~once | interview-booking
+
+> 브랜드명 **at~once** · 서비스명 **interview-booking**
 
 > 2026-11-03 ~ 11-04 · Main Quest 01 「내 서비스 만들기」
 > **면접관 2~3명의 일정이 모인 시간만 후보자에게 열리는 면접 예약 서비스**를 이틀 동안 기획 → 구현 → 배포 → 검증까지 해 봤어요.

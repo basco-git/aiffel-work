@@ -1,4 +1,6 @@
-# 면접 한 번에 — PRD
+# at~once | interview-booking — PRD
+
+> 브랜드명 **at~once** · 서비스명 **interview-booking**
 
 > 작성: 2026-11-03 · 상태: 확정 (Main Quest 01) · 제출 마감: 2026-11-04 오전
 
