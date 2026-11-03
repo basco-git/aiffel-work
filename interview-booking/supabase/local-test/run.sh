@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # 로컬 PostgreSQL에서 schema.sql의 규칙 R1~R9를 실제 요청으로 시험해요.
+# ⚠️ 공유·승인(members) 방식으로 바꾸기 전 스키마(커밋 3178acc) 기준이에요. 지금 스키마의 검증은
+#    실제 Supabase에 보내는 `npm run test:rules`(scripts/test-rules.mjs)를 기준으로 해요.
 # 사용: PSQL=psql경로 PGPORT=포트 bash run.sh   (빈 시험용 DB에서만 실행하세요)
 set -u
 cd "$(dirname "$0")"
