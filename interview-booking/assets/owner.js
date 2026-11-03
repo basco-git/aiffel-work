@@ -847,6 +847,19 @@
     }
   });
 
+  // 트랙패드 가로 스와이프가 브라우저 뒤로가기로 해석되는 것을 막습니다.
+  window.addEventListener(
+    "wheel",
+    (event) => {
+      const horizontal = Math.abs(event.deltaX || 0);
+      const vertical = Math.abs(event.deltaY || 0);
+      if (horizontal > 5 && horizontal >= vertical) {
+        event.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
   // ---------- 뒤로가기(history) ----------
   async function applyRoute(fromPop = true) {
     if ($("#app-view").hidden) return;
