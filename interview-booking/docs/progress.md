@@ -16,6 +16,8 @@
 | 오전 | 4. 저장 | `supabase/schema.sql`: 표 6개, RLS, 토큰 함수 4개, R1~R9 제약 | 업무 규칙은 DB 함수·제약에 (교안 8번: 화면이 아니라 DB가 문지기) | 로컬 임시 PostgreSQL 18에서 두 번 실행해도 오류 없음 | (이번 커밋) |
 | 오전 | 4. 저장 | `supabase/local-test/run.sh`: 규칙을 어기는 요청 19개 시험 | 기대한 거부 메시지가 나올 때만 통과로 침 (처음엔 엉뚱한 오류도 통과로 찍혀서 고침) | **19/19 통과, 동시 예약 10건 중 1건만 성공** → `docs/evidence-local-rules.txt` | `3178acc` |
 | 오후 | 3. 화면 | 담당자·면접관·후보자 화면 3개와 공용 스크립트·스타일 (`index.html`, `interviewer.html`, `candidate.html`, `assets/`) | 로그인한 담당자만 포지션을 만들고, 링크 화면은 면접관·후보자 각자 토큰만 (PRD 2장), 시각 입력은 기기 시간대와 무관하게 **한국 시간으로 해석** (AI 제안) | 가짜 데이터로 띄운 미리보기(저장소 밖 임시 폴더)에서 3개 화면 렌더 + 예약·체크 해제·면접관 추가 버튼 동작 확인. **실제 Supabase 연결은 아직** | `4513054` |
+| 오후 | 4. 저장 | `package.json` + `scripts/test-rules.mjs`: 공개 키·담당자 A·B 로그인·링크 토큰으로 R1~R9를 실제 Supabase에 시험(동시 10건, 시험 데이터 자동 정리, `docs/evidence-live-rules.txt` 기록) | 서브에이전트·MCP 대신 단일 스크립트 (사용자: 사용량 아끼기) | 문법 검사 통과, `.env`가 없을 때 안내 문구 확인. **실제 실행은 키 받은 뒤** | (이번 커밋) |
+| 오후 | 5. 제출 준비 | PRD에 **화면 구성(10장)·데이터 구조(11장)** 추가, `docs/api.md`(API 서버·함수 4개·오류), 과제 README(평가 기준 대응·교안 1~8·진행 과정), `retrospective.md`, `docs/demo-script.md` | 교안 평가 1·3번(PRD 항목, API 서버)이 문서로 확인되게 (사용자 요청 반영) | PRD 10·11장과 README 표 읽어 확인, 맨 위 README에 9번 행 추가 | (이번 커밋) |
 
 ## 막혔던 곳과 푼 방법
 - **로컬 시험에서 한글이 깨짐**: Windows의 psql은 명령줄 인자(`-c`)를 CP949로 보내요 → `PGCLIENTENCODING=UTF8` + SQL을 표준 입력으로 넘겨서 해결.
@@ -27,5 +29,6 @@
 ## 다음 할 일
 1. (사용자) `docs/supabase-setup.md` 순서대로 Supabase 프로젝트 만들고 `schema.sql` 실행, 시험 계정 2개, **URL·공개 키 전달**
 2. 받은 URL·공개 키를 `assets/config.js`에 넣고 화면 3개를 실제 Supabase로 한 바퀴 → PRD 9장 성공 조건 3개 기록
-3. `package.json` + `scripts/test-rules.mjs` → `npm run test:rules`로 R1~R9를 실제 Supabase에서 시험
-4. GitHub Pages 배포 → 배포 주소에서 한 바퀴 → README·회고·시연 영상
+3. `npm install && npm run test:rules`로 R1~R9를 실제 Supabase에서 시험 → 결과를 PRD 9장에 기록
+4. 푸시 → PR 병합 → GitHub Pages 배포(`https://basco-git.github.io/aiffel-work/interview-booking/`) → 배포 주소에서 한 바퀴, 맨 위 README의 실행 링크 채우기
+5. `submit-check` 스킬로 제출 전 점검 → 구글폼에 저장소·배포 URL 제출
