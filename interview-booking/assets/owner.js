@@ -9,6 +9,8 @@
 
   const state = {
     user: null,
+    member: null,
+    members: [],
     positions: [],
     position: null,
     interviewers: [],
@@ -16,6 +18,7 @@
     slots: [],
     availability: [],
     bookings: [],
+    pollTimer: null,
   };
 
   // ---------- 화면 전환 ----------
@@ -23,21 +26,85 @@
     APP.ready();
     setAuthTab("login");
     $("#login-view").hidden = false;
+    $("#pending-view").hidden = true;
     $("#app-view").hidden = true;
     $("#logout").hidden = true;
     $("#who").textContent = "";
     if (message) showLoginError(message);
   }
 
-  function showApp(session) {
+  function setHeader(email) {
+    $("#who").textContent = email || "";
+    $("#logout").hidden = !email;
+  }
+
+  function stopPolling() {
+    if (!state.pollTimer) return;
+    window.clearInterval(state.pollTimer);
+    state.pollTimer = null;
+  }
+
+  function startPolling() {
+    stopPolling();
+    state.pollTimer = window.setInterval(() => {
+      if (document.hidden || !state.member || state.member.status !== "active") return;
+      loadPositions(true);
+      if (state.member.role === "admin") loadMembers();
+    }, 5000);
+  }
+
+  function showPending(session, message) {
+    APP.ready();
+    state.user = session?.user || null;
+    const email = session?.user?.email || "";
+    setHeader(email);
+    $("#login-view").hidden = true;
+    $("#app-view").hidden = true;
+    $("#pending-view").hidden = false;
+    $("#pending-email").textContent = email
+      ? `${email} 계정은 승인 대기 중이에요.`
+      : (message || "승인 대기 중이에요.");
+    stopPolling();
+  }
+
+  async function fetchMember() {
+    if (!state.user) return null;
+    const { data, error } = await db
+      .from("members")
+      .select("user_id,email,role,status")
+      .eq("user_id", state.user.id)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  function showApp(session, member) {
     APP.ready();
     state.user = session.user;
+    state.member = member;
+    setHeader(session.user.email || "");
     $("#login-view").hidden = true;
+    $("#pending-view").hidden = true;
     $("#app-view").hidden = false;
-    $("#logout").hidden = false;
     $("#who").textContent = session.user.email || "";
     $("#login-error").hidden = true;
-    loadPositions();
+    showList();
+    if (member.role === "admin") loadMembers();
+    startPolling();
+  }
+
+  async function finishLogin(session) {
+    state.user = session.user;
+    try {
+      const member = await fetchMember();
+      if (!member || member.status !== "active") {
+        showPending(session, !member ? "계정 승인 정보가 없어요. 관리자에게 문의해 주세요." : undefined);
+        return;
+      }
+      showApp(session, member);
+    } catch (error) {
+      showPending(session, APP.errorText(error, "승인 정보를 확인하지 못했어요."));
+    }
   }
 
   function showLoginError(message) {
@@ -66,14 +133,24 @@
       );
       return;
     }
-    showApp(data.session);
+    await finishLogin(data.session);
   });
 
   $("#logout").addEventListener("click", async () => {
     await db.auth.signOut();
+    stopPolling();
+    state.member = null;
+    state.members = [];
     state.position = null;
     state.positions = [];
     $("#password").value = "";
+    showLogin();
+  });
+
+  $("#pending-logout").addEventListener("click", async () => {
+    await db.auth.signOut();
+    stopPolling();
+    state.member = null;
     showLogin();
   });
 
@@ -89,7 +166,7 @@
     $("#auth-title").textContent = isLogin ? "담당자 로그인" : "담당자 회원가입";
     $("#auth-sub").textContent = isLogin
       ? "시간 후보를 만들고 링크를 전달하는 화면이에요."
-      : "계정을 만들면 내 포지션과 시간 후보를 다른 담당자와 분리해 관리해요.";
+      : "가입 후 관리자가 승인해야 공유 일정에 들어갈 수 있어요.";
     $("#signup-error").hidden = true;
   }
 
@@ -138,8 +215,8 @@
       return;
     }
     if (data.session) {
-      showApp(data.session);
-      APP.toast("가입했어요. 포지션을 만들어 시작해 보세요.");
+      await finishLogin(data.session);
+      APP.toast("가입했어요. 관리자 승인을 기다려 주세요.");
       return;
     }
     // 이메일 확인이 켜진 프로젝트에서는 메일 확인 뒤 로그인해요.
@@ -156,13 +233,33 @@
     select.innerHTML = state.positions
       .map((p) => `<option value="${esc(p.id)}">${esc(p.title)}</option>`)
       .join("");
-    select.hidden = state.positions.length === 0;
+    select.hidden = false;
     if (state.position) select.value = state.position.id;
-    $("#new-pos-toggle").hidden = state.positions.length === 0;
-    if (state.positions.length === 0) $("#pos-form").hidden = false;
   }
 
-  async function loadPositions(keepId) {
+  function renderPositionList() {
+    const list = $("#position-list");
+    if (state.positions.length === 0) {
+      list.innerHTML = `<li class="empty">아직 만든 면접 포지션이 없어요. 새 포지션을 만들어 주세요.</li>`;
+      return;
+    }
+    list.innerHTML = state.positions
+      .map(
+        (position) => `
+          <li>
+            <button class="position-item" type="button" data-open-position="${esc(position.id)}">
+              <span>
+                <h3>${esc(position.title)}</h3>
+                <p>필요한 면접관 ${position.required_interviewers}명</p>
+              </span>
+              <span class="badge badge-brand">열기</span>
+            </button>
+          </li>`
+      )
+      .join("");
+  }
+
+  async function loadPositions(keepId, options = {}) {
     const { data, error } = await db
       .from("positions")
       .select("id,title,required_interviewers")
@@ -171,13 +268,94 @@
       APP.toast(APP.errorText(error, "포지션을 불러오지 못했어요."), true);
       return;
     }
+    const previous = state.position && state.position.id;
     state.positions = data || [];
-    const wanted = keepId || (state.position && state.position.id);
-    const next = state.positions.find((p) => p.id === wanted) || state.positions[0] || null;
-    state.position = next;
+    const requested = keepId || options.currentId || previous;
+    state.position = state.positions.find((p) => p.id === requested) || null;
     renderPositionSelect();
-    if (next) await loadPositionData();
-    else renderAll();
+    renderPositionList();
+
+    if ($("#editor-view").hidden) return;
+    if (!state.position) {
+      showList();
+      return;
+    }
+    await loadPositionData();
+  }
+
+  async function loadMembers() {
+    if (!state.member || state.member.role !== "admin") return;
+    const { data, error } = await db
+      .from("members")
+      .select("user_id,email,role,status,created_at")
+      .order("created_at", { ascending: true });
+    if (error) {
+      APP.toast(APP.errorText(error, "회원 목록을 불러오지 못했어요."), true);
+      return;
+    }
+    state.members = data || [];
+    renderMembers();
+  }
+
+  function renderMembers() {
+    const approval = $("#approval-view");
+    if (!state.member || state.member.role !== "admin") {
+      approval.hidden = true;
+      return;
+    }
+    approval.hidden = false;
+    const list = $("#approvals-list");
+    const people = state.members;
+    if (people.length === 0) {
+      list.innerHTML = `<li class="empty">가입한 회원이 없어요.</li>`;
+      return;
+    }
+    list.innerHTML = people
+      .map((member) => {
+        const isSelf = member.user_id === state.user.id;
+        const statusLabel = member.status === "active" ? "승인됨" : member.status === "pending" ? "대기" : "반려됨";
+        const roleLabel = member.role === "admin" ? "관리자" : "일반 회원";
+        let actions = "";
+        if (member.status === "pending") {
+          actions = `<div class="approval-actions">
+            <button class="btn btn-primary btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">승인</button>
+            <button class="btn btn-small" type="button" data-member-status="rejected" data-user-id="${esc(member.user_id)}">반려</button>
+          </div>`;
+        } else if (member.status === "rejected" && !isSelf) {
+          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button></div>`;
+        }
+        return `
+          <li class="approval-item">
+            <span>
+              <strong>${esc(member.email || "(이메일 없음)")}</strong>
+              <p>${roleLabel} · ${statusLabel}${isSelf ? " · 현재 계정" : ""}</p>
+            </span>
+            ${actions}
+          </li>`;
+      })
+      .join("");
+  }
+
+  function showList() {
+    $("#list-view").hidden = false;
+    $("#editor-view").hidden = true;
+    if (state.member && state.member.role === "admin") loadMembers();
+    else $("#approval-view").hidden = true;
+    renderPositionList();
+  }
+
+  async function showEditor(position) {
+    state.position = position;
+    $("#list-view").hidden = true;
+    $("#editor-view").hidden = false;
+    renderPositionSelect();
+    if (state.position) await loadPositionData();
+  }
+
+  async function openPosition(positionId) {
+    const position = state.positions.find((p) => p.id === positionId);
+    if (!position) return;
+    await showEditor(position);
   }
 
   $("#pos-select").addEventListener("change", async (event) => {
@@ -185,7 +363,9 @@
     await loadPositionData();
   });
 
-  $("#new-pos-toggle").addEventListener("click", () => {
+  $("#back-to-list").addEventListener("click", () => showList());
+
+  $("#create-position-btn").addEventListener("click", () => {
     const form = $("#pos-form");
     form.hidden = !form.hidden;
     if (!form.hidden) $("#pos-name").focus();
@@ -207,9 +387,38 @@
     }
     $("#pos-name").value = "";
     $("#pos-form").hidden = true;
-    $("#new-pos-toggle").hidden = false;
     await loadPositions(data.id);
+    const created = state.positions.find((p) => p.id === data.id);
+    if (created) await showEditor(created);
     APP.toast("포지션을 만들었어요.");
+  });
+
+  document.addEventListener("click", async (event) => {
+    const open = event.target.closest("[data-open-position]");
+    if (open) {
+      await openPosition(open.dataset.openPosition);
+      return;
+    }
+
+    const memberButton = event.target.closest("[data-member-status]");
+    if (memberButton) {
+      const next = memberButton.dataset.memberStatus;
+      const userId = memberButton.dataset.userId;
+      const action = next === "active" ? "승인할까요?" : "반려할까요?";
+      if (!window.confirm(`이 회원을 ${action}`)) return;
+      memberButton.disabled = true;
+      const { error } = await db
+        .from("members")
+        .update({ status: next, updated_at: new Date().toISOString() })
+        .eq("user_id", userId);
+      memberButton.disabled = false;
+      if (error) {
+        APP.toast(APP.errorText(error, "회원 승인 상태를 바꾸지 못했어요."), true);
+        return;
+      }
+      APP.toast(next === "active" ? "회원을 승인했어요." : "회원을 반려했어요.");
+      await loadMembers();
+    }
   });
 
   // ---------- 데이터 불러오기 ----------
@@ -268,7 +477,6 @@
     renderPeople($("#iv-list"), state.interviewers, "interviewer");
     renderPeople($("#cand-list"), state.candidates, "candidate");
     renderSlots();
-    if (state.positions.length === 0) $("#pos-form").hidden = false;
   }
 
   function renderPeople(listEl, rows, kind) {
@@ -285,6 +493,8 @@
             <button class="btn btn-small btn-ghost" type="button"
               data-copy="${kind}" data-token="${esc(row.token)}"
               data-name="${esc(row.name)}">링크 복사</button>
+            <button class="btn btn-small btn-ghost" type="button"
+              data-delete-person="${kind}" data-id="${esc(row.id)}" data-name="${esc(row.name)}">삭제</button>
           </span>
         </li>`
       )
@@ -423,8 +633,39 @@
     $("#slot-start").value = defaultSlotStart();
   });
 
+  // ---------- 면접관·후보자 삭제 ----------
+  async function deletePerson(kind, id, name) {
+    const isInterviewer = kind === "interviewer";
+    const message = isInterviewer
+      ? `${name} 면접관을 삭제할까요?\n해당 면접관의 가능 체크도 함께 삭제돼요.`
+      : `${name} 후보자를 삭제할까요?\n이 후보자의 예약도 함께 삭제돼요.`;
+    if (!window.confirm(message)) return;
+
+    const table = isInterviewer ? "interviewers" : "candidates";
+    const { error } = await db.from(table).delete().eq("id", id);
+    if (error) {
+      APP.toast(APP.errorText(error, "삭제하지 못했어요."), true);
+      return;
+    }
+    await loadPositionData();
+    APP.toast(isInterviewer ? "면접관을 삭제했어요." : "후보자를 삭제했어요.");
+  }
+
   // ---------- 목록 버튼(링크 복사·예약 취소) ----------
   document.addEventListener("click", async (event) => {
+    const deleteBtn = event.target.closest("[data-delete-person]");
+    if (deleteBtn) {
+      event.preventDefault();
+      deleteBtn.disabled = true;
+      await deletePerson(
+        deleteBtn.dataset.deletePerson,
+        deleteBtn.dataset.id,
+        deleteBtn.dataset.name
+      );
+      deleteBtn.disabled = false;
+      return;
+    }
+
     const copyBtn = event.target.closest("[data-copy]");
     if (copyBtn) {
       const kind = copyBtn.dataset.copy;
@@ -458,7 +699,7 @@
   // ---------- 시작 ----------
   (async () => {
     const { data } = await db.auth.getSession();
-    if (data.session) showApp(data.session);
+    if (data.session) await finishLogin(data.session);
     else showLogin();
     db.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT" || !session) showLogin();
