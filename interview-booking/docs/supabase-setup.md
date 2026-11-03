@@ -21,7 +21,9 @@
 
 ## 3. 로그인 설정 (담당자만 로그인해요)
 1. **Authentication → Sign In / Providers → Email**: Email이 켜져 있는지 확인
-2. 같은 화면의 **Confirm email**을 끄기 (수업 데모용. 확인 메일 없이 바로 로그인돼요)
+2. 같은 화면의 **Confirm email**을 끄기 (수업 데모용. 확인 메일 없이 바로 가입·로그인돼요)
+3. **Allow new users to sign up**을 **켜기** — 화면의 `회원가입` 탭을 쓰려면 필요해요. (심사자가 직접 가입해 볼 수 있어요.)
+   - ⚠️ 공개 주소에서는 누구나 계정을 만들 수 있다는 뜻이에요. 데이터는 RLS로 분리되지만, **과제가 끝나면 이 옵션을 다시 끄세요**(아래 7번).
 
 ## 4. 시험용 담당자 계정 두 개 만들기 (R6 권한 시험용)
 1. **Authentication → Users → Add user → Create new user**
@@ -38,3 +40,9 @@
 
 ## 6. (배포 뒤에) 주소 설정
 배포 주소가 정해지면 **Authentication → URL Configuration**의 Site URL을 배포 주소로 바꿔요. 이건 배포 단계에서 다시 안내할게요.
+
+## 7. 과제가 끝난 뒤 (보안 정리)
+1. **Authentication → Sign In / Providers → Email → Allow new users to sign up** 끄기
+2. **Confirm email** 켜기
+3. 시험용 담당자 B 계정과 시험 데이터는 남겨도 되지만, 실제 지원자 정보가 들어갔다면 지워요.
+

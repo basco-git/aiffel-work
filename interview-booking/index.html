@@ -28,8 +28,14 @@
     </section>
 
     <section class="card narrow" id="login-view" hidden>
-      <h1>담당자 로그인</h1>
-      <p class="muted" style="margin-top:6px">시간 후보를 만들고 링크를 전달하는 화면이에요. 계정은 Supabase에서 만듭니다.</p>
+      <h1 id="auth-title">담당자 로그인</h1>
+      <p class="muted" style="margin-top:6px" id="auth-sub">시간 후보를 만들고 링크를 전달하는 화면이에요.</p>
+
+      <div class="tabs" role="tablist" aria-label="로그인 또는 회원가입">
+        <button type="button" class="tab is-active" id="tab-login" role="tab" aria-selected="true">로그인</button>
+        <button type="button" class="tab" id="tab-signup" role="tab" aria-selected="false">회원가입</button>
+      </div>
+
       <form class="stack" id="login-form">
         <label>이메일
           <input type="email" id="email" autocomplete="username" required>
@@ -40,6 +46,23 @@
         <button class="btn btn-primary" type="submit" id="login-btn">로그인</button>
         <p class="error" id="login-error" hidden></p>
       </form>
+
+      <form class="stack" id="signup-form" hidden>
+        <label>이메일
+          <input type="email" id="signup-email" autocomplete="email" required>
+        </label>
+        <label>비밀번호 (6자 이상)
+          <input type="password" id="signup-password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <label>비밀번호 확인
+          <input type="password" id="signup-password2" autocomplete="new-password" minlength="6" required>
+        </label>
+        <button class="btn btn-primary" type="submit" id="signup-btn">가입하고 시작하기</button>
+        <p class="error" id="signup-error" hidden></p>
+        <p class="ok-msg" id="signup-info" hidden></p>
+      </form>
+
+      <p class="hint">면접관·후보자는 계정 없이 개인 링크로 들어옵니다.</p>
     </section>
 
     <section id="app-view" hidden>

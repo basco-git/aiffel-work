@@ -25,6 +25,7 @@
 | `candidate.html` · `assets/candidate.js` | 후보자 화면(`?t=토큰`): 열린 시간만 보이고 예약·변경, 함수 오류 문구 그대로 표시 | 완료 (가짜 데이터 미리보기 확인) |
 | `assets/app.js` | 공용: Supabase 연결, 한국 시간 표시, 토스트, 링크 복사, 설정 안내 | 완료 |
 | `assets/config.js` | Project URL·공개 키 자리(예시 값) | **키 받은 뒤 채우기** |
+| 로그인·회원가입 | `index.html` 탭 + `assets/owner.js`(`signInWithPassword`, `signUp`). 담당자별 데이터는 `owner_id`+RLS로 분리 | 구현 완료, 실제 가입은 Supabase '가입 허용' 필요 |
 | `README.md` (이 폴더) | 서비스 소개, 화면 3개, 규칙 표, 실행 방법, 평가 기준 대응, 교안 1~8 반영, 진행 과정, 회고 | 완료 |
 | `retrospective.md` | 회고: 왜 골랐나 / 자른 것 / 막힌 곳 3개 / AI 활용 / 다음 한 걸음 / 교안 질문 답 | 완료 |
 | `docs/api.md` | API 서버(Supabase PostgREST)·표 API·토큰 함수 4개·오류·상태 코드 | 완료 |
@@ -53,9 +54,10 @@ PSQL="$B/psql" bash supabase/local-test/run.sh
 (사용자의 PostgreSQL 서비스(5432)는 비밀번호가 필요해서 건드리지 않았어요.)
 
 ## 이어서 할 일 (순서대로)
-1. **(사용자)** `docs/supabase-setup.md` 따라 Supabase 프로젝트 생성 → `schema.sql` 실행 → Confirm email 끄기 → 시험용 담당자 A·B 계정 → `.env` 작성 → **Project URL과 공개 키를 채팅으로 전달** (비밀 키는 절대 X)
+1. **(사용자)** `docs/supabase-setup.md` 따라 Supabase 프로젝트 생성 → `schema.sql` 실행 → Confirm email 끄기 + **가입 허용 켜기** → 시험용 담당자 A·B 계정 → `.env` 작성 → **Project URL과 공개 키를 채팅으로 전달** (비밀 키는 절대 X)
 2. 받은 Project URL·공개 키를 `assets/config.js` 두 줄에 넣고 **실제 Supabase로 화면 3개 한 바퀴**
    - 담당자 로그인 → 포지션(2명) → 면접관 2·후보자 2 추가 → 시간 3개 추가 → 링크 복사
+   - **회원가입 탭으로 새 계정 가입 → 빈 화면에서 포지션 만들기 → 기존 A 계정 데이터가 안 보이는지(R6)**
    - 면접관 링크 2개: 겹치는 시간 체크 → 후보자 링크에서 열린 시간만 보이는지
    - 후보자 예약 → 담당자 화면에 예약자 표시 → 예약 취소 → 다시 열림
    - 14:00~14:30이 있는데 14:15 추가 → "겹치는 시간" 오류 문구 확인 (R9)
