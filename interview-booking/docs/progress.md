@@ -30,6 +30,8 @@
 
 | 오후 | 10. 화면 | 공유 포지션 목록을 박스별 구분이 아닌 한 줄 리스트로 변경 | 포지션 목록이 박스마다 높이가 달라 보기 좋지 않다는 **사용자 피드백** | CSS grid·ellipsis·mobile 1열 적용, 데스크톱에서는 한 줄로 보임 | (이번 커밋) |
 
+| 오후 | 11. 브랜드 | 제공된 at~once 로고를 서비스 헤더·로그인 화면·파비콘·Open Graph 썸네일로 적용 | 서비스 브랜드를 Interview-booking에도 명확하게 보여 주기 위해 **사용자 요청** | logo SVG·favicon SVG·OG thumbnail PNG(1200×630) 생성, 화면 3개에 og:image·twitter:card·description 연결 | (이번 커밋) |
+
 ## 막혔던 곳과 푼 방법
 - **로컬 시험에서 한글이 깨짐**: Windows의 psql은 명령줄 인자(`-c`)를 CP949로 보내요 → `PGCLIENTENCODING=UTF8` + SQL을 표준 입력으로 넘겨서 해결.
 - **토큰이 '올바르지 않은 UUID'로 거부됨**: psql 출력 줄 끝의 `\r` 때문 → 출력에서 `\r` 제거.

@@ -5,12 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow">
-  <title>면접 한 번에 — 담당자</title>
+  <title>at~once | interview-booking — 담당자</title>
+  <meta name="description" content="승인된 HR 담당자가 함께 쓰는 at~once interview-booking 면접 예약 서비스입니다.">
+  <link rel="icon" href="assets/at-once-favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#4f2068">
+  <meta property="og:site_name" content="at~once">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://basco-git.github.io/aiffel-work/interview-booking/">
+  <meta property="og:title" content="at~once | interview-booking — 면접 가능한 시간만 한 번에">
+  <meta property="og:description" content="면접관 일정이 모인 시간만 후보자에게 열리는 HR 면접 예약 서비스입니다.">
+  <meta property="og:image" content="https://basco-git.github.io/aiffel-work/interview-booking/assets/at-once-thumbnail.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="at~once — interview-booking 로고">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="at~once | interview-booking — 면접 가능한 시간만 한 번에">
+  <meta name="twitter:description" content="면접관 일정이 모인 시간만 후보자에게 열리는 HR 면접 예약 서비스입니다.">
+  <meta name="twitter:image" content="https://basco-git.github.io/aiffel-work/interview-booking/assets/at-once-thumbnail.png">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./">면접 한 번에<small>담당자</small></a>
+    <a class="brand" href="./" aria-label="at~once — interview-booking 홈">
+      <img class="brand-mark" src="assets/at-once-favicon.svg" alt="" aria-hidden="true">
+      <span class="brand-text">at~once<small>담당자</small></span>
+    </a>
     <div class="topbar-right">
       <span class="who" id="who"></span>
       <button class="btn btn-ghost" id="logout" type="button" hidden>로그아웃</button>
@@ -28,6 +47,7 @@
     </section>
 
     <section class="card narrow" id="login-view" hidden>
+      <img class="logo-hero" src="assets/at-once-logo.svg" alt="at~once — interview-booking">
       <h1 id="auth-title">담당자 로그인</h1>
       <p class="muted" style="margin-top:6px" id="auth-sub">시간 후보를 만들고 링크를 전달하는 화면이에요.</p>
 
