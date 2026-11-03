@@ -466,6 +466,12 @@
   }
 
   function showList(fromPop = false) {
+    state.position = null;
+    state.interviewers = [];
+    state.candidates = [];
+    state.slots = [];
+    state.availability = [];
+    state.bookings = [];
     $("#list-view").hidden = false;
     $("#editor-view").hidden = true;
     if (state.member && state.member.role === "admin") loadMembers();
@@ -861,8 +867,17 @@
   );
 
   // ---------- 뒤로가기(history) ----------
-  async function applyRoute(fromPop = true) {
+  async function applyRoute() {
     if ($("#app-view").hidden) return;
+    const wasDetail = !$("#editor-view").hidden && state.position;
+    if (wasDetail) {
+      // 상세 화면에서는 휠·스와이프·뒤로가기를 전부 무시해요.
+      const positionId = state.position.id;
+      await showEditor(state.position, true);
+      setRouteSilently("position", positionId);
+      return;
+    }
+
     const positionId = safeParseHash();
     const position = positionId
       ? state.positions.find((p) => p.id === positionId)
