@@ -1,0 +1,40 @@
+# Supabase 설정 순서 (직접 하는 일)
+
+> 10분 정도 걸려요. 비밀번호와 비밀 키는 채팅에 붙여 넣지 마세요.
+> 대시보드 메뉴 이름은 바뀔 수 있어요. 안 보이면 비슷한 이름을 찾거나 화면 캡처로 물어보세요.
+
+## 1. 새 프로젝트 만들기
+1. https://supabase.com/dashboard 접속 → **New project**
+2. 이름: `interview-booking` · Region: **Northeast Asia (Seoul)**
+3. Database Password: 자동 생성 → 비밀번호 관리자 등에 따로 보관 (채팅·저장소에 넣지 않기)
+4. 무료 요금제(Free) 선택 → **Create new project** → 1~2분 기다리기
+
+## 2. 스키마 붙여 넣기 (SQL Editor)
+1. 왼쪽 메뉴 **SQL Editor** → **New query**
+2. 저장소의 `interview-booking/supabase/schema.sql` 파일을 열어 **전체 복사** → 붙여 넣기
+3. **Run** (Ctrl+Enter)
+   - "destructive operation" 경고가 뜨면: 이 파일은 앞부분에서 이 앱의 표를 지우고 다시 만들기 때문이에요. 새 프로젝트이니 **Run this query**를 눌러도 돼요.
+   - 성공하면 아래에 `Success. No rows returned`가 보여요.
+4. 확인: 왼쪽 **Table Editor**에 `positions, interviewers, candidates, slots, availability, bookings` 6개 표가 있고, 각 표에 RLS가 켜져 있으면(경고 표시 없음) 통과예요.
+
+⚠️ 실제 데이터가 생긴 뒤에는 `schema.sql`을 다시 실행하지 마세요. 표를 지우고 다시 만들어요.
+
+## 3. 로그인 설정 (담당자만 로그인해요)
+1. **Authentication → Sign In / Providers → Email**: Email이 켜져 있는지 확인
+2. 같은 화면의 **Confirm email**을 끄기 (수업 데모용. 확인 메일 없이 바로 로그인돼요)
+
+## 4. 시험용 담당자 계정 두 개 만들기 (R6 권한 시험용)
+1. **Authentication → Users → Add user → Create new user**
+2. 담당자 A: 이메일(예: `hr-a@본인도메인` 또는 실제 받을 수 있는 주소), 비밀번호, **Auto Confirm User 체크**
+3. 같은 방법으로 담당자 B 만들기
+4. 두 계정의 이메일·비밀번호는 `interview-booking/.env`에 직접 적어요 (`.env.example`을 복사해 이름을 `.env`로 바꾸기). `.env`는 커밋되지 않아요.
+
+## 5. 공개 주소와 공개 키 알려 주기
+1. **Project Settings → API Keys**(또는 **Data API**)에서
+   - **Project URL** (예: `https://abcd1234.supabase.co`)
+   - **Publishable key** 또는 **anon public** 키
+2. 이 두 값은 브라우저에 공개되는 값이라 채팅에 알려 주셔도 돼요.
+3. ❌ **secret key / service_role key는 절대 알려 주지 마세요.** 이 앱은 쓰지 않아요.
+
+## 6. (배포 뒤에) 주소 설정
+배포 주소가 정해지면 **Authentication → URL Configuration**의 Site URL을 배포 주소로 바꿔요. 이건 배포 단계에서 다시 안내할게요.

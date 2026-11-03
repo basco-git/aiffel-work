@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>면접 한 번에 — 담당자</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">면접 한 번에<small>담당자</small></a>
+    <div class="topbar-right">
+      <span class="who" id="who"></span>
+      <button class="btn btn-ghost" id="logout" type="button" hidden>로그아웃</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="muted" id="booting" style="text-align:center;padding:48px 0">불러오는 중…</p>
+    <section class="card notice" id="setup" hidden>
+      <h2>설정이 필요해요</h2>
+      <p class="muted" id="setup-reason">
+        <code>assets/config.js</code>에 Supabase Project URL과 공개 키를 넣어 주세요.
+        <code>docs/supabase-setup.md</code> 5번에서 확인한 값이에요. 비밀 키(service_role)는 넣지 않습니다.
+      </p>
+    </section>
+
+    <section class="card narrow" id="login-view" hidden>
+      <h1>담당자 로그인</h1>
+      <p class="muted" style="margin-top:6px">시간 후보를 만들고 링크를 전달하는 화면이에요. 계정은 Supabase에서 만듭니다.</p>
+      <form class="stack" id="login-form">
+        <label>이메일
+          <input type="email" id="email" autocomplete="username" required>
+        </label>
+        <label>비밀번호
+          <input type="password" id="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn btn-primary" type="submit" id="login-btn">로그인</button>
+        <p class="error" id="login-error" hidden></p>
+      </form>
+    </section>
+
+    <section id="app-view" hidden>
+      <div class="page-head">
+        <div>
+          <h1 id="pos-title">면접 일정</h1>
+          <p class="muted" id="pos-sub">포지션을 고르거나 새로 만들어 주세요.</p>
+        </div>
+        <div class="row">
+          <label class="sr-only" for="pos-select">포지션 선택</label>
+          <select id="pos-select" style="min-width:190px"></select>
+          <button class="btn" type="button" id="new-pos-toggle">+ 새 포지션</button>
+        </div>
+      </div>
+
+      <form class="card inline-form" id="pos-form" hidden>
+        <label class="grow">포지션 이름
+          <input id="pos-name" maxlength="100" placeholder="예: 백엔드 개발자" required>
+        </label>
+        <label>필요 면접관
+          <select id="pos-required">
+            <option value="2" selected>2명</option>
+            <option value="3">3명</option>
+          </select>
+        </label>
+        <button class="btn btn-primary" type="submit">포지션 만들기</button>
+      </form>
+
+      <div class="grid">
+        <section class="card">
+          <h2>면접관</h2>
+          <p class="hint" style="margin-top:4px">이름을 추가하면 그 사람만의 링크가 생겨요. 링크를 받은 면접관은 로그인 없이 가능한 시간을 체크합니다.</p>
+          <form class="inline-form" id="iv-form">
+            <input id="iv-name" maxlength="50" placeholder="면접관 이름" required>
+            <button class="btn" type="submit">추가</button>
+          </form>
+          <ul class="people" id="iv-list"></ul>
+
+          <h2 class="mt">후보자</h2>
+          <p class="hint" style="margin-top:4px">후보자 링크에는 열린 시간만 보이고, 면접관 이름은 보이지 않아요.</p>
+          <form class="inline-form" id="cand-form">
+            <input id="cand-name" maxlength="50" placeholder="후보자 이름" required>
+            <button class="btn" type="submit">추가</button>
+          </form>
+          <ul class="people" id="cand-list"></ul>
+        </section>
+
+        <section class="card">
+          <h2>시간 후보</h2>
+          <form class="inline-form" id="slot-form">
+            <label class="grow">시작 시각 (한국 시간)
+              <input type="datetime-local" id="slot-start" required>
+            </label>
+            <label>면접 길이
+              <select id="slot-duration">
+                <option value="15">15분</option>
+                <option value="30" selected>30분</option>
+                <option value="45">45분</option>
+                <option value="60">60분</option>
+                <option value="75">75분</option>
+                <option value="90">90분</option>
+                <option value="105">105분</option>
+                <option value="120">120분</option>
+              </select>
+            </label>
+            <button class="btn" type="submit">추가</button>
+          </form>
+          <p class="hint">15분 단위로만 만들 수 있고, 같은 포지션의 시간끼리 겹치면 저장되지 않아요.</p>
+          <div class="slots" id="slot-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/owner.js"></script>
+</body>
+</html>
