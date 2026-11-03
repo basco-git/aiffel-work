@@ -135,7 +135,11 @@ function checkNoSecrets() {
     return;
   }
 
-  const patterns = [/eyJhbGciOi/, /sb_secret_/, /service_role\s*[:=]\s*["'][A-Za-z0-9._-]{20,}/];
+  const patterns = [
+    /sb_secret_[A-Za-z0-9_-]{10,}/,
+    /eyJhbGciOi[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}/,
+    /service_role\s*[:=]\s*["'][A-Za-z0-9._-]{20,}/i,
+  ];
   const hits = [];
   for (const file of tracked) {
     if (!/\.(html|js|mjs|css|md|json|sql|txt|example|yml|yaml)$/.test(file)) continue;

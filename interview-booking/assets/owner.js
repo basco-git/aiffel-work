@@ -21,6 +21,7 @@
   // ---------- 화면 전환 ----------
   function showLogin(message) {
     APP.ready();
+    setAuthTab("login");
     $("#login-view").hidden = false;
     $("#app-view").hidden = true;
     $("#logout").hidden = true;
@@ -74,6 +75,79 @@
     state.positions = [];
     $("#password").value = "";
     showLogin();
+  });
+
+  // ---------- 회원가입 ----------
+  function setAuthTab(name) {
+    const isLogin = name === "login";
+    $("#tab-login").classList.toggle("is-active", isLogin);
+    $("#tab-signup").classList.toggle("is-active", !isLogin);
+    $("#tab-login").setAttribute("aria-selected", String(isLogin));
+    $("#tab-signup").setAttribute("aria-selected", String(!isLogin));
+    $("#login-form").hidden = !isLogin;
+    $("#signup-form").hidden = isLogin;
+    $("#auth-title").textContent = isLogin ? "담당자 로그인" : "담당자 회원가입";
+    $("#auth-sub").textContent = isLogin
+      ? "시간 후보를 만들고 링크를 전달하는 화면이에요."
+      : "계정을 만들면 내 포지션과 시간 후보를 다른 담당자와 분리해 관리해요.";
+    $("#signup-error").hidden = true;
+  }
+
+  $("#tab-login").addEventListener("click", () => setAuthTab("login"));
+  $("#tab-signup").addEventListener("click", () => setAuthTab("signup"));
+
+  function showSignupError(message) {
+    const box = $("#signup-error");
+    box.textContent = message;
+    box.hidden = false;
+  }
+
+  function signupErrorText(error) {
+    const message = error.message || "";
+    if (/already registered|already been registered|user already exists/i.test(message))
+      return "이미 가입된 이메일이에요. 로그인해 주세요.";
+    if (/password/i.test(message) && /(6|least|short|weak)/i.test(message))
+      return "비밀번호는 6자 이상으로 정해 주세요.";
+    if (/signups? not allowed|signup.*disabled|email signups are disabled/i.test(message))
+      return "지금은 회원가입이 꺼져 있어요. 담당자에게 문의해 주세요.";
+    if (/invalid.*email|email.*invalid|unable to validate email/i.test(message))
+      return "이메일 형식을 확인해 주세요.";
+    return APP.errorText(error, "가입하지 못했어요.");
+  }
+
+  $("#signup-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const btn = $("#signup-btn");
+    const email = $("#signup-email").value.trim();
+    const password = $("#signup-password").value;
+    const password2 = $("#signup-password2").value;
+    $("#signup-error").hidden = true;
+    $("#signup-info").hidden = true;
+
+    if (password.length < 6) return showSignupError("비밀번호는 6자 이상으로 정해 주세요.");
+    if (password !== password2) return showSignupError("비밀번호 확인이 일치하지 않아요.");
+
+    btn.disabled = true;
+    btn.textContent = "가입 중…";
+    const { data, error } = await db.auth.signUp({ email, password });
+    btn.disabled = false;
+    btn.textContent = "가입하고 시작하기";
+
+    if (error) {
+      showSignupError(signupErrorText(error));
+      return;
+    }
+    if (data.session) {
+      showApp(data.session);
+      APP.toast("가입했어요. 포지션을 만들어 시작해 보세요.");
+      return;
+    }
+    // 이메일 확인이 켜진 프로젝트에서는 메일 확인 뒤 로그인해요.
+    const info = $("#signup-info");
+    info.textContent = "가입 확인 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.";
+    info.hidden = false;
+    $("#signup-password").value = "";
+    $("#signup-password2").value = "";
   });
 
   // ---------- 포지션 ----------

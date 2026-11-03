@@ -18,7 +18,11 @@
 | 오후 | 3. 화면 | 담당자·면접관·후보자 화면 3개와 공용 스크립트·스타일 (`index.html`, `interviewer.html`, `candidate.html`, `assets/`) | 로그인한 담당자만 포지션을 만들고, 링크 화면은 면접관·후보자 각자 토큰만 (PRD 2장), 시각 입력은 기기 시간대와 무관하게 **한국 시간으로 해석** (AI 제안) | 가짜 데이터로 띄운 미리보기(저장소 밖 임시 폴더)에서 3개 화면 렌더 + 예약·체크 해제·면접관 추가 버튼 동작 확인. **실제 Supabase 연결은 아직** | `4513054` |
 | 오후 | 4. 저장 | `package.json` + `scripts/test-rules.mjs`: 공개 키·담당자 A·B 로그인·링크 토큰으로 R1~R9를 실제 Supabase에 시험(동시 10건, 시험 데이터 자동 정리, `docs/evidence-live-rules.txt` 기록) | 서브에이전트·MCP 대신 단일 스크립트 (사용자: 사용량 아끼기) | 문법 검사 통과, `.env`가 없을 때 안내 문구 확인. **실제 실행은 키 받은 뒤** | (이번 커밋) |
 | 오후 | 5. 제출 준비 | PRD에 **화면 구성(10장)·데이터 구조(11장)** 추가, `docs/api.md`(API 서버·함수 4개·오류), 과제 README(평가 기준 대응·교안 1~8·진행 과정), `retrospective.md`, `docs/demo-script.md` | 교안 평가 1·3번(PRD 항목, API 서버)이 문서로 확인되게 (사용자 요청 반영) | PRD 10·11장과 README 표 읽어 확인, 맨 위 README에 9번 행 추가 | `3c9c8c2` |
-| 오후 | 5. 제출 준비 | 브랜치 푸시 + main으로 PR 생성 | **지금 푸시하고 PR (사용자)** — 병합은 직접 | 푸시 성공, PR #8 열림 | (이번 커밋) |
+| 오후 | 5. 제출 준비 | 브랜치 푸시 + main으로 PR 생성 | **지금 푸시하고 PR (사용자)** — 병합은 직접 | 푸시 성공, PR #8 열림 | `cb6adac` |
+| 오후 | 5. 보안 | 링크 토큰이 외부 요청 Referer로 새지 않게 `no-referrer`, 데모 주소 검색 노출 차단 `noindex` | 공개 배포 대비 (AI 제안, 사용자 보안 검토 요청) | 헤드리스 브라우저로 메타 적용·화면 렌더·JS 오류 없음 확인 | `8baf948` |
+| 오후 | 3. 화면 | 담당자 **회원가입 탭** 추가: 이메일·비밀번호(6자 이상)·확인, 중복·형식 오류 안내, 가입 직후 로그인 | 심사자가 직접 가입해 체험할 수 있게 회원가입 추가 (사용자 선택) | 미리보기에서 가입 → 앱 진입·이메일 표시·비밀번호 불일치 안내 확인. 실제 가입은 Supabase '가입 허용'을 켠 뒤 | (이번 커밋) |
+
+| 오후 | 4. 실제 서버 시험 | 실제 Supabase에 R1~R9 자동 요청 시험. `scripts/test-rules.mjs`가 시험 데이터를 만들고 삭제한 뒤 R1~R9 결과를 `docs/evidence-live-rules.txt`에 기록 | 기존 시험 재사용, 비밀 키 대신 A·B 공개 공개키·로그인만 사용 (규칙 R8) | **R1~R9 21/21 통과**, 비로그인 표 접근 401, 추적 파일 28개에서 비밀 키 패턴 없음. PRD 9장 R1~R9를 2026-11-03 통과로 기록 | `d6d88db` + 시험 기록 커밋 |
 
 ## 막혔던 곳과 푼 방법
 - **로컬 시험에서 한글이 깨짐**: Windows의 psql은 명령줄 인자(`-c`)를 CP949로 보내요 → `PGCLIENTENCODING=UTF8` + SQL을 표준 입력으로 넘겨서 해결.
@@ -28,8 +32,9 @@
 - **화면이 하얗게 비는 문제**: 모든 영역을 자바스크립트로 열게 만들면, 스크립트가 멈출 때 빈 화면만 남아요 → 첫 화면에 '불러오는 중…'을 두고 준비되면 스크립트가 감추게 했어요. 실패하면 그 글이 남아 원인을 알 수 있어요.
 
 ## 다음 할 일
-1. (사용자) `docs/supabase-setup.md` 순서대로 Supabase 프로젝트 만들고 `schema.sql` 실행, 시험 계정 2개, **URL·공개 키 전달**
-2. 받은 URL·공개 키를 `assets/config.js`에 넣고 화면 3개를 실제 Supabase로 한 바퀴 → PRD 9장 성공 조건 3개 기록
-3. `npm install && npm run test:rules`로 R1~R9를 실제 Supabase에서 시험 → 결과를 PRD 9장에 기록
-4. 푸시 → PR 병합 → GitHub Pages 배포(`https://basco-git.github.io/aiffel-work/interview-booking/`) → 배포 주소에서 한 바퀴, 맨 위 README의 실행 링크 채우기
-5. `submit-check` 스킬로 제출 전 점검 → 구글폼에 저장소·배포 URL 제출
+1. **(사용자)** Supabase 프로젝트 만들고 `schema.sql` 실행, 시험 계정 A·B + 가입 허용 (완료, 2026-11-03)
+2. **(사용자)** `assets/config.js`에 Project URL·Publishable key 등록 (완료, `d6d88db`)
+3. **(자동)** `npm run test:rules`로 실제 Supabase R1~R9 시험 (완료: 21/21 통과, `docs/evidence-live-rules.txt`, PRD 9장 기록)
+4. 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)에서 3개 화면 직접 확인 → PRD 9장 성공 조건 1~3 기록
+5. 푸시 → PR #8 병합 → 배포 시험 → 맨 위 README 9번 행의 실행 링크 채우기
+6. `submit-check` 스킬로 제출 전 점검 → 구글폼에 저장소·배포 URL 제출

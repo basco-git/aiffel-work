@@ -127,6 +127,26 @@ form.stack { display: grid; gap: 12px; margin-top: 16px; }
 .inline-form > .btn { flex: 0 0 auto; }
 .inline-form input, .inline-form select { margin-top: 4px; }
 
+/* 로그인·회원가입 탭 */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 16px 0 0;
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  flex: 1;
+  padding: 9px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tab.is-active { color: var(--brand); border-bottom-color: var(--brand); }
+.tab:hover { color: var(--brand); }
+
 /* 버튼 */
 .btn {
   display: inline-flex;

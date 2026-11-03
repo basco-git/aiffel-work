@@ -25,6 +25,7 @@
 | 하는 일 | 요청 | 비고 |
 |---|---|---|
 | 로그인 | `supabase.auth.signInWithPassword({ email, password })` | 실패: `Invalid login credentials` |
+| 회원가입 | `supabase.auth.signUp({ email, password })` | Supabase에서 **가입 허용**이 켜져 있어야 해요. 이메일 확인을 끄면 가입 직후 로그인 상태가 돼요 |
 | 포지션 목록 | `GET /rest/v1/positions?select=id,title,required_interviewers&order=created_at.asc` | RLS가 본인 것만 돌려줘요 |
 | 포지션 만들기 | `POST /rest/v1/positions` `{ "title": "백엔드 개발자", "required_interviewers": 2 }` | `owner_id` 기본값은 로그인 사용자 |
 | 포지션 삭제 | `DELETE /rest/v1/positions?id=eq.<id>` | 하위 표까지 함께 지워져요(시험 데이터 정리에 사용) |
