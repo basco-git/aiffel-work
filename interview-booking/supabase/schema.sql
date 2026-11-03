@@ -10,7 +10,7 @@
 --   R3 면접관 부족 시간 예약 불가   → book_slot()이 가능 면접관 수 확인
 --   R4 예약된 시간 체크 해제 불가   → set_availability()가 예약 여부 확인 (같은 슬롯 행 잠금)
 --   R5 지난 시간 예약 불가          → book_slot()이 시작 시각 확인
---   R6 담당자 데이터는 그 담당자만  → 모든 표에 RLS, 소유자만 읽기·쓰기
+--   R6 승인된 담당자만 접근   → 승인되지 않은 회원(anon·pending)은 접근 불가, 승인 회원 전체 공유
 --   R7 링크로는 자기 것만           → 링크 사용자(anon)는 표에 직접 접근 불가, 토큰을 받는 함수로만
 --   R9 시간 겹침 금지·15분 단위     → slots 배제 제약(EXCLUDE) + CHECK
 -- =====================================================================
@@ -18,17 +18,62 @@
 create extension if not exists btree_gist;
 
 -- 다시 실행할 때를 위한 정리
+drop function if exists public.handle_new_auth_user() cascade;
+drop function if exists public.is_admin() cascade;
+drop function if exists public.is_active_member() cascade;
 drop function if exists public.interviewer_view(uuid);
 drop function if exists public.set_availability(uuid, uuid, boolean);
 drop function if exists public.candidate_view(uuid);
 drop function if exists public.book_slot(uuid, uuid);
 drop function if exists public.slot_set_end() cascade;
+drop trigger if exists on_auth_user_created on auth.users;
 drop table if exists public.bookings, public.availability, public.slots,
-  public.candidates, public.interviewers, public.positions cascade;
+  public.candidates, public.interviewers, public.positions, public.members cascade;
 
 -- ---------------------------------------------------------------------
 -- 표
 -- ---------------------------------------------------------------------
+-- 승인된 담당자만 앱을 쓰게 하고, 승인된 회원끼리는 면접일정을 공유해요.
+create table public.members (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  email text not null unique,
+  role text not null default 'member' check (role in ('admin', 'member')),
+  status text not null default 'pending' check (status in ('pending', 'active', 'rejected')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- 새로 가입한 담당자는 기본적으로 승인 대기 상태로 들어와요.
+create function public.handle_new_auth_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.members (user_id, email, role, status)
+  values (new.id, lower(coalesce(new.email, '')), 'member', 'pending')
+  on conflict (user_id) do nothing;
+  return new;
+end $$;
+
+revoke all on function public.handle_new_auth_user() from public, anon, authenticated;
+create trigger on_auth_user_created after insert on auth.users
+  for each row execute function public.handle_new_auth_user();
+
+-- 멤버 검사는 반드시 이 함수를 통해서만 해요. RLS 재귀를 막아요.
+create function public.is_active_member() returns boolean
+language sql stable security definer set search_path = public set row_security = off as $$
+  select exists (
+    select 1 from public.members
+    where user_id = auth.uid() and status = 'active'
+  );
+$$;
+
+create function public.is_admin() returns boolean
+language sql stable security definer set search_path = public set row_security = off as $$
+  select exists (
+    select 1 from public.members
+    where user_id = auth.uid() and status = 'active' and role = 'admin'
+  );
+$$;
+
 create table public.positions (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
@@ -98,6 +143,7 @@ create trigger slots_set_end before insert or update of starts_at, duration_min
 -- ---------------------------------------------------------------------
 -- 권한: 담당자(로그인)는 RLS로 자기 것만, 링크 사용자(anon)는 표에 직접 못 들어와요 (R6·R7)
 -- ---------------------------------------------------------------------
+alter table public.members     enable row level security;
 alter table public.positions    enable row level security;
 alter table public.interviewers enable row level security;
 alter table public.candidates   enable row level security;
@@ -105,38 +151,63 @@ alter table public.slots        enable row level security;
 alter table public.availability enable row level security;
 alter table public.bookings     enable row level security;
 
-revoke all on public.positions, public.interviewers, public.candidates,
+revoke all on public.members, public.positions, public.interviewers, public.candidates,
   public.slots, public.availability, public.bookings from anon, authenticated;
+grant select, update on public.members to authenticated;
 grant select, insert, update, delete on public.positions, public.interviewers,
   public.candidates, public.slots to authenticated;
 grant select, delete on public.availability, public.bookings to authenticated;  -- 체크·예약은 함수로만
 
-create policy "본인 포지션" on public.positions for all to authenticated
-  using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+create policy "회원 본인 또는 관리자만 상태 보기" on public.members for select to authenticated
+  using (user_id = auth.uid() or public.is_admin());
 
-create policy "본인 포지션의 면접관" on public.interviewers for all to authenticated
-  using (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()))
-  with check (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()));
+create policy "관리자만 회원 승인·역할 변경" on public.members for update to authenticated
+  using (public.is_admin()) with check (public.is_admin());
 
-create policy "본인 포지션의 후보자" on public.candidates for all to authenticated
-  using (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()))
-  with check (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()));
+create policy "승인 회원 전체 포지션 보기" on public.positions for select to authenticated
+  using (public.is_active_member());
+create policy "승인 회원 전체 포지션 만들기" on public.positions for insert to authenticated
+  with check (public.is_active_member());
+create policy "승인 회원 전체 포지션 수정" on public.positions for update to authenticated
+  using (public.is_active_member()) with check (public.is_active_member());
+create policy "관리자만 포지션 삭제" on public.positions for delete to authenticated
+  using (public.is_admin());
 
-create policy "본인 포지션의 시간" on public.slots for all to authenticated
-  using (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()))
-  with check (exists (select 1 from public.positions p where p.id = position_id and p.owner_id = auth.uid()));
+create policy "승인 회원 전체 면접관 보기" on public.interviewers for select to authenticated
+  using (public.is_active_member());
+create policy "승인 회원 전체 면접관 만들기" on public.interviewers for insert to authenticated
+  with check (public.is_active_member());
+create policy "승인 회원 전체 면접관 수정" on public.interviewers for update to authenticated
+  using (public.is_active_member()) with check (public.is_active_member());
+create policy "승인 회원 전체 면접관 삭제" on public.interviewers for delete to authenticated
+  using (public.is_active_member());
 
-create policy "본인 포지션의 가능 체크 보기" on public.availability for select to authenticated
-  using (exists (select 1 from public.slots s join public.positions p on p.id = s.position_id
-                 where s.id = slot_id and p.owner_id = auth.uid()));
+create policy "승인 회원 전체 후보자 보기" on public.candidates for select to authenticated
+  using (public.is_active_member());
+create policy "승인 회원 전체 후보자 만들기" on public.candidates for insert to authenticated
+  with check (public.is_active_member());
+create policy "승인 회원 전체 후보자 수정" on public.candidates for update to authenticated
+  using (public.is_active_member()) with check (public.is_active_member());
+create policy "승인 회원 전체 후보자 삭제" on public.candidates for delete to authenticated
+  using (public.is_active_member());
 
-create policy "본인 포지션의 예약 보기" on public.bookings for select to authenticated
-  using (exists (select 1 from public.slots s join public.positions p on p.id = s.position_id
-                 where s.id = slot_id and p.owner_id = auth.uid()));
+create policy "승인 회원 전체 시간 보기" on public.slots for select to authenticated
+  using (public.is_active_member());
+create policy "승인 회원 전체 시간 만들기" on public.slots for insert to authenticated
+  with check (public.is_active_member());
+create policy "승인 회원 전체 시간 수정" on public.slots for update to authenticated
+  using (public.is_active_member()) with check (public.is_active_member());
+create policy "관리자만 시간 삭제" on public.slots for delete to authenticated
+  using (public.is_admin());
 
-create policy "본인 포지션의 예약 취소" on public.bookings for delete to authenticated
-  using (exists (select 1 from public.slots s join public.positions p on p.id = s.position_id
-                 where s.id = slot_id and p.owner_id = auth.uid()));
+create policy "승인 회원 전체 가능 체크 보기" on public.availability for select to authenticated
+  using (public.is_active_member());
+
+create policy "승인 회원 전체 예약 보기" on public.bookings for select to authenticated
+  using (public.is_active_member());
+
+create policy "승인 회원 전체 예약 취소" on public.bookings for delete to authenticated
+  using (public.is_active_member());
 
 -- ---------------------------------------------------------------------
 -- 링크용 함수 (security definer: 함수 안에서만 표에 닿고, 토큰으로 자기 것만 다뤄요)

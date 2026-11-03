@@ -23,7 +23,7 @@
       <h2>설정이 필요해요</h2>
       <p class="muted" id="setup-reason">
         <code>assets/config.js</code>에 Supabase Project URL과 공개 키를 넣어 주세요.
-        <code>docs/supabase-setup.md</code> 5번에서 확인한 값이에요. 비밀 키(service_role)는 넣지 않습니다.
+        <code>docs/supabase-setup.md</code> 6번에서 확인한 값이에요. 비밀 키(service_role)는 넣지 않습니다.
       </p>
     </section>
 
@@ -65,31 +65,59 @@
       <p class="hint">면접관·후보자는 계정 없이 개인 링크로 들어옵니다.</p>
     </section>
 
+    <section class="card narrow" id="pending-view" hidden>
+      <h1>가입 승인이 필요해요</h1>
+      <p class="muted" style="margin-top:6px">면접 일정은 승인된 HR 담당자끼리 공유해요. 관리자(계정 A)가 승인하면 바로 이용할 수 있어요.</p>
+      <p class="pending-email" id="pending-email"></p>
+      <button class="btn btn-primary" id="pending-logout" type="button">로그아웃</button>
+    </section>
+
     <section id="app-view" hidden>
+      <section class="card" id="list-view">
+        <div class="list-head">
+          <div>
+            <h1>공유 면접 포지션</h1>
+            <p class="muted" style="margin-top:6px">승인된 HR 담당자라면 누구나 확인하고 함께 만들 수 있어요.</p>
+          </div>
+          <button class="btn btn-primary" type="button" id="create-position-btn">+ 새 포지션</button>
+        </div>
+
+        <div class="approval" id="approval-view" hidden>
+          <div class="approval-head">
+            <h2>회원 승인</h2>
+            <p class="hint" style="margin:4px 0 0">회원가입을 한 사용자를 승인해야 면접일정을 볼 수 있어요.</p>
+          </div>
+          <ul class="approvals" id="approvals-list"></ul>
+        </div>
+
+        <ul class="position-list" id="position-list"></ul>
+
+        <form class="inline-form new-position-form" id="pos-form" hidden>
+          <label class="grow">포지션 이름
+            <input id="pos-name" maxlength="100" placeholder="예: 백엔드 개발자" required>
+          </label>
+          <label>필요 면접관
+            <select id="pos-required">
+              <option value="2" selected>2명</option>
+              <option value="3">3명</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">포지션 만들기</button>
+        </form>
+      </section>
+
+      <div id="editor-view" hidden>
       <div class="page-head">
         <div>
           <h1 id="pos-title">면접 일정</h1>
           <p class="muted" id="pos-sub">포지션을 고르거나 새로 만들어 주세요.</p>
         </div>
         <div class="row">
+          <button class="btn btn-ghost" type="button" id="back-to-list">목록으로</button>
           <label class="sr-only" for="pos-select">포지션 선택</label>
           <select id="pos-select" style="min-width:190px"></select>
-          <button class="btn" type="button" id="new-pos-toggle">+ 새 포지션</button>
         </div>
       </div>
-
-      <form class="card inline-form" id="pos-form" hidden>
-        <label class="grow">포지션 이름
-          <input id="pos-name" maxlength="100" placeholder="예: 백엔드 개발자" required>
-        </label>
-        <label>필요 면접관
-          <select id="pos-required">
-            <option value="2" selected>2명</option>
-            <option value="3">3명</option>
-          </select>
-        </label>
-        <button class="btn btn-primary" type="submit">포지션 만들기</button>
-      </form>
 
       <div class="grid">
         <section class="card">
@@ -133,6 +161,7 @@
           <p class="hint">15분 단위로만 만들 수 있고, 같은 포지션의 시간끼리 겹치면 저장되지 않아요.</p>
           <div class="slots" id="slot-list"></div>
         </section>
+      </div>
       </div>
     </section>
   </main>

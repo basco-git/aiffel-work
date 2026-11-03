@@ -15,7 +15,7 @@
 | 필수 헤더 | `apikey: <공개 키>`, `Authorization: Bearer <세션 토큰>` |
 | 응답 형식 | JSON 배열 또는 객체 |
 
-- 담당자 요청은 로그인 세션 토큰을 붙여요. 표에는 RLS가 걸려 있어 **자기 포지션 데이터만** 보이고 바뀌어요(R6).
+- 담당자 요청은 로그인 세션 토큰을 붙여요. 표에는 RLS가 걸려 있어 **승인된 회원은 전체 일정을 보고 함께 관리하고, 비승인·반려 회원은 접근할 수 없어요**(R6).
 - 링크 사용자(면접관·후보자)는 로그인하지 않아요. 표에 직접 접근할 권한이 없고, 아래 **RPC 4개**로만 자기 것을 다뤄요(R7).
 - 오류는 PostgREST 형식이에요: `{ "code": "P0001", "message": "이미 지난 시간이에요.", "details": null, "hint": null }`.
   화면은 `message`를 그대로 보여 줘요.
@@ -25,10 +25,12 @@
 | 하는 일 | 요청 | 비고 |
 |---|---|---|
 | 로그인 | `supabase.auth.signInWithPassword({ email, password })` | 실패: `Invalid login credentials` |
-| 회원가입 | `supabase.auth.signUp({ email, password })` | Supabase에서 **가입 허용**이 켜져 있어야 해요. 이메일 확인을 끄면 가입 직후 로그인 상태가 돼요 |
-| 포지션 목록 | `GET /rest/v1/positions?select=id,title,required_interviewers&order=created_at.asc` | RLS가 본인 것만 돌려줘요 |
+| 회원가입 | `supabase.auth.signUp({ email, password })` | 가입 후 **승인 대기** 목록에 들어가요. 관리자가 `active`로 바꾸어야 표를 볼 수 있어요 |
+| 포지션 목록 | `GET /rest/v1/positions?select=id,title,required_interviewers&order=created_at.asc` | 승인된 회원은 모두 볼 수 있어요 |
 | 포지션 만들기 | `POST /rest/v1/positions` `{ "title": "백엔드 개발자", "required_interviewers": 2 }` | `owner_id` 기본값은 로그인 사용자 |
-| 포지션 삭제 | `DELETE /rest/v1/positions?id=eq.<id>` | 하위 표까지 함께 지워져요(시험 데이터 정리에 사용) |
+| 포지션 삭제 | `DELETE /rest/v1/positions?id=eq.<id>` | **관리자만** 가능하고 하위 표까지 함께 지워져요(시험 데이터 정리에 사용) |
+| 회원 상태 목록 | `GET /rest/v1/members?select=user_id,email,role,status,created_at&order=created_at.asc` | 관리자는 전체, 일반 회원은 자기 것만 조회 |
+| 회원 승인/반려 | `PATCH /rest/v1/members?user_id=eq.<id>` `{ "status": "active" }` | 관리자만, `active`·`rejected`로 변경 |
 | 면접관 목록·추가 | `GET /rest/v1/interviewers?position_id=eq.<id>&select=id,name,token` / `POST` `{ position_id, name }` | `token`은 자동 생성(UUID v4) |
 | 후보자 목록·추가 | `GET /rest/v1/candidates?...` / `POST` `{ position_id, name }` | 같음 |
 | 시간 목록·추가 | `GET /rest/v1/slots?position_id=eq.<id>&order=starts_at.asc` / `POST` `{ position_id, starts_at, duration_min }` | `ends_at`은 트리거가 계산, 겹치면 23P01 |
@@ -113,6 +115,6 @@
 ## 5. 보안 경계
 
 - 브라우저에는 **공개 키만** 들어가요(`assets/config.js`). 비밀 키(service_role)는 어디에도 쓰지 않아요(R8).
-- 표 접근 권한은 `anon`에게 전부 회수했고, `authenticated`도 RLS로 자기 포지션만 다뤄요.
+- 표 접근 권한은 `anon`에게 전부 회수했고, `authenticated`도 RLS로 **승인된 회원만** 다뤄요.
 - 체크·예약은 `security definer` 함수 안에서 토큰으로 대상을 찾고, 다른 사람 데이터는 반환하지 않아요.
 - 링크 토큰은 UUID v4라 추측이 사실상 불가능해요. 링크가 새면 담당자가 그 면접관·후보자를 지우고 새로 만들어요.

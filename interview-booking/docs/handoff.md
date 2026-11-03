@@ -25,7 +25,7 @@
 | `candidate.html` · `assets/candidate.js` | 후보자 화면(`?t=토큰`): 열린 시간만 보이고 예약·변경, 함수 오류 문구 그대로 표시 | 완료 (가짜 데이터 미리보기 확인) |
 | `assets/app.js` | 공용: Supabase 연결, 한국 시간 표시, 토스트, 링크 복사, 설정 안내 | 완료 |
 | `assets/config.js` | Project URL·Publishable key (공개 값만) | 완료 (`d6d88db`에 반영) |
-| 로그인·회원가입 | `index.html` 탭 + `assets/owner.js`(`signInWithPassword`, `signUp`). 담당자별 데이터는 `owner_id`+RLS로 분리 | 구현 완료, 실제 Supabase에 가입 허용 켜짐 확인 |
+| 로그인·회원가입 | `index.html` 탭 + `assets/owner.js`. 가입 후 승인 대기, 관리자(A)가 앱에서 승인해야 데이터 접근 | **공유 면접일정 + 가입 승인 완료 (DB 마이그레이션 반영)** |
 | `README.md` (이 폴더) | 서비스 소개, 화면 3개, 규칙 표, 실행 방법, 평가 기준 대응, 교안 1~8 반영, 진행 과정, 회고 | 완료 |
 | `retrospective.md` | 회고: 왜 골랐나 / 자른 것 / 막힌 곳 3개 / AI 활용 / 다음 한 걸음 / 교안 질문 답 | 완료 |
 | `docs/api.md` | API 서버(Supabase PostgREST)·표 API·토큰 함수 4개·오류·상태 코드 | 완료 |
@@ -60,8 +60,9 @@ PSQL="$B/psql" bash supabase/local-test/run.sh
 4. **(완료)** GitHub Pages 배포 주소에서 3개 화면을 실제로 클릭 검증(헤드리스 Chrome, 테스트 후보 생성 후 삭제) → PRD 9장 성공 조건 1~3 통과로 기록 → 맨 위 README 실행 링크 채우기
    - 기록: `docs/evidence-deploy-ui.txt` (2026-11-03)
    - 확인: 담당자 로그인, 시간 후보 추가+새로고침 유지, 면접관 2명 체크, 후보자 예약, 후보자 2명에게 마감 표시, 담당자 화면에 예약자 이름
-5. **(사용자)** Supabase **Authentication → URL Configuration**의 Site URL을 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)로 설정
-6. 마무리: 3분 시연 영상(`docs/demo-script.md` 대로), 제출 전 점검(`submit-check` 스킬), 구글폼에 저장소·배포 URL 제출
+5. **공유·승인 업데이트 (이번 작업)**: RLS를 '승인된 회원끼리 공유'로 바꾸고 `members` 승인 흐름을 적용했어요. DB 마이그레이션은 실행됐고, 계정 A는 `admin/active`, 기존 나머지 계정은 `pending` 상태예요.
+6. **(사용자)** Supabase Authentication → URL Configuration의 Site URL을 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)로 설정
+7. 마무리: 3분 시연 영상(`docs/demo-script.md` 대로), 제출 전 점검(`submit-check` 스킬), 구글폼에 저장소·배포 URL 제출
 
 ## 교안 1~8 반영 계획 (README에 쓸 표)
 | 교안 | 증거 |
