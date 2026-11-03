@@ -22,6 +22,8 @@ const REQUIRED = [
   "HR_A_PASSWORD",
   "HR_B_EMAIL",
   "HR_B_PASSWORD",
+  "HR_C_EMAIL",
+  "HR_C_PASSWORD",
 ];
 const missing = REQUIRED.filter((key) => !process.env[key]);
 if (missing.length) {
@@ -34,6 +36,8 @@ const URL_ = process.env.SUPABASE_URL;
 const KEY = process.env.SUPABASE_ANON_KEY;
 const hrA = { email: process.env.HR_A_EMAIL, password: process.env.HR_A_PASSWORD };
 const hrB = { email: process.env.HR_B_EMAIL, password: process.env.HR_B_PASSWORD };
+// C: 승인 대기 계정 (R6 시험용). 시험 동안 관리자 A가 상태를 맞추고, 끝나면 원래대로 되돌려요.
+const hrC = { email: process.env.HR_C_EMAIL, password: process.env.HR_C_PASSWORD };
 
 const BASE_TITLE = "시험용-규칙-";
 const results = [];
@@ -161,7 +165,10 @@ function checkNoSecrets() {
 async function main() {
   const a = makeClient();
   const b = makeClient();
+  const c = makeClient();
   const anon = makeClient();
+  const original = {}; // B·C의 시험 전 회원 상태 (끝나면 되돌려요)
+  let ids = {};
   const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
 
   let posA = null;
@@ -170,6 +177,19 @@ async function main() {
   try {
     await login(a, "담당자 A", hrA);
     await login(b, "담당자 B", hrB);
+    await login(c, "담당자 C(승인 대기)", hrC);
+
+    // ---------- 회원 상태 맞추기: A=관리자, B=승인, C=대기 ----------
+    ids = {
+      b: (await b.auth.getUser()).data.user.id,
+      c: (await c.auth.getUser()).data.user.id,
+    };
+    const { data: before, error: beforeError } = await a
+      .from("members").select("user_id,status").in("user_id", [ids.b, ids.c]);
+    if (beforeError) throw beforeError;
+    for (const m of before || []) original[m.user_id] = m.status;
+    await one(a.from("members").update({ status: "active" }).eq("user_id", ids.b).select("user_id"), "B 승인");
+    await one(a.from("members").update({ status: "pending" }).eq("user_id", ids.c).select("user_id"), "C 대기");
 
     // 이전 시험에서 남은 데이터 정리 (제목이 시험용-규칙- 인 것만)
     await removeTestPositions(a);
@@ -285,12 +305,42 @@ async function main() {
     const { data: open1Bookings } = await a.from("bookings").select("slot_id").eq("slot_id", open1.id);
     check("R1 DB에도 1건", (open1Bookings || []).length === 1, `예약 행 ${(open1Bookings || []).length}개`);
 
-    // ---------- R6: 다른 담당자·비로그인 ----------
-    const { data: bPositions, error: bPosError } = await b.from("positions").select("id,title");
+    // ---------- R6: 승인된 담당자만 함께 보고 관리, 가입만으로는 접근 불가 ----------
+    const statusOf = async (userId) =>
+      (await a.from("members").select("status").eq("user_id", userId).single()).data?.status;
+
+    const { data: bPositions, error: bPosError } = await b.from("positions").select("id");
     check(
-      "R6 다른 담당자 현황 차단",
-      !bPosError && (bPositions || []).every((p) => p.id !== posA.id),
-      bPosError ? msgOf(bPosError) : `B가 본 포지션 ${(bPositions || []).length}개 (A의 포지션 안 보임)`
+      "R6 승인 회원끼리 일정 공유",
+      !bPosError && (bPositions || []).some((p) => p.id === posA.id),
+      bPosError ? msgOf(bPosError) : "승인된 B에게 A가 만든 포지션이 보여요"
+    );
+
+    const { data: cPositions, error: cPosError } = await c.from("positions").select("id");
+    const cInsert = await c.from("positions").insert({ title: `${BASE_TITLE}대기계정-${stamp}` }).select("id");
+    check(
+      "R6 승인 대기 계정 조회·생성 차단",
+      (Boolean(cPosError) || (cPositions || []).length === 0) && Boolean(cInsert.error),
+      `조회 ${cPosError ? msgOf(cPosError) : `행 ${(cPositions || []).length}개`} · 생성 ${cInsert.error ? msgOf(cInsert.error) : "됨(문제)"}`
+    );
+
+    const cDelete = await c.from("bookings").delete().eq("slot_id", open3.id);
+    const { data: stillBooked } = await a.from("bookings").select("slot_id").eq("slot_id", open3.id);
+    check(
+      "R6 승인 대기 계정 예약 취소 차단",
+      (stillBooked || []).length === 1,
+      cDelete.error ? msgOf(cDelete.error) : `C의 삭제 요청 뒤에도 예약 ${(stillBooked || []).length}건`
+    );
+
+    await c.from("members").update({ status: "active", role: "admin" }).eq("user_id", ids.c);
+    check("R6 대기 계정이 스스로 승인 불가", (await statusOf(ids.c)) === "pending", `요청 뒤 C 상태: ${await statusOf(ids.c)}`);
+
+    await b.from("members").update({ status: "active" }).eq("user_id", ids.c);
+    const { data: bMembers } = await b.from("members").select("user_id");
+    check(
+      "R6 일반 회원은 다른 회원 승인·조회 불가",
+      (await statusOf(ids.c)) === "pending" && (bMembers || []).every((m) => m.user_id === ids.b),
+      `B의 승인 요청 뒤 C 상태: ${await statusOf(ids.c)} · B가 본 회원 ${(bMembers || []).length}명(자기 자신만)`
     );
 
     const { data: anonPositions, error: anonError } = await anon.from("positions").select("id");
@@ -300,13 +350,14 @@ async function main() {
       anonError ? msgOf(anonError) : "행 0개"
     );
 
-    const bDelete = await b.from("bookings").delete().eq("slot_id", open3.id);
-    const { data: stillBooked } = await a.from("bookings").select("slot_id").eq("slot_id", open3.id);
+    await one(a.from("members").update({ status: "rejected" }).eq("user_id", ids.b).select("user_id"), "B 승인 취소");
+    const { data: revoked, error: revokedError } = await b.from("positions").select("id");
     check(
-      "R6 다른 담당자 예약 취소 차단",
-      !bDelete.error && (stillBooked || []).length === 1,
-      bDelete.error ? msgOf(bDelete.error) : `B의 삭제 뒤에도 예약 ${(stillBooked || []).length}건`
+      "R6 승인 취소 뒤 접근 차단",
+      Boolean(revokedError) || (revoked || []).length === 0,
+      revokedError ? msgOf(revokedError) : `승인 취소된 B가 본 포지션 ${(revoked || []).length}개`
     );
+    await one(a.from("members").update({ status: "active" }).eq("user_id", ids.b).select("user_id"), "B 다시 승인");
 
     // ---------- R9: 시간 겹침·15분 단위 ----------
     const overlap = await a
@@ -356,6 +407,10 @@ async function main() {
       if (posB) await b.from("positions").delete().eq("id", posB.id);
       await removeTestPositions(a);
       await removeTestPositions(b);
+      // B·C 회원 상태를 시험 전으로 되돌려요
+      for (const [userId, status] of Object.entries(original)) {
+        await a.from("members").update({ status }).eq("user_id", userId);
+      }
       const { data: leftovers } = await a.from("positions").select("id").like("title", `${BASE_TITLE}%`);
       check("정리: 시험 데이터 삭제", (leftovers || []).length === 0, `남은 시험 포지션 ${(leftovers || []).length}개`);
     } catch (cleanupError) {
@@ -376,7 +431,7 @@ async function main() {
     "|---|---|---|",
     ...results.map((r) => `| ${r.name} | ${r.ok ? "통과" : "실패"} | ${String(r.detail).replace(/\|/g, "\\|")} |`),
     "",
-    "> 집계는 공개 키와 담당자 A·B 로그인으로만 했어요. service_role 키는 쓰지 않았어요.",
+    "> 집계는 공개 키와 담당자 A(관리자)·B(승인)·C(승인 대기) 로그인으로만 했어요. B·C 상태는 시험 뒤 원래대로 되돌렸어요. service_role 키는 쓰지 않았어요.",
     "",
   ];
   writeFileSync("docs/evidence-live-rules.txt", lines.join("\n"), "utf8");
