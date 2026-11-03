@@ -20,6 +20,11 @@
 | `supabase/local-test/` | `supabase_stub.sql`(auth 흉내), `run.sh`(규칙 시험 19개) | 완료 |
 | `docs/evidence-local-rules.txt` | 로컬 시험 결과: **19/19 통과, 동시 예약 10건 중 1건 성공** | 완료 |
 | `docs/supabase-setup.md` | 사용자가 할 Supabase 설정 순서 | 완료 |
+| `index.html` · `assets/owner.js` · `assets/styles.css` | 담당자 화면: 로그인, 포지션, 면접관·후보자 추가와 링크 복사, 시간 추가, 시간별 가능 인원·예약자, 예약 취소 | 완료 (가짜 데이터 미리보기 확인) |
+| `interviewer.html` · `assets/interviewer.js` | 면접관 화면(`?t=토큰`): 가능 체크. 예약된 시간은 잠김 | 완료 (가짜 데이터 미리보기 확인) |
+| `candidate.html` · `assets/candidate.js` | 후보자 화면(`?t=토큰`): 열린 시간만 보이고 예약·변경, 함수 오류 문구 그대로 표시 | 완료 (가짜 데이터 미리보기 확인) |
+| `assets/app.js` | 공용: Supabase 연결, 한국 시간 표시, 토스트, 링크 복사, 설정 안내 | 완료 |
+| `assets/config.js` | Project URL·공개 키 자리(예시 값) | **키 받은 뒤 채우기** |
 | `docs/progress.md` | 단계별 진행 기록(결정한 사람, 확인한 것, 커밋)과 막혔던 곳 | 계속 추가 |
 | `.env.example` | URL·공개 키·시험용 담당자 A/B 계정 자리 | 완료 |
 
@@ -44,15 +49,17 @@ PSQL="$B/psql" bash supabase/local-test/run.sh
 
 ## 이어서 할 일 (순서대로)
 1. **(사용자)** `docs/supabase-setup.md` 따라 Supabase 프로젝트 생성 → `schema.sql` 실행 → Confirm email 끄기 → 시험용 담당자 A·B 계정 → `.env` 작성 → **Project URL과 공개 키를 채팅으로 전달** (비밀 키는 절대 X)
-2. 화면 3개 만들기 (순수 HTML·CSS·JS + `@supabase/supabase-js` CDN 버전 고정, `config.js`에 URL·공개 키)
-   - `index.html` 담당자: 로그인, 포지션(필요 면접관 2·3), 면접관·후보자 추가와 링크 복사, 시간 추가(15분 단위), 시간별 가능 면접관 수·예약자 현황, 예약 취소
-   - `interviewer.html?t=토큰`: `interviewer_view` → 체크하면 `set_availability`
-   - `candidate.html?t=토큰`: `candidate_view` → `book_slot`(처음이면 예약, 있으면 변경). 오류 메시지는 함수가 준 한국어 그대로 표시
-   - 먼저 화면을 띄워 확인 → 커밋 → progress.md 한 줄
+2. 받은 Project URL·공개 키를 `assets/config.js` 두 줄에 넣고 **실제 Supabase로 화면 3개 한 바퀴**
+   - 담당자 로그인 → 포지션(2명) → 면접관 2·후보자 2 추가 → 시간 3개 추가 → 링크 복사
+   - 면접관 링크 2개: 겹치는 시간 체크 → 후보자 링크에서 열린 시간만 보이는지
+   - 후보자 예약 → 담당자 화면에 예약자 표시 → 예약 취소 → 다시 열림
+   - 14:00~14:30이 있는데 14:15 추가 → "겹치는 시간" 오류 문구 확인 (R9)
+   - 성공 조건 3개를 PRD 9장에 "결과 · 실제로 본 것 · 날짜"로 기록
 3. `package.json` + `scripts/test-rules.mjs` → `npm run test:rules`: 공개 키 + 담당자 A·B 로그인 + 링크 토큰으로 R1~R9를 실제 Supabase에 시험(동시 예약 10건 → 1건 성공), 시험 데이터만 정리 → 결과를 PRD 9장에 기록
 4. GitHub Pages 배포: PR로 main에 합치면 `https://basco-git.github.io/aiffel-work/interview-booking/` (기존 과제와 같은 방식인지 확인) → Supabase Site URL 설정 → 다른 기기·시크릿 창에서 한 바퀴 → PRD 9장
 5. 마무리: `retrospective.md`(무엇을 잘랐나 / 막혀서 어떻게 풀었나 / 다음 한 걸음 + 교안 회고 질문 3개), 폴더 README(진행 과정 표, 교안 1~8 반영표), 맨 위 README 표에 9번 추가(`assignment-wrapup` 스킬), 제출 전 점검(`submit-check` 스킬), 3분 시연 대본
 6. 마감이 급하면 축소안: 면접관 체크 화면을 빼고 담당자가 면접관을 직접 지정 (PRD 4장 주석대로 progress.md에 기록)
+7. 아직 푸시 안 함: 커밋만 쌓인 상태예요. 배포 전에 `git push -u origin interview-booking` → PR 생성
 
 ## 교안 1~8 반영 계획 (README에 쓸 표)
 | 교안 | 증거 |

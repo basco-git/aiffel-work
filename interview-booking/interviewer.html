@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>면접 한 번에 — 면접관</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">면접 한 번에<small>면접관</small></span>
+  </header>
+
+  <main class="wrap narrow">
+    <p class="muted" id="booting" style="text-align:center;padding:48px 0">불러오는 중…</p>
+    <section class="card notice" id="setup" hidden>
+      <h2>설정이 필요해요</h2>
+      <p class="muted" id="setup-reason">담당자에게 링크를 다시 받아 주세요.</p>
+    </section>
+
+    <section id="main-view" hidden>
+      <div class="link-head">
+        <p class="eyebrow">면접관 일정</p>
+        <h1 id="pos-title">불러오는 중…</h1>
+        <p class="muted" id="greeting"></p>
+      </div>
+
+      <div class="card">
+        <p class="hint" style="margin-top:0">가능한 시간을 체크하면 바로 저장돼요. 예약이 들어간 시간은 담당자만 풀 수 있어요.</p>
+        <div class="slots" id="slot-list"></div>
+      </div>
+      <p class="hint" style="text-align:center">이 화면은 나만 볼 수 있는 링크예요. 다른 사람에게 전달하지 마세요.</p>
+    </section>
+
+    <section class="card" id="error-view" hidden>
+      <h2>링크를 열 수 없어요</h2>
+      <p class="error" id="error-text"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/interviewer.js"></script>
+</body>
+</html>

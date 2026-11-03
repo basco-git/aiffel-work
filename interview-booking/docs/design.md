@@ -31,7 +31,7 @@
 - 기각: React·Next.js는 컴포넌트 재사용 이점보다 설정·빌드·배포 경로가 늘어나는 비용이 커요.
 
 ### 키 관리 (R8)
-- 브라우저에는 **공개 키(publishable/anon)만** 넣어요. 공개 키는 원래 브라우저에 보이는 값이고, 데이터 보호는 RLS와 토큰 함수가 맡아요. 정적 사이트라 빌드 단계가 없으므로 `config.js`에 두고 커밋해요.
+- 브라우저에는 **공개 키(publishable/anon)만** 넣어요. 공개 키는 원래 브라우저에 보이는 값이고, 데이터 보호는 RLS와 토큰 함수가 맡아요. 정적 사이트라 빌드 단계가 없으므로 `assets/config.js`에 두고 커밋해요.
 - 비밀 키(service_role)는 어디에도 쓰지 않아요. 규칙 시험도 일반 사용자 로그인과 링크 토큰으로만 해요.
 - 시험용 담당자 계정의 이메일·비밀번호는 `.env`(커밋 안 함)에만 둬요.
 
@@ -67,6 +67,8 @@ positions (포지션: 담당자 1명이 소유, 필요 면접관 수 2·3)
 | 담당자 | `index.html` | 로그인, 포지션·면접관·후보자·시간 만들기, 링크 복사, 현황 보기, 예약 취소 |
 | 면접관 | `interviewer.html?t=토큰` | 시간 목록에서 가능 체크 |
 | 후보자 | `candidate.html?t=토큰` | 열린 시간 중 예약·변경 |
+
+화면 코드는 `assets/`에 있어요: `app.js`(공용), `owner.js`, `interviewer.js`, `candidate.js`, `styles.css`, `config.js`(Project URL·공개 키).
 
 ## 5. 검증 방법
 - **로컬**: `supabase/local-test/run.sh` — 임시 PostgreSQL에 Supabase의 `auth.uid()`와 역할을 흉내 내고 R1~R9를 실제 요청으로 시험해요. 결과: `docs/evidence-local-rules.txt`.
