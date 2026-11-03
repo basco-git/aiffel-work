@@ -110,6 +110,14 @@
           <ul class="approvals" id="approvals-list"></ul>
         </div>
 
+        <section class="confirmations" id="confirmations-panel" aria-labelledby="confirmations-title">
+          <div class="confirmations-head">
+            <h2 id="confirmations-title">확정된 면접 일정</h2>
+            <span class="hint">가까운 일정순</span>
+          </div>
+          <ul class="confirmed-list" id="confirmed-list"></ul>
+        </section>
+
         <ul class="position-list" id="position-list"></ul>
 
         <form class="inline-form new-position-form" id="pos-form" hidden>
@@ -179,7 +187,8 @@
             <button class="btn" type="submit">추가</button>
           </form>
           <p class="hint">15분 단위로만 만들 수 있고, 같은 포지션의 시간끼리 겹치면 저장되지 않아요.</p>
-          <div class="slots" id="slot-list"></div>
+          <div class="slot-confirmation-summary" id="confirmed-summary" hidden></div>
+        <div class="slots" id="slot-list"></div>
         </section>
       </div>
       </div>

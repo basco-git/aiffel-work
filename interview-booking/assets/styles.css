@@ -280,6 +280,122 @@ form.stack { display: grid; gap: 12px; margin-top: 16px; }
   }
   .position-item p { white-space: normal; }
 }
+.confirmations {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid #bce3cf;
+  border-radius: 12px;
+  background: var(--ok-soft);
+}
+.confirmations-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.confirmations-head .hint {
+  margin: 0;
+  color: var(--ok);
+  font-weight: 700;
+}
+.confirmed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.confirmed-item {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #d6eee1;
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.confirmed-item:hover { border-color: var(--ok); }
+.confirmed-time {
+  color: var(--ok);
+  font-size: 13px;
+  font-weight: 800;
+}
+.confirmed-meta {
+  min-width: 0;
+  font-size: 13px;
+}
+.confirmed-meta strong,
+.confirmed-meta span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.confirmed-meta span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.slot-confirmation-summary {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--ok);
+  border-radius: 10px;
+  background: var(--ok-soft);
+  color: var(--ok);
+  font-size: 13px;
+  font-weight: 700;
+}
+.appointment-badge {
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+.confirmations .empty {
+  margin: 0;
+  background: #fff;
+  border-color: #c7e5d6;
+}
+.position-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.position-title-row .position-title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.position-confirmed {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--ok-soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+.position-confirmed.muted {
+  background: #f0f1f4;
+  color: var(--muted);
+}
+@media (max-width: 560px) {
+  .confirmed-item {
+    grid-template-columns: 1fr auto;
+  }
+  .confirmed-time {
+    grid-column: 1 / -1;
+  }
+}
+.approval-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.approvals { margin-top: 12px; display: grid; gap: 8px; }
+.approval-actions { display: flex; gap: 6px; }
 .approval {
   margin-top: 16px;
   padding: 14px;
@@ -287,9 +403,6 @@ form.stack { display: grid; gap: 12px; margin-top: 16px; }
   border-radius: 12px;
   background: #fafbff;
 }
-.approval-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.approvals { margin-top: 12px; display: grid; gap: 8px; }
-.approval-actions { display: flex; gap: 6px; }
 .pending-email {
   margin: 16px 0;
   padding: 10px 12px;

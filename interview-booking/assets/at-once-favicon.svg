@@ -7,6 +7,6 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#background)"/>
-  <text x="32" y="37" fill="#fff" font-family="Inter,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" letter-spacing="-2" text-anchor="middle" dominant-baseline="middle">a~b</text>
+  <text x="32" y="37" fill="#fff" font-family="Inter,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" letter-spacing="-2" text-anchor="middle" dominant-baseline="middle">a-o</text>
   <path fill="#f7f6fa" d="M52 48.5c1.2 8 5.8 11.8 13.8 11.8-8 0-12.6 3.2-13.8 11.2-1.2-8-5.8-11.2-13.8-11.2 8 0 12.6-3.8 13.8-11.8Z" transform="translate(-22 -22) scale(.58)" opacity="0.95"/>
 </svg>

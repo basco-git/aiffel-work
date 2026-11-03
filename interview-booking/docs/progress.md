@@ -30,7 +30,9 @@
 
 | 오후 | 10. 화면 | 공유 포지션 목록을 박스별 구분이 아닌 한 줄 리스트로 변경 | 포지션 목록이 박스마다 높이가 달라 보기 좋지 않다는 **사용자 피드백** | CSS grid·ellipsis·mobile 1열 적용, 데스크톱에서는 한 줄로 보임 | (이번 커밋) |
 
-| 오후 | 11. 브랜드 | 제공된 at~once 로고를 서비스 헤더·로그인 화면·파비콘·Open Graph 썸네일로 적용 | 서비스 브랜드를 Interview-booking에도 명확하게 보여 주기 위해 **사용자 요청** | logo SVG·favicon SVG·OG thumbnail PNG(1200×630) 생성, 화면 3개에 og:image·twitter:card·description 연결 | (이번 커밋) |
+| 오후 | 11. 브랜드 | 제공된 at~once 로고를 서비스 헤더·로그인 화면·파비콘·Open Graph 썸네일로 적용 | 서비스 브랜드를 Interview-booking에도 명확하게 보여 주기 위해 **사용자 요청** | logo SVG·favicon SVG·OG thumbnail PNG(1200×630) 생성, 화면 3개에 og:image·twitter:card·description 연결, 작은 화면에서는 favicon을 `a-o`로 표시 | (이번 커밋) |
+
+| 오후 | 12. UX·확정 표시 | 포지션 상세를 브라우저 뒤로가기와 연동하고, 목록·상세에 확정된 면접 일정을 노출 | 포지션 상세가 목록으로만 돌아가고 뒤로가기 동작이 부자연스러움 + 확정된 일정을 한눈에 보고 싶다는 **사용자 요청** | 확정 일정 집계(후보자·시각)를 두 화면에 표시, URL 해시(`#position=<id>`) 기반 history/popstate 처리, 노출 예정 항목은 배포 후 확인 | (이번 커밋) |
 
 ## 막혔던 곳과 푼 방법
 - **로컬 시험에서 한글이 깨짐**: Windows의 psql은 명령줄 인자(`-c`)를 CP949로 보내요 → `PGCLIENTENCODING=UTF8` + SQL을 표준 입력으로 넘겨서 해결.

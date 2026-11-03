@@ -19,6 +19,7 @@
     availability: [],
     bookings: [],
     pollTimer: null,
+    confirmed: [],
   };
 
   // ---------- 화면 전환 ----------
@@ -78,7 +79,7 @@
     return data;
   }
 
-  function showApp(session, member) {
+  async function showApp(session, member) {
     APP.ready();
     state.user = session.user;
     state.member = member;
@@ -88,8 +89,16 @@
     $("#app-view").hidden = false;
     $("#who").textContent = session.user.email || "";
     $("#login-error").hidden = true;
-    showList();
-    if (member.role === "admin") loadMembers();
+    showList(true);
+    await loadPositions();
+    const positionId = safeParseHash();
+    if (positionId) {
+      const position = state.positions.find((p) => p.id === positionId);
+      if (position) await showEditor(position, true);
+      else setRouteSilently("list");
+    } else {
+      setRouteSilently("list");
+    }
     startPolling();
   }
 
@@ -101,7 +110,7 @@
         showPending(session, !member ? "계정 승인 정보가 없어요. 관리자에게 문의해 주세요." : undefined);
         return;
       }
-      showApp(session, member);
+      await showApp(session, member);
     } catch (error) {
       showPending(session, APP.errorText(error, "승인 정보를 확인하지 못했어요."));
     }
@@ -237,26 +246,125 @@
     if (state.position) select.value = state.position.id;
   }
 
-  function renderPositionList() {
-    const list = $("#position-list");
-    if (state.positions.length === 0) {
-      list.innerHTML = `<li class="empty">아직 만든 면접 포지션이 없어요. 새 포지션을 만들어 주세요.</li>`;
+  function getUpcomingConfirmed(positionId) {
+    const nowMs = Date.now();
+    return state.confirmed
+      .filter((c) => new Date(c.endsAt).getTime() >= nowMs)
+      .filter((c) => !positionId || c.positionId === positionId)
+      .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
+  }
+
+  function renderConfirmations() {
+    const list = $("#confirmed-list");
+    if (!list) return;
+    const upcoming = getUpcomingConfirmed();
+    if (!upcoming.length) {
+      list.innerHTML = `<li class="empty">아직 확정된 면접 일정이 없어요.</li>`;
       return;
     }
-    list.innerHTML = state.positions
+    list.innerHTML = upcoming
+      .slice(0, 5)
       .map(
-        (position) => `
+        (item) => `
           <li>
-            <button class="position-item" type="button" data-open-position="${esc(position.id)}">
-              <span>
-                <h3>${esc(position.title)}</h3>
-                <p>필요한 면접관 ${position.required_interviewers}명</p>
+            <button class="confirmed-item" type="button" data-open-position="${esc(item.positionId)}">
+              <span class="confirmed-time">${esc(APP.fmtRange(item.startsAt, item.durationMin))}</span>
+              <span class="confirmed-meta">
+                <strong>${esc(item.candidateName)}</strong>
+                <span>${esc(item.positionTitle)}</span>
               </span>
-              <span class="badge badge-brand">열기</span>
+              <span class="badge badge-ok">확정</span>
             </button>
           </li>`
       )
       .join("");
+  }
+
+  function renderPositionList() {
+    const list = $("#position-list");
+    if (state.positions.length === 0) {
+      list.innerHTML = `<li class="empty">아직 만든 면접 포지션이 없어요. 새 포지션을 만들어 주세요.</li>`;
+      renderConfirmations();
+      return;
+    }
+    list.innerHTML = state.positions
+      .map((position) => {
+        const upcoming = getUpcomingConfirmed(position.id);
+        const next = upcoming[0];
+        const confirmedLabel = upcoming.length
+          ? `<span class="position-confirmed">확정 ${upcoming.length}건${next ? ` · ${esc(APP.fmtRange(next.startsAt, next.durationMin))}` : ""}</span>`
+          : `<span class="position-confirmed muted">확정 대기</span>`;
+        return `
+          <li>
+            <button class="position-item" type="button" data-open-position="${esc(position.id)}">
+              <span>
+                <h3 class="position-title-row"><span class="position-title">${esc(position.title)}</span>${confirmedLabel}</h3>
+                <p>필요한 면접관 ${position.required_interviewers}명</p>
+              </span>
+              <span class="badge badge-brand">열기</span>
+            </button>
+          </li>`;
+      })
+      .join("");
+    renderConfirmations();
+  }
+
+  async function loadConfirmed() {
+    const positionIds = state.positions.map((p) => p.id);
+    if (!positionIds.length) {
+      state.confirmed = [];
+      renderConfirmations();
+      return;
+    }
+    const { data: slotRows, error: slotError } = await db
+      .from("slots")
+      .select("id,position_id,starts_at,duration_min")
+      .in("position_id", positionIds)
+      .order("starts_at", { ascending: true });
+    if (slotError) {
+      APP.toast(APP.errorText(slotError, "확정된 일정을 불러오지 못했어요."), true);
+      state.confirmed = [];
+      renderConfirmations();
+      return;
+    }
+    const slotIds = (slotRows || []).map((s) => s.id);
+    if (!slotIds.length) {
+      state.confirmed = [];
+      renderConfirmations();
+      return;
+    }
+    const { data: bookings, error: bookingError } = await db
+      .from("bookings")
+      .select("slot_id,candidate_id,candidates(name)")
+      .in("slot_id", slotIds);
+    if (bookingError) {
+      APP.toast(APP.errorText(bookingError, "확정된 일정을 불러오지 못했어요."), true);
+      state.confirmed = [];
+      renderConfirmations();
+      return;
+    }
+    const positionsById = new Map(state.positions.map((p) => [p.id, p]));
+    const slotsById = new Map((slotRows || []).map((s) => [s.id, s]));
+    state.confirmed = (bookings || [])
+      .map((booking) => {
+        const slot = slotsById.get(booking.slot_id);
+        if (!slot) return null;
+        const endsAt = new Date(
+          new Date(slot.starts_at).getTime() + slot.duration_min * 60000
+        ).toISOString();
+        const position = positionsById.get(slot.position_id);
+        return {
+          slotId: slot.id,
+          positionId: slot.position_id,
+          positionTitle: position ? position.title : "포지션",
+          candidateName: nameOf(booking, "candidates") || "후보자",
+          startsAt: slot.starts_at,
+          endsAt,
+          durationMin: slot.duration_min,
+        };
+      })
+      .filter(Boolean);
+    renderConfirmations();
   }
 
   async function loadPositions(keepId, options = {}) {
@@ -272,12 +380,13 @@
     state.positions = data || [];
     const requested = keepId || options.currentId || previous;
     state.position = state.positions.find((p) => p.id === requested) || null;
+    await loadConfirmed();
     renderPositionSelect();
     renderPositionList();
 
     if ($("#editor-view").hidden) return;
     if (!state.position) {
-      showList();
+      showList(true);
       return;
     }
     await loadPositionData();
@@ -336,20 +445,44 @@
       .join("");
   }
 
-  function showList() {
+  function safeParseHash() {
+    const hash = location.hash.replace(/^#/, "");
+    const params = new URLSearchParams(hash);
+    return params.get("position");
+  }
+
+  function setRoute(view, positionId) {
+    const url = view === "position" && positionId
+      ? `${location.pathname}${location.search}#position=${encodeURIComponent(positionId)}`
+      : `${location.pathname}${location.search}#list`;
+    window.history.pushState({ view, positionId: positionId || null }, "", url);
+  }
+
+  function setRouteSilently(view, positionId) {
+    const url = view === "position" && positionId
+      ? `${location.pathname}${location.search}#position=${encodeURIComponent(positionId)}`
+      : `${location.pathname}${location.search}#list`;
+    window.history.replaceState({ view, positionId: positionId || null }, "", url);
+  }
+
+  function showList(fromPop = false) {
     $("#list-view").hidden = false;
     $("#editor-view").hidden = true;
     if (state.member && state.member.role === "admin") loadMembers();
     else $("#approval-view").hidden = true;
     renderPositionList();
+    if (!fromPop) setRoute("list");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function showEditor(position) {
+  async function showEditor(position, fromPop = false) {
     state.position = position;
     $("#list-view").hidden = true;
     $("#editor-view").hidden = false;
     renderPositionSelect();
+    if (!fromPop) setRoute("position", position && position.id);
     if (state.position) await loadPositionData();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function openPosition(positionId) {
@@ -457,6 +590,7 @@
       state.availability = av.data || [];
       state.bookings = bk.data || [];
     }
+    await loadConfirmed();
     renderAll();
   }
 
@@ -503,14 +637,28 @@
 
   function renderSlots() {
     const list = $("#slot-list");
+    const summary = $("#confirmed-summary");
+    const upcoming = state.position ? getUpcomingConfirmed(state.position.id) : [];
+
     if (!state.position) {
+      if (summary) summary.hidden = true;
       list.innerHTML = "";
       return;
     }
+
+    if (summary) {
+      const next = upcoming[0];
+      summary.hidden = false;
+      summary.innerHTML = upcoming.length
+        ? `확정된 면접 <strong>${upcoming.length}건</strong> · 가까운 일정 ${esc(APP.fmtRange(next.startsAt, next.durationMin))}`
+        : `아직 확정된 면접 일정이 없어요.`;
+    }
+
     if (!state.slots.length) {
       list.innerHTML = `<div class="empty">아직 시간 후보가 없어요. 위에서 시작 시각과 길이를 골라 추가해 주세요.</div>`;
       return;
     }
+
     const required = state.position.required_interviewers;
     list.innerHTML = state.slots
       .map((slot) => {
@@ -527,6 +675,9 @@
           : enough
             ? `<span class="badge badge-ok">열림 ${names.length}/${required}</span>`
             : `<span class="badge badge-warn">닫힘 ${names.length}/${required}</span>`;
+        const bookedBadge = booking
+          ? `<span class="badge badge-ok appointment-badge">확정됨</span>`
+          : "";
         const cancel = booking
           ? `<button class="btn btn-small btn-ghost" type="button" data-cancel="${esc(slot.id)}"
                data-label="${esc(APP.fmtRange(slot.starts_at, slot.duration_min))}">예약 취소</button>`
@@ -535,7 +686,7 @@
           <article class="slot ${booking ? "is-booked" : ""}">
             <div class="slot-row">
               <span class="slot-time">${esc(APP.fmtRange(slot.starts_at, slot.duration_min))}</span>
-              ${badge}
+              ${badge}${bookedBadge}
             </div>
             <p class="slot-meta">가능 면접관 ${names.length}명${names.length ? `: <strong>${names.map(esc).join(", ")}</strong>` : ""}</p>
             <p class="slot-meta">${
@@ -695,6 +846,23 @@
       APP.toast("예약을 취소했어요.");
     }
   });
+
+  // ---------- 뒤로가기(history) ----------
+  async function applyRoute(fromPop = true) {
+    if ($("#app-view").hidden) return;
+    const positionId = safeParseHash();
+    const position = positionId
+      ? state.positions.find((p) => p.id === positionId)
+      : null;
+    if (positionId && position) {
+      await showEditor(position, true);
+      return;
+    }
+    showList(true);
+    if (!positionId) setRouteSilently("list");
+  }
+
+  window.addEventListener("popstate", applyRoute);
 
   // ---------- 시작 ----------
   (async () => {
