@@ -52,7 +52,7 @@
     stopPolling();
     state.pollTimer = window.setInterval(() => {
       if (document.hidden || !state.member || state.member.status !== "active") return;
-      loadPositions(true);
+      loadPositions(state.position && state.position.id);
       if (state.member.role === "admin") loadMembers();
     }, 5000);
   }
@@ -385,7 +385,8 @@
     }
     const previous = state.position && state.position.id;
     state.positions = data || [];
-    const requested = keepId || options.currentId || previous;
+    const requested =
+      typeof keepId === "string" ? keepId : options.currentId || previous;
     state.position = state.positions.find((p) => p.id === requested) || null;
     await loadConfirmed();
     renderPositionSelect();
