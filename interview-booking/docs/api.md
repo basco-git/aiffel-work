@@ -30,7 +30,7 @@
 | 포지션 만들기 | `POST /rest/v1/positions` `{ "title": "백엔드 개발자", "required_interviewers": 2 }` | `owner_id` 기본값은 로그인 사용자 |
 | 포지션 삭제 | `DELETE /rest/v1/positions?id=eq.<id>` | **관리자만** 가능하고 하위 표까지 함께 지워져요(시험 데이터 정리에 사용) |
 | 회원 상태 목록 | `GET /rest/v1/members?select=user_id,email,role,status,created_at&order=created_at.asc` | 관리자는 전체, 일반 회원은 자기 것만 조회 |
-| 회원 승인/반려 | `PATCH /rest/v1/members?user_id=eq.<id>` `{ "status": "active" }` | 관리자만, `active`·`rejected`로 변경 |
+| 회원 승인·승인 취소 | `PATCH /rest/v1/members?user_id=eq.<id>` `{ "status": "active" }` | 관리자만, `active`·`rejected`로 변경. 승인 취소는 앱 접근만 막고 기존 데이터는 유지해요 |
 | 면접관 목록·추가 | `GET /rest/v1/interviewers?position_id=eq.<id>&select=id,name,token` / `POST` `{ position_id, name }` | `token`은 자동 생성(UUID v4) |
 | 후보자 목록·추가 | `GET /rest/v1/candidates?...` / `POST` `{ position_id, name }` | 같음 |
 | 시간 목록·추가 | `GET /rest/v1/slots?position_id=eq.<id>&order=starts_at.asc` / `POST` `{ position_id, starts_at, duration_min }` | `ends_at`은 트리거가 계산, 겹치면 23P01 |
