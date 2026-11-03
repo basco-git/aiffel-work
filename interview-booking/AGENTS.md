@@ -1,4 +1,6 @@
-# AGENTS.md — 면접 한 번에 (interview-booking)
+# AGENTS.md — at~once | interview-booking
+
+> 브랜드명 **at~once** · 서비스명 **interview-booking**
 
 AI 코딩 도구가 이 폴더에서 일할 때 늘 따르는 규칙이에요. 무엇을 만들지는 `PRD.md`가 정답이에요.
 

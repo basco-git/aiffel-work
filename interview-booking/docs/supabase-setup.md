@@ -60,7 +60,10 @@ update public.members
 배포 주소가 정해지면 **Authentication → URL Configuration**의 Site URL을 배포 주소로 바꿔요. 이건 배포 단계에서 다시 안내할게요.
 
 ## 8. 과제가 끝난 뒤 (보안 정리)
-1. **Authentication → Sign In / Providers → Email → Allow new users to sign up** 끄기
+1. **Authentication → Sign In / Providers** 화면 위쪽 **User Signups** 묶음의 **Allow new users to sign up** 끄기 (Email 제공자 안의 설정이 아니라 화면 전체 설정이에요)
+   - 끄면 앱의 `회원가입` 탭으로는 새 계정을 만들 수 없고, 이미 있는 계정의 로그인은 그대로 돼요.
+   - 평가자가 직접 가입해 볼 수 있어야 한다면 평가가 끝난 뒤에 끄세요. 새 가입자는 어차피 승인 대기라 일정은 볼 수 없어요.
+   - **Confirm email을 켠 상태에서는** 새 가입자가 확인 메일을 받아야 로그인할 수 있어요. 기본 메일은 팀 멤버 주소로만, 시간당 몇 통만 나가므로 평가자 가입을 받으려면 Confirm email을 끄거나 커스텀 SMTP가 필요해요.
 2. **Confirm email** 켜기
 3. 시험용 담당자 B 계정과 시험 데이터는 남겨도 되지만, 실제 지원자 정보가 들어갔다면 지워요.
 

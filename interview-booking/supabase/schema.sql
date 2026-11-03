@@ -1,5 +1,5 @@
 -- =====================================================================
--- 면접 한 번에 (interview-booking) — Supabase 스키마
+-- at~once | interview-booking — Supabase 스키마 (브랜드 at~once, 서비스 interview-booking)
 -- 사용법: Supabase 대시보드 → SQL Editor → New query → 이 파일 전체 붙여 넣기 → Run
 -- 여러 번 실행해도 되게 만들었어요(앞부분에서 기존 객체를 지우고 다시 만들어요).
 -- 주의: 다시 실행하면 이 앱의 표와 데이터가 모두 지워져요. 실제 데이터가 생긴 뒤에는 실행하지 마세요.

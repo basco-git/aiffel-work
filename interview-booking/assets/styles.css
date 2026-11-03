@@ -74,6 +74,8 @@ p { margin: 0; }
   white-space: nowrap;
 }
 .brand small { font-weight: 700; color: var(--brand); margin-left: 6px; letter-spacing: 0; }
+.brand-sep { margin: 0 5px; font-weight: 400; color: var(--muted); }
+.brand-sub { font-weight: 700; letter-spacing: -0.02em; }
 .logo-hero {
   display: block;
   width: 250px;
@@ -85,6 +87,9 @@ p { margin: 0; }
 @media (max-width: 420px) {
   .brand-mark { width: 30px; height: 30px; }
   .brand small { margin-left: 4px; }
+  .brand-text { font-size: 13px; }
+  .who { display: none; } /* 좁은 화면에서는 이메일을 숨겨 상단 바가 넘치지 않게 */
+  .brand-sep { margin: 0 3px; }
   .logo-hero { width: 190px; }
 }
 .topbar-right { display: flex; align-items: center; gap: 10px; }

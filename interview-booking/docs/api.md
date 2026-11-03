@@ -1,4 +1,4 @@
-# API 문서 — 면접 한 번에
+# API 문서 — at~once | interview-booking
 
 > 화면은 프레임워크 없는 정적 HTML·JS이고, **API 서버는 Supabase가 맡아요**(PostgREST + PostgreSQL 함수).
 > 브라우저는 공개 키와 로그인 세션으로 호출하고, 규칙 R1~R9는 서버(DB 제약·행 잠금·RLS)에서 막아요.

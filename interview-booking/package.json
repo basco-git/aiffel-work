@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "면접 한 번에 — 실제 Supabase에 규칙 R1~R9를 시험하는 스크립트",
+  "description": "at~once | interview-booking — 실제 Supabase에 규칙 R1~R9를 시험하는 스크립트",
   "scripts": {
     "test:rules": "node --env-file-if-exists=.env scripts/test-rules.mjs"
   },
