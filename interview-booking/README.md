@@ -3,7 +3,7 @@
 > **면접관 2~3명의 일정이 모인 시간만 후보자에게 열리는 면접 예약 페이지.**
 > HR 15년 경력에서 출발한 불편 — 면접 한 건을 잡으려고 메일·메신저를 여러 번 오가고, 시간이 바뀌면 처음부터 다시 조율하고, 같은 시간에 두 후보자가 겹치는 일 — 을 줄이는 서비스예요.
 
-- 배포 주소: **배포 예정** (GitHub Pages, PR 병합 뒤 `https://basco-git.github.io/aiffel-work/interview-booking/`)
+- 배포 주소: [https://basco-git.github.io/aiffel-work/interview-booking/](https://basco-git.github.io/aiffel-work/interview-booking/)
 - 기획 문서: [PRD.md](PRD.md) · 설계 이유: [docs/design.md](docs/design.md) · API: [docs/api.md](docs/api.md)
 - 회고: [retrospective.md](retrospective.md) · 진행 기록: [docs/progress.md](docs/progress.md)
 
@@ -78,7 +78,7 @@ npm run test:rules
 | 2. 프론트엔드 (2개 이상 화면) | 화면 3개. 체크·예약·취소가 서버에 저장되고 다시 그려지는 흐름. 담당자 회원가입·로그인 |
 | 3. 백엔드/API | Supabase(PostgREST)를 API 서버로 사용, 업무 규칙은 SQL 함수 4개(`interviewer_view`, `set_availability`, `candidate_view`, `book_slot`) — 요청·응답·오류는 [docs/api.md](docs/api.md) |
 | 4. DB 연동 | PostgreSQL 표 6개, 1:N·N:M·1:1, RLS, 배제 제약, 저장·조회 흐름 전부 화면과 연결 |
-| 5. 배포·새로운 시도 | GitHub Pages 배포(진행 예정) · **규칙을 DB에서 강제**(화면 우회 차단) · 회원가입·로그인으로 담당자별 데이터 분리 · 동시 예약 10건 시험 · AGENTS.md 규칙 파일과 Claude Code 스킬로 작업 자동화 · 모바일 대응 |
+| 5. 배포·새로운 시도 | [GitHub Pages 배포](https://basco-git.github.io/aiffel-work/interview-booking/) · **규칙을 DB에서 강제**(화면 우회 차단) · 회원가입·로그인으로 담당자별 데이터 분리 · 동시 예약 10건 시험 · AGENTS.md 규칙 파일과 Claude Code 스킬로 작업 자동화 · 모바일 대응 |
 
 ## 교안 1~8 반영
 
@@ -103,7 +103,7 @@ npm run test:rules
 | 4 | DB 스키마 6표 + RLS + 토큰 함수 4개 | 로컬 PostgreSQL에서 규칙 시험 **19/19 통과**, 동시 예약 10건 중 1건 성공 (`3178acc`) |
 | 5 | 화면 3개 구현 | 담당자·면접관·후보자 화면, 예약·체크·취소 흐름 (`4513054`) |
 | 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — **완료: R1~R9 21/21 통과** (2026-11-03, `docs/evidence-live-rules.txt`) |
-| 7 | 배포·다른 기기에서 한 바퀴 | **진행 예정** (PR 병합 뒤 GitHub Pages) |
+| 7 | 배포·다른 기기에서 한 바퀴 | 배포 주소 `https://basco-git.github.io/aiffel-work/interview-booking/` **2026-11-03 열림, HTTP 200 확인** |
 
 ## 회고
 
