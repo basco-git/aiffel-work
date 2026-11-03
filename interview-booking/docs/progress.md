@@ -24,6 +24,8 @@
 
 | 오후 | 4. 실제 서버 시험 | 실제 Supabase에 R1~R9 자동 요청 시험. `scripts/test-rules.mjs`가 시험 데이터를 만들고 삭제한 뒤 R1~R9 결과를 `docs/evidence-live-rules.txt`에 기록 | 기존 시험 재사용, 비밀 키 대신 A·B 공개 공개키·로그인만 사용 (규칙 R8) | **R1~R9 21/21 통과**, 비로그인 표 접근 401, 추적 파일 28개에서 비밀 키 패턴 없음. PRD 9장 R1~R9를 2026-11-03 통과로 기록 | `d6d88db` + 시험 기록 커밋 |
 
+| 오후 | 6. 배포 | GitHub Pages 배포가 `interview-booking/`를 복사하도록 워크플로 추가 → PR #9·#10·#11 병합 | 공개 배포가 HTTP 200인지 실제로 열림을 확인 (사용자 요청) | 배포 주소에서 회원가입·로그인·체크·예약·새로고침 유지를 직접 클릭 검증, PRD 9장 성공 조건 1~3을 통과로 기록, 검증 뒤 `[검증]` 포지션 삭제 | `36dd7a6`, `24fd628`, 배포 유지 확인 |
+
 ## 막혔던 곳과 푼 방법
 - **로컬 시험에서 한글이 깨짐**: Windows의 psql은 명령줄 인자(`-c`)를 CP949로 보내요 → `PGCLIENTENCODING=UTF8` + SQL을 표준 입력으로 넘겨서 해결.
 - **토큰이 '올바르지 않은 UUID'로 거부됨**: psql 출력 줄 끝의 `\r` 때문 → 출력에서 `\r` 제거.
@@ -35,6 +37,6 @@
 1. **(사용자)** Supabase 프로젝트 만들고 `schema.sql` 실행, 시험 계정 A·B + 가입 허용 (완료, 2026-11-03)
 2. **(사용자)** `assets/config.js`에 Project URL·Publishable key 등록 (완료, `d6d88db`)
 3. **(자동)** `npm run test:rules`로 실제 Supabase R1~R9 시험 (완료: 21/21 통과, `docs/evidence-live-rules.txt`, PRD 9장 기록)
-4. 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)에서 3개 화면 직접 확인 → PRD 9장 성공 조건 1~3 기록
-5. 푸시 → PR #8 병합 → 배포 시험 → 맨 위 README 9번 행의 실행 링크 채우기
+4. 배포 주소(`https://basco-git.github.io/aiffel-work/interview-booking/`)에서 3개 화면 직접 확인 → PRD 9장 성공 조건 1~3 기록 (**완료, `docs/evidence-deploy-ui.txt`**)
+5. PR #8·#9·#10·#11 병합 → GitHub Pages 배포 확인 → 맨 위 README 9번 행의 실행 링크 채우기 (**완료**)
 6. `submit-check` 스킬로 제출 전 점검 → 구글폼에 저장소·배포 URL 제출
