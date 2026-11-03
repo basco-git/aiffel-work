@@ -72,5 +72,5 @@ positions (포지션: 담당자 1명이 소유, 필요 면접관 수 2·3)
 
 ## 5. 검증 방법
 - **로컬**: `supabase/local-test/run.sh` — 임시 PostgreSQL에 Supabase의 `auth.uid()`와 역할을 흉내 내고 R1~R9를 실제 요청으로 시험해요. 결과: `docs/evidence-local-rules.txt`.
-- **실제 Supabase**: `npm run test:rules` — 공개 키와 시험용 담당자 계정 두 개로 같은 시험을 실제 서비스에 보내요(다음 단계에서 작성).
+- **실제 Supabase**: `npm run test:rules` — 공개 키와 시험용 담당자 계정 두 개로 같은 시험을 실제 서비스에 보내요. 2026-11-03 완료, R1~R9 21/21 통과.
 - 결과는 `PRD.md` 9장에 기록해요.

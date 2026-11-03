@@ -102,7 +102,7 @@ npm run test:rules
 | 3 | 기술 후보 3개 비교 (Supabase+정적 / Node+SQLite / Firebase) | Supabase + 정적 화면 채택, 이유는 `docs/design.md` (`3178acc`) |
 | 4 | DB 스키마 6표 + RLS + 토큰 함수 4개 | 로컬 PostgreSQL에서 규칙 시험 **19/19 통과**, 동시 예약 10건 중 1건 성공 (`3178acc`) |
 | 5 | 화면 3개 구현 | 담당자·면접관·후보자 화면, 예약·체크·취소 흐름 (`4513054`) |
-| 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — **진행 예정** (프로젝트 키 필요) |
+| 6 | 실제 Supabase에 규칙 시험 | `npm run test:rules` — **완료: R1~R9 21/21 통과** (2026-11-03, `docs/evidence-live-rules.txt`) |
 | 7 | 배포·다른 기기에서 한 바퀴 | **진행 예정** (PR 병합 뒤 GitHub Pages) |
 
 ## 회고
