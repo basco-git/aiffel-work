@@ -1,8 +1,8 @@
 # 실제 Supabase 규칙 시험 결과
 
-- 일시: 2026. 11. 3. 오후 6:09
+- 일시: 2026. 11. 4. 오전 10:06
 - 프로젝트: lzrhmjjkecnuhpzxvkgm.supabase.co
-- 결과: 25/25 통과
+- 결과: 26/26 통과
 
 | 시험 | 결과 | 실제로 본 것 |
 |---|---|---|
@@ -24,12 +24,13 @@
 | R6 일반 회원은 다른 회원 승인·조회 불가 | 통과 | B의 승인 요청 뒤 C 상태: pending · B가 본 회원 1명(자기 자신만) |
 | R6 비로그인 현황 차단 | 통과 | permission denied for table positions |
 | R6 승인 취소 뒤 접근 차단 | 통과 | 승인 취소된 B가 본 포지션 0개 |
+| R6 계정 삭제는 관리자·승인 취소 계정만 | 통과 | 일반 회원 B의 삭제 요청: 관리자만 회원을 삭제할 수 있어요. · 대기 계정 C 삭제: 승인 취소된 계정만 삭제할 수 있어요. 먼저 승인 취소해 주세요. · 관리자 자기 삭제: 내 계정은 삭제할 수 없어요. · C 상태 pending |
 | R9 겹치는 시간 거부 | 통과 | 23P01 conflicting key value violates exclusion constraint "slots_no_overlap" |
 | R9 15분 단위 아님 거부 | 통과 | 23514 new row for relation "slots" violates check constraint "slots_duration_min_check" |
 | R7 면접관 화면에 다른 이름 없음 | 통과 | 내 이름 면접관1 · 시간 5개 |
 | R7 후보자 화면에 면접관 이름·닫힌 시간 없음 | 통과 | 보이는 상태: booked, open, mine |
 | R8 .env 미추적 | 통과 | .gitignore가 .env를 막고 있어요 |
-| R8 비밀 키 미포함 | 통과 | 추적 중인 파일 35개에서 비밀 키 패턴 없음 |
+| R8 비밀 키 미포함 | 통과 | 추적 중인 파일 46개에서 비밀 키 패턴 없음 |
 | 정리: 시험 데이터 삭제 | 통과 | 남은 시험 포지션 0개 |
 
 > 집계는 공개 키와 담당자 A(관리자)·B(승인)·C(승인 대기) 로그인으로만 했어요. B·C 상태는 시험 뒤 원래대로 되돌렸어요. service_role 키는 쓰지 않았어요.

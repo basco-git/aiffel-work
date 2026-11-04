@@ -195,6 +195,8 @@ form.stack { display: grid; gap: 12px; margin-top: 16px; }
 .btn-ghost { border-color: transparent; background: transparent; color: var(--brand); }
 .btn-ghost:hover { background: var(--brand-soft); }
 .btn-small { padding: 4px 10px; font-size: 12.5px; border-radius: 7px; }
+.btn-danger { color: var(--danger); border-color: var(--danger-soft); }
+.btn-danger:hover { background: var(--danger-soft); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* 목록 */

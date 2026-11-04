@@ -460,7 +460,11 @@
         } else if (member.status === "active" && !isSelf && member.role !== "admin") {
           actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="rejected" data-user-id="${esc(member.user_id)}">승인 취소</button></div>`;
         } else if (member.status === "rejected" && !isSelf) {
-          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button></div>`;
+          // 승인 취소된 일반 회원은 다시 승인하거나, 퇴사 등으로 계정만 삭제할 수 있어요(기록은 남김).
+          const deleteButton = member.role !== "admin"
+            ? `<button class="btn btn-small btn-danger" type="button" data-member-delete="${esc(member.user_id)}" data-email="${esc(member.email || "")}">삭제</button>`
+            : "";
+          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button>${deleteButton}</div>`;
         }
         return `
           <li class="approval-item">
@@ -589,6 +593,23 @@
         return;
       }
       APP.toast(next === "active" ? "회원을 승인했어요." : "회원의 앱 접근을 중지했어요.");
+      await loadMembers();
+      return;
+    }
+
+    const deleteButton = event.target.closest("[data-member-delete]");
+    if (deleteButton) {
+      const email = deleteButton.dataset.email || "이 회원";
+      const message = `${email} 계정을 삭제할까요?\n로그인 계정만 지워지고, 만든 포지션·면접관·후보자·예약 기록은 그대로 남아요.\n삭제한 계정은 되살릴 수 없어요.`;
+      if (!window.confirm(message)) return;
+      deleteButton.disabled = true;
+      const { error } = await db.rpc("delete_member", { target: deleteButton.dataset.memberDelete });
+      deleteButton.disabled = false;
+      if (error) {
+        APP.toast(APP.errorText(error, "회원을 삭제하지 못했어요."), true);
+        return;
+      }
+      APP.toast("회원 계정을 삭제했어요. 기록은 그대로 남아 있어요.");
       await loadMembers();
     }
   });

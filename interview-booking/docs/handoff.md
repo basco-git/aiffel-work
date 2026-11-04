@@ -15,7 +15,7 @@
 | 배포 | https://basco-git.github.io/aiffel-work/interview-booking/ — 담당자·면접관·후보자 화면 HTTP 200 |
 | Git | 브랜치 `interview-booking`, PR #24까지 main 병합. 이후 변경은 새 PR로 |
 | 맨 위 README | 9번 행(실행·폴더 링크) 있음 |
-| 실제 규칙 시험 | `npm run test:rules` **25/25 통과** (R1~R9, R6는 공유·승인 규칙 7개) → `docs/evidence-live-rules.txt`, PRD 9장 반영 |
+| 실제 규칙 시험 | `npm run test:rules` **26/26 통과** (R1~R9, R6는 공유·승인·계정 삭제 규칙 8개, 2026-11-04) → `docs/evidence-live-rules.txt`, PRD 9장 반영 |
 | 배포 화면 검증 | 성공 조건 1~3 통과 → `docs/evidence-deploy-ui.txt` |
 | 비밀값 | `config.js`에 공개 키만, `.env`·`node_modules` 미추적, 추적 파일 35개에서 비밀 키 패턴 없음 |
 | 문서 | PRD(10·11장 화면·데이터 포함), design, api, demo-script, retrospective, progress, supabase-setup |

@@ -357,6 +357,20 @@ async function main() {
       Boolean(revokedError) || (revoked || []).length === 0,
       revokedError ? msgOf(revokedError) : `승인 취소된 B가 본 포지션 ${(revoked || []).length}개`
     );
+
+    // R6 계정 삭제(퇴사자): 관리자만, 승인 취소된 일반 회원만. 실제로 지우지는 않고 거부되는 경우만 시험해요.
+    const bDeletesC = await b.rpc("delete_member", { target: ids.c });
+    const aDeletesPending = await a.rpc("delete_member", { target: ids.c });
+    const aId = (await a.auth.getUser()).data.user.id;
+    const aDeletesSelf = await a.rpc("delete_member", { target: aId });
+    const cAfter = await statusOf(ids.c);
+    check(
+      "R6 계정 삭제는 관리자·승인 취소 계정만",
+      Boolean(bDeletesC.error) && Boolean(aDeletesPending.error) && Boolean(aDeletesSelf.error) && cAfter === "pending",
+      `일반 회원 B의 삭제 요청: ${bDeletesC.error ? msgOf(bDeletesC.error) : "됨(문제)"} · ` +
+        `대기 계정 C 삭제: ${aDeletesPending.error ? msgOf(aDeletesPending.error) : "됨(문제)"} · ` +
+        `관리자 자기 삭제: ${aDeletesSelf.error ? msgOf(aDeletesSelf.error) : "됨(문제)"} · C 상태 ${cAfter || "없음"}`
+    );
     await one(a.from("members").update({ status: "active" }).eq("user_id", ids.b).select("user_id"), "B 다시 승인");
 
     // ---------- R9: 시간 겹침·15분 단위 ----------

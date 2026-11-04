@@ -76,7 +76,7 @@ $$;
 
 create table public.positions (
   id uuid primary key default gen_random_uuid(),
-  owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  owner_id uuid default auth.uid() references auth.users(id) on delete set null,  -- 계정을 지워도 포지션은 남김(퇴사자)
   title text not null check (length(trim(title)) between 1 and 100),
   required_interviewers int not null default 2 check (required_interviewers in (2, 3)),
   created_at timestamptz not null default now()
@@ -319,3 +319,32 @@ revoke all on function public.interviewer_view(uuid), public.set_availability(uu
 grant execute on function public.interviewer_view(uuid), public.set_availability(uuid, uuid, boolean),
   public.candidate_view(uuid), public.book_slot(uuid, uuid) to anon, authenticated;
 revoke all on function public.slot_set_end() from public, anon, authenticated;
+
+-- 승인 취소된 일반 회원 계정 삭제(퇴사자). 관리자만, 로그인 계정만 지우고 포지션 등 기록은 남겨요.
+create function public.delete_member(target uuid) returns void
+language plpgsql security definer set search_path = public set row_security = off as $$
+declare
+  m public.members;
+begin
+  if not public.is_admin() then
+    raise exception '관리자만 회원을 삭제할 수 있어요.';
+  end if;
+  if target = auth.uid() then
+    raise exception '내 계정은 삭제할 수 없어요.';
+  end if;
+  select * into m from public.members where user_id = target;
+  if not found then
+    raise exception '회원을 찾을 수 없어요.';
+  end if;
+  if m.role = 'admin' then
+    raise exception '관리자 계정은 삭제할 수 없어요.';
+  end if;
+  if m.status <> 'rejected' then
+    raise exception '승인 취소된 계정만 삭제할 수 있어요. 먼저 승인 취소해 주세요.';
+  end if;
+  delete from auth.users where id = target;
+end $$;
+
+revoke all on function public.delete_member(uuid) from public, anon, authenticated;
+grant execute on function public.delete_member(uuid) to authenticated;
+
