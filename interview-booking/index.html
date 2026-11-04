@@ -122,6 +122,8 @@
 
         <ul class="position-list" id="position-list"></ul>
 
+        <button class="btn btn-ghost records-link" type="button" id="open-records">완료된 면접 기록 보기</button>
+
         <form class="inline-form new-position-form" id="pos-form" hidden>
           <label class="grow">포지션 이름
             <input id="pos-name" maxlength="100" placeholder="예: 백엔드 개발자" required>
@@ -136,6 +138,18 @@
         </form>
       </section>
 
+      <!-- 채용 완료 처리한 포지션을 모아 보는 기록 화면. 메인 목록은 진행 중인 포지션만 보여요. -->
+      <section class="card" id="records-view" hidden>
+        <div class="list-head">
+          <div>
+            <h1>완료된 면접 기록</h1>
+            <p class="muted" style="margin-top:6px">채용 완료 처리한 포지션이에요. 열어서 면접관·후보자·예약 기록을 볼 수 있고, [다시 진행]으로 목록에 되돌릴 수 있어요.</p>
+          </div>
+          <button class="btn btn-ghost" type="button" id="records-back">진행 중 목록으로</button>
+        </div>
+        <ul class="position-list" id="records-list"></ul>
+      </section>
+
       <div id="editor-view" hidden>
       <div class="page-head">
         <div>
@@ -144,6 +158,7 @@
         </div>
         <div class="row">
           <button class="btn btn-ghost" type="button" id="back-to-list">목록으로</button>
+          <button class="btn" type="button" id="complete-toggle" hidden>채용 완료</button>
           <label class="sr-only" for="pos-select">포지션 선택</label>
           <select id="pos-select" style="min-width:190px"></select>
         </div>

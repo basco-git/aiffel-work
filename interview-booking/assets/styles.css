@@ -243,6 +243,10 @@ form.stack { display: grid; gap: 12px; margin-top: 16px; }
   overflow: hidden;
 }
 .position-list > li + li { border-top: 1px solid var(--line); }
+/* 완료된 면접 기록: 포지션 열기 버튼 + [다시 진행] 버튼을 한 줄에 */
+.record-item { display: flex; align-items: center; gap: 8px; padding-right: 12px; background: #fff; }
+.record-item .position-item { flex: 1; }
+.records-link { margin-top: 10px; padding-left: 0; }
 .position-item, .approval-item {
   width: 100%;
   min-width: 0;
