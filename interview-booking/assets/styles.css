@@ -64,7 +64,7 @@ p { margin: 0; }
 }
 .brand-logo {
   display: block;
-  height: 22px; /* 로고 비율 약 14:1 → 너비 약 312px */
+  height: 26px; /* 로고 비율 약 11.9:1 → 너비 약 309px (g 아래 꼬리까지 보이게 viewBox를 넓힘) */
   width: auto;
 }
 .brand small { font-weight: 700; color: var(--brand); margin-left: 4px; letter-spacing: 0; white-space: nowrap; }
@@ -76,7 +76,7 @@ p { margin: 0; }
   margin: 0 auto 18px;
 }
 @media (max-width: 420px) {
-  .brand-logo { height: 14px; }
+  .brand-logo { height: 17px; }
   .brand small { margin-left: 0; font-size: 12px; }
   .who { display: none; } /* 좁은 화면에서는 이메일을 숨겨 상단 바가 넘치지 않게 */
   .logo-hero { width: 250px; }
