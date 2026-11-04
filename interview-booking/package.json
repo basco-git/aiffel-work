@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "at~once | interview-booking — 실제 Supabase에 규칙 R1~R9를 시험하는 스크립트",
+  "description": "at~once | interview-booking — 실제 Supabase 규칙 시험(R1~R10)과 시연 캡처 도구",
   "scripts": {
-    "test:rules": "node --env-file-if-exists=.env scripts/test-rules.mjs"
+    "test:rules": "node --env-file-if-exists=.env scripts/test-rules.mjs",
+    "capture": "node --env-file-if-exists=.env scripts/capture-demo.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0"
