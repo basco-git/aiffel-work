@@ -20,10 +20,12 @@
 | 2 | 담당자 회원가입 | ![회원가입](docs/screenshots/02-signup.png) |
 | 3 | 가입 직후: 관리자 승인 대기 (승인 전에는 일정을 볼 수 없음) | ![승인 대기](docs/screenshots/03-pending.png) |
 | 4 | 관리자의 회원 승인 목록 (대기 회원에 승인·반려, 승인 회원에 승인 취소) | ![회원 승인](docs/screenshots/04-approve.png) |
-| 5 | 반려·승인 취소된 회원을 다시 승인 | ![다시 승인](docs/screenshots/05-reapprove.png) |
-| 6 | 포지션 등록 뒤 면접일정 잡기: 면접관·후보자 링크, 시간 후보(15분 단위), 시간별 가능 면접관 수와 확정 예약 | ![포지션 일정](docs/screenshots/06-position-schedule.png) |
+| 5 | 반려·승인 취소된 회원: **다시 승인** 또는 **삭제**(퇴사자 — 로그인 계정만 지우고 포지션·예약 기록은 남김) | ![다시 승인·삭제](docs/screenshots/05-reapprove-delete.png) |
+| 6 | 포지션 등록 뒤 면접일정 잡기: 면접관·후보자 링크, 시간 후보(15분 단위), 시간별 가능 면접관 수와 확정 예약, 끝나면 **[면접 완료]** | ![포지션 일정](docs/screenshots/06-position-schedule.png) |
 | 7 | 면접관 링크: 가능한 시간 체크, 예약된 시간은 해제 불가 | ![면접관 링크](docs/screenshots/07-interviewer-link.png) |
 | 8 | 후보자 링크: 면접관이 모인 시간만 보이고, 예약된 시간은 마감 (면접관 1명뿐인 11:00은 안 보임) | ![후보자 링크](docs/screenshots/08-candidate-link.png) |
+| 9 | **완료된 면접 기록**: 면접 완료한 포지션은 진행 중 목록에서 빠져 여기에 모이고, [다시 진행]으로 되돌릴 수 있음 | ![완료된 면접 기록](docs/screenshots/09-records.png) |
+| 10 | 면접이 끝난 포지션의 후보자 링크: 기존 예약은 보이지만 새 예약은 서버에서 막음(R10) | ![면접 종료 후보자 링크](docs/screenshots/10-candidate-completed.png) |
 
 ## 사용한 AI 도구
 
