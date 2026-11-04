@@ -357,6 +357,20 @@ async function main() {
       Boolean(revokedError) || (revoked || []).length === 0,
       revokedError ? msgOf(revokedError) : `승인 취소된 B가 본 포지션 ${(revoked || []).length}개`
     );
+
+    // R6 계정 삭제(퇴사자): 관리자만, 승인 취소된 일반 회원만. 실제로 지우지는 않고 거부되는 경우만 시험해요.
+    const bDeletesC = await b.rpc("delete_member", { target: ids.c });
+    const aDeletesPending = await a.rpc("delete_member", { target: ids.c });
+    const aId = (await a.auth.getUser()).data.user.id;
+    const aDeletesSelf = await a.rpc("delete_member", { target: aId });
+    const cAfter = await statusOf(ids.c);
+    check(
+      "R6 계정 삭제는 관리자·승인 취소 계정만",
+      Boolean(bDeletesC.error) && Boolean(aDeletesPending.error) && Boolean(aDeletesSelf.error) && cAfter === "pending",
+      `일반 회원 B의 삭제 요청: ${bDeletesC.error ? msgOf(bDeletesC.error) : "됨(문제)"} · ` +
+        `대기 계정 C 삭제: ${aDeletesPending.error ? msgOf(aDeletesPending.error) : "됨(문제)"} · ` +
+        `관리자 자기 삭제: ${aDeletesSelf.error ? msgOf(aDeletesSelf.error) : "됨(문제)"} · C 상태 ${cAfter || "없음"}`
+    );
     await one(a.from("members").update({ status: "active" }).eq("user_id", ids.b).select("user_id"), "B 다시 승인");
 
     // ---------- R9: 시간 겹침·15분 단위 ----------
@@ -376,6 +390,24 @@ async function main() {
       "R9 15분 단위 아님 거부",
       Boolean(badDuration.error),
       badDuration.error ? `${badDuration.error.code || ""} ${msgOf(badDuration.error)}`.trim() : "20분 시간이 저장됐어요"
+    );
+
+    // ---------- R10: 채용 완료된 포지션은 새 예약·가능 체크 거부 ----------
+    await one(a.from("positions").update({ completed_at: new Date().toISOString() }).eq("id", posA.id).select("id"), "포지션 채용 완료");
+    const doneBook = await a.rpc("book_slot", { p_token: cand2.token, p_slot: open2.id });
+    const doneAvail = await avail(iv2.token, closed.id);
+    const doneView = await a.rpc("candidate_view", { p_token: cand2.token });
+    check(
+      "R10 채용 완료 포지션 예약·체크 거부",
+      Boolean(doneBook.error) && Boolean(doneAvail.error) && doneView.data?.completed === true,
+      `예약 ${doneBook.error ? msgOf(doneBook.error) : "됨(문제)"} · 체크 ${doneAvail.error ? msgOf(doneAvail.error) : "됨(문제)"} · 후보자 화면 completed=${doneView.data?.completed}`
+    );
+    await one(a.from("positions").update({ completed_at: null }).eq("id", posA.id).select("id"), "포지션 다시 진행");
+    const reopenBook = await a.rpc("book_slot", { p_token: cand2.token, p_slot: open2.id });
+    check(
+      "R10 다시 진행하면 예약 가능",
+      !reopenBook.error,
+      reopenBook.error ? msgOf(reopenBook.error) : "다시 진행 뒤 후보2 예약됨"
     );
 
     // ---------- R7: 링크 화면이 보여 주는 범위 ----------

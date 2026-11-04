@@ -122,6 +122,8 @@
         sessionStorage.removeItem(DETAIL_KEY);
         setRouteSilently("list");
       }
+    } else if (isRecordsHash()) {
+      showRecords(true);
     } else {
       setRouteSilently("list");
     }
@@ -272,9 +274,19 @@
     if (state.position) select.value = state.position.id;
   }
 
+  // 채용 완료(completed_at 있음) 포지션은 기록 화면으로 가고, 메인 목록·확정 일정에서는 빠져요.
+  const isCompleted = (positionId) =>
+    Boolean((state.positions.find((p) => p.id === positionId) || {}).completed_at);
+  const activePositions = () => state.positions.filter((p) => !p.completed_at);
+  const completedPositions = () =>
+    state.positions
+      .filter((p) => p.completed_at)
+      .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
+
   function getUpcomingConfirmed(positionId) {
     const nowMs = Date.now();
     return state.confirmed
+      .filter((c) => !isCompleted(c.positionId))
       .filter((c) => new Date(c.endsAt).getTime() >= nowMs)
       .filter((c) => !positionId || c.positionId === positionId)
       .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt));
@@ -306,14 +318,49 @@
       .join("");
   }
 
+  function renderRecordsLink() {
+    const count = completedPositions().length;
+    $("#open-records").textContent = `완료된 면접 기록 보기 (${count})`;
+  }
+
+  function renderRecords() {
+    const list = $("#records-list");
+    const rows = completedPositions();
+    if (!rows.length) {
+      list.innerHTML = `<li class="empty">아직 채용 완료 처리한 포지션이 없어요.</li>`;
+      return;
+    }
+    list.innerHTML = rows
+      .map((position) => {
+        const done = state.confirmed.filter((c) => c.positionId === position.id).length;
+        return `
+          <li class="record-item">
+            <button class="position-item" type="button" data-open-position="${esc(position.id)}">
+              <span>
+                <h3 class="position-title-row"><span class="position-title">${esc(position.title)}</span><span class="position-confirmed muted">면접 ${done}건</span></h3>
+                <p>채용 완료 ${esc(APP.fmtDay(position.completed_at))} ·필요한 면접관 ${position.required_interviewers}명</p>
+              </span>
+              <span class="badge">기록</span>
+            </button>
+            <button class="btn btn-small" type="button" data-reopen-position="${esc(position.id)}">다시 진행</button>
+          </li>`;
+      })
+      .join("");
+  }
+
   function renderPositionList() {
     const list = $("#position-list");
-    if (state.positions.length === 0) {
-      list.innerHTML = `<li class="empty">아직 만든 면접 포지션이 없어요. 새 포지션을 만들어 주세요.</li>`;
+    renderRecordsLink();
+    renderRecords();
+    const active = activePositions();
+    if (active.length === 0) {
+      list.innerHTML = state.positions.length
+        ? `<li class="empty">진행 중인 포지션이 없어요. 새 포지션을 만들거나 완료된 기록을 확인해 주세요.</li>`
+        : `<li class="empty">아직 만든 면접 포지션이 없어요. 새 포지션을 만들어 주세요.</li>`;
       renderConfirmations();
       return;
     }
-    list.innerHTML = state.positions
+    list.innerHTML = active
       .map((position) => {
         const upcoming = getUpcomingConfirmed(position.id);
         const next = upcoming[0];
@@ -396,7 +443,7 @@
   async function loadPositions(keepId, options = {}) {
     const { data, error } = await db
       .from("positions")
-      .select("id,title,required_interviewers")
+      .select("id,title,required_interviewers,completed_at")
       .order("created_at", { ascending: true });
     if (error) {
       APP.toast(APP.errorText(error, "포지션을 불러오지 못했어요."), true);
@@ -460,7 +507,11 @@
         } else if (member.status === "active" && !isSelf && member.role !== "admin") {
           actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="rejected" data-user-id="${esc(member.user_id)}">승인 취소</button></div>`;
         } else if (member.status === "rejected" && !isSelf) {
-          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button></div>`;
+          // 승인 취소된 일반 회원은 다시 승인하거나, 퇴사 등으로 계정만 삭제할 수 있어요(기록은 남김).
+          const deleteButton = member.role !== "admin"
+            ? `<button class="btn btn-small btn-danger" type="button" data-member-delete="${esc(member.user_id)}" data-email="${esc(member.email || "")}">삭제</button>`
+            : "";
+          actions = `<div class="approval-actions"><button class="btn btn-small" type="button" data-member-status="active" data-user-id="${esc(member.user_id)}">다시 승인</button>${deleteButton}</div>`;
         }
         return `
           <li class="approval-item">
@@ -480,18 +531,29 @@
     return params.get("position");
   }
 
+  function routeUrl(view, positionId) {
+    const base = `${location.pathname}${location.search}`;
+    if (view === "position" && positionId) return `${base}#position=${encodeURIComponent(positionId)}`;
+    if (view === "records") return `${base}#records`;
+    return `${base}#list`;
+  }
+
   function setRoute(view, positionId) {
-    const url = view === "position" && positionId
-      ? `${location.pathname}${location.search}#position=${encodeURIComponent(positionId)}`
-      : `${location.pathname}${location.search}#list`;
-    window.history.pushState({ view, positionId: positionId || null }, "", url);
+    window.history.pushState({ view, positionId: positionId || null }, "", routeUrl(view, positionId));
   }
 
   function setRouteSilently(view, positionId) {
-    const url = view === "position" && positionId
-      ? `${location.pathname}${location.search}#position=${encodeURIComponent(positionId)}`
-      : `${location.pathname}${location.search}#list`;
-    window.history.replaceState({ view, positionId: positionId || null }, "", url);
+    window.history.replaceState({ view, positionId: positionId || null }, "", routeUrl(view, positionId));
+  }
+
+  const isRecordsHash = () => location.hash.replace(/^#/, "") === "records";
+
+  function showRecords(fromPop = false) {
+    showList(true);
+    $("#list-view").hidden = true;
+    $("#records-view").hidden = false;
+    renderRecords();
+    if (!fromPop) setRoute("records");
   }
 
   function showList(fromPop = false) {
@@ -503,6 +565,7 @@
     state.bookings = [];
     sessionStorage.removeItem(DETAIL_KEY);
     $("#list-view").hidden = false;
+    $("#records-view").hidden = true;
     $("#editor-view").hidden = true;
     if (state.member && state.member.role === "admin") loadMembers();
     else $("#approval-view").hidden = true;
@@ -515,6 +578,7 @@
     state.position = position;
     if (position && position.id) sessionStorage.setItem(DETAIL_KEY, position.id);
     $("#list-view").hidden = true;
+    $("#records-view").hidden = true;
     $("#editor-view").hidden = false;
     renderPositionSelect();
     if (!fromPop) setRoute("position", position && position.id);
@@ -533,7 +597,44 @@
     await loadPositionData();
   });
 
-  $("#back-to-list").addEventListener("click", () => showList());
+  // 완료된 포지션에서 "목록으로"를 누르면 기록 화면으로 돌아가요.
+  $("#back-to-list").addEventListener("click", () => {
+    if (state.position && state.position.completed_at) showRecords();
+    else showList();
+  });
+  $("#open-records").addEventListener("click", () => showRecords());
+  $("#records-back").addEventListener("click", () => showList());
+
+  async function setCompleted(positionId, completed) {
+    const position = state.positions.find((p) => p.id === positionId);
+    if (!position) return false;
+    const message = completed
+      ? `'${position.title}' 포지션을 채용 완료 처리할까요?\n진행 중 목록에서 빠지고 '완료된 면접 기록'으로 옮겨져요.\n면접관 체크와 후보자 예약은 더 받지 않아요. 기록은 그대로 남아요.`
+      : `'${position.title}' 포지션을 다시 진행할까요?\n진행 중 목록으로 돌아가고, 면접관 체크·후보자 예약을 다시 받아요.`;
+    if (!window.confirm(message)) return false;
+    const { error } = await db
+      .from("positions")
+      .update({ completed_at: completed ? new Date().toISOString() : null })
+      .eq("id", positionId);
+    if (error) {
+      APP.toast(APP.errorText(error, "포지션 상태를 바꾸지 못했어요."), true);
+      return false;
+    }
+    APP.toast(completed ? "채용 완료로 옮겼어요. 완료된 면접 기록에서 볼 수 있어요." : "진행 중 목록으로 되돌렸어요.");
+    return true;
+  }
+
+  $("#complete-toggle").addEventListener("click", async (event) => {
+    if (!state.position) return;
+    const button = event.currentTarget;
+    const completing = !state.position.completed_at;
+    button.disabled = true;
+    const ok = await setCompleted(state.position.id, completing);
+    button.disabled = false;
+    if (!ok) return;
+    await loadPositions(state.position.id);
+    if (completing) showRecords();
+  });
 
   $("#create-position-btn").addEventListener("click", () => {
     const form = $("#pos-form");
@@ -570,6 +671,18 @@
       return;
     }
 
+    const reopen = event.target.closest("[data-reopen-position]");
+    if (reopen) {
+      reopen.disabled = true;
+      const ok = await setCompleted(reopen.dataset.reopenPosition, false);
+      reopen.disabled = false;
+      if (ok) {
+        await loadPositions();
+        renderRecords();
+      }
+      return;
+    }
+
     const memberButton = event.target.closest("[data-member-status]");
     if (memberButton) {
       const next = memberButton.dataset.memberStatus;
@@ -589,6 +702,23 @@
         return;
       }
       APP.toast(next === "active" ? "회원을 승인했어요." : "회원의 앱 접근을 중지했어요.");
+      await loadMembers();
+      return;
+    }
+
+    const deleteButton = event.target.closest("[data-member-delete]");
+    if (deleteButton) {
+      const email = deleteButton.dataset.email || "이 회원";
+      const message = `${email} 계정을 삭제할까요?\n로그인 계정만 지워지고, 만든 포지션·면접관·후보자·예약 기록은 그대로 남아요.\n삭제한 계정은 되살릴 수 없어요.`;
+      if (!window.confirm(message)) return;
+      deleteButton.disabled = true;
+      const { error } = await db.rpc("delete_member", { target: deleteButton.dataset.memberDelete });
+      deleteButton.disabled = false;
+      if (error) {
+        APP.toast(APP.errorText(error, "회원을 삭제하지 못했어요."), true);
+        return;
+      }
+      APP.toast("회원 계정을 삭제했어요. 기록은 그대로 남아 있어요.");
       await loadMembers();
     }
   });
@@ -643,9 +773,14 @@
   function renderAll() {
     const pos = state.position;
     $("#pos-title").textContent = pos ? pos.title : "면접 일정";
-    $("#pos-sub").textContent = pos
-      ? `필요 면접관 ${pos.required_interviewers}명 · 면접관이 ${pos.required_interviewers}명 이상 가능한 시간만 후보자에게 열려요.`
-      : "포지션을 고르거나 새로 만들어 주세요.";
+    $("#pos-sub").textContent = !pos
+      ? "포지션을 고르거나 새로 만들어 주세요."
+      : pos.completed_at
+        ? `채용 완료 ${APP.fmtDay(pos.completed_at)} · 기록 보기 중이에요. 면접관 체크·후보자 예약은 더 받지 않아요.`
+        : `필요 면접관 ${pos.required_interviewers}명 · 면접관이 ${pos.required_interviewers}명 이상 가능한 시간만 후보자에게 열려요.`;
+    const toggle = $("#complete-toggle");
+    toggle.hidden = !pos;
+    if (pos) toggle.textContent = pos.completed_at ? "다시 진행" : "채용 완료";
 
     renderPeople($("#iv-list"), state.interviewers, "interviewer");
     renderPeople($("#cand-list"), state.candidates, "candidate");
@@ -917,6 +1052,10 @@
       : null;
     if (positionId && position) {
       await showEditor(position, true);
+      return;
+    }
+    if (isRecordsHash()) {
+      showRecords(true);
       return;
     }
     showList(true);

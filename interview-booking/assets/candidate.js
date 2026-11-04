@@ -22,7 +22,10 @@
     if (!data) return;
     document.title = `${data.position} — 후보자`;
     $("#pos-title").textContent = data.position;
-    $("#greeting").textContent = `${data.name}님, 가능한 시간을 골라 주세요.`;
+    // 채용 완료된 포지션은 서버가 예약을 막아요(R10). 화면에서도 미리 알려 줘요.
+    $("#greeting").textContent = data.completed
+      ? `${data.name}님, 이 포지션은 채용이 끝나 새로 예약할 수 없어요. 문의는 담당자에게 해 주세요.`
+      : `${data.name}님, 가능한 시간을 골라 주세요.`;
 
     const list = $("#slot-list");
     if (!data.slots.length) {
@@ -45,7 +48,7 @@
               <span class="badge badge-brand">내 예약</span>
             </div>`;
         }
-        if (slot.status === "open") {
+        if (slot.status === "open" && !data.completed) {
           return `
             <div class="choice">
               <span class="choice-main">
@@ -63,7 +66,9 @@
             ? "마감"
             : slot.status === "past"
               ? "지난 시간"
-              : "면접관 일정 부족";
+              : data.completed
+                ? "채용 종료"
+                : "면접관 일정 부족";
         return `
           <div class="choice is-locked">
             <span class="choice-main">

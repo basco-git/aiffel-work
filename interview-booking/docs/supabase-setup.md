@@ -31,6 +31,12 @@
 3. 같은 방법으로 담당자 B 만들기
 4. 두 계정의 이메일·비밀번호는 `interview-booking/.env`에 직접 적어요 (`.env.example`을 복사해 이름을 `.env`로 바꾸기). `.env`는 커밋되지 않아요.
 
+## 5-1. 계정 삭제(퇴사자) 기능 추가 (2026-11-04, 데이터가 이미 있는 프로젝트)
+`supabase/migrate-member-delete.sql` 전체를 SQL Editor에 붙여 넣고 **Run** 하세요. 기존 데이터는 지우지 않고, 포지션의 `owner_id` 연결을 "계정 삭제 시 비우기"로 바꾸고 관리자 전용 함수 `delete_member`를 추가해요. 여러 번 실행해도 안전해요.
+
+## 5-2. 채용 완료·완료된 면접 기록 추가 (2026-11-04, 데이터가 이미 있는 프로젝트)
+`supabase/migrate-position-complete.sql` 전체를 SQL Editor에 붙여 넣고 **Run** 하세요. `positions.completed_at` 칸을 추가하고, 완료된 포지션의 면접관 체크·후보자 예약을 막도록 링크 함수 4개를 바꿔요(R10). 기존 데이터는 지우지 않고, 여러 번 실행해도 안전해요.
+
 ## 5. 최초 관리자 지정 (데이터가 이미 있는 프로젝트)
 기존에 `schema.sql`을 한 번이라도 실행한 프로젝트라면 `supabase/migrate-shared-members.sql`을 SQL Editor에서 실행하세요.
 
