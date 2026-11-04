@@ -392,13 +392,13 @@ async function main() {
       badDuration.error ? `${badDuration.error.code || ""} ${msgOf(badDuration.error)}`.trim() : "20분 시간이 저장됐어요"
     );
 
-    // ---------- R10: 채용 완료된 포지션은 새 예약·가능 체크 거부 ----------
-    await one(a.from("positions").update({ completed_at: new Date().toISOString() }).eq("id", posA.id).select("id"), "포지션 채용 완료");
+    // ---------- R10: 면접 완료된 포지션은 새 예약·가능 체크 거부 ----------
+    await one(a.from("positions").update({ completed_at: new Date().toISOString() }).eq("id", posA.id).select("id"), "포지션 면접 완료");
     const doneBook = await a.rpc("book_slot", { p_token: cand2.token, p_slot: open2.id });
     const doneAvail = await avail(iv2.token, closed.id);
     const doneView = await a.rpc("candidate_view", { p_token: cand2.token });
     check(
-      "R10 채용 완료 포지션 예약·체크 거부",
+      "R10 면접 완료 포지션 예약·체크 거부",
       Boolean(doneBook.error) && Boolean(doneAvail.error) && doneView.data?.completed === true,
       `예약 ${doneBook.error ? msgOf(doneBook.error) : "됨(문제)"} · 체크 ${doneAvail.error ? msgOf(doneAvail.error) : "됨(문제)"} · 후보자 화면 completed=${doneView.data?.completed}`
     );

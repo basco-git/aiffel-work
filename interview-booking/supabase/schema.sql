@@ -80,7 +80,7 @@ create table public.positions (
   title text not null check (length(trim(title)) between 1 and 100),
   required_interviewers int not null default 2 check (required_interviewers in (2, 3)),
   created_at timestamptz not null default now(),
-  completed_at timestamptz  -- 채용 완료 처리 시각. 값이 있으면 기록 페이지로 가고 새 예약·체크를 막아요(R10)
+  completed_at timestamptz  -- 면접 완료 처리 시각. 값이 있으면 기록 페이지로 가고 새 예약·체크를 막아요(R10)
 );
 
 create table public.interviewers (
@@ -245,7 +245,7 @@ begin
   select * into v_iv from public.interviewers where token = p_token;
   if not found then raise exception '링크가 올바르지 않아요.'; end if;
   if exists (select 1 from public.positions where id = v_iv.position_id and completed_at is not null) then
-    raise exception '채용이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
+    raise exception '면접이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
   end if;
   -- 같은 슬롯의 예약과 동시에 일어나지 않게 슬롯 행을 잠가요
   select * into v_slot from public.slots where id = p_slot and position_id = v_iv.position_id for update;
@@ -300,7 +300,7 @@ begin
   if not found then raise exception '링크가 올바르지 않아요.'; end if;
   select * into v_pos from public.positions where id = v_c.position_id;
   if v_pos.completed_at is not null then
-    raise exception '채용이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
+    raise exception '면접이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
   end if;
   -- 같은 슬롯을 노리는 다른 예약·체크 해제가 끝날 때까지 기다리게 슬롯 행을 잠가요 (R1·R4)
   select * into v_slot from public.slots where id = p_slot and position_id = v_c.position_id for update;
