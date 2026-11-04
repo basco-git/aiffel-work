@@ -22,9 +22,9 @@
     if (!data) return;
     document.title = `${data.position} — 면접관`;
     $("#pos-title").textContent = data.position;
-    // 채용 완료된 포지션은 서버가 체크를 막아요(R10). 화면에서도 미리 알려 줘요.
+    // 면접 완료된 포지션은 서버가 체크를 막아요(R10). 화면에서도 미리 알려 줘요.
     $("#greeting").textContent = data.completed
-      ? `${data.name}님, 채용이 끝난 포지션이라 더 체크할 필요가 없어요. 감사합니다.`
+      ? `${data.name}님, 면접이 끝난 포지션이라 더 체크할 필요가 없어요. 감사합니다.`
       : `${data.name}님, 가능한 시간을 체크해 주세요.`;
 
     const list = $("#slot-list");
@@ -39,7 +39,7 @@
         const note = slot.booked
           ? "예약된 시간이라 바꿀 수 없어요"
           : data.completed
-            ? "채용이 끝났어요"
+            ? "면접이 끝났어요"
             : slot.past
             ? "지난 시간"
             : slot.mine

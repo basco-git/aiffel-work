@@ -1,11 +1,11 @@
 -- =====================================================================
--- 기존 Supabase 프로젝트에 "포지션 채용 완료 + 완료된 면접 기록"을 적용하는 마이그레이션
+-- 기존 Supabase 프로젝트에 "포지션 면접 완료 + 완료된 면접 기록"을 적용하는 마이그레이션
 -- 실행 대상: migrate-member-delete.sql까지 적용된 프로젝트
 -- 실행 방법: SQL Editor → New query → 전체를 붙여 넣고 Run (여러 번 실행해도 안전)
 --
 -- 기존 데이터는 지우지 않아요.
 -- 바뀌는 것
---   1) positions에 completed_at(채용 완료 시각) 칸 추가. 비어 있으면 진행 중이에요.
+--   1) positions에 completed_at(면접 완료 시각) 칸 추가. 비어 있으면 진행 중이에요.
 --   2) 완료된 포지션은 면접관 가능 체크·후보자 예약을 서버에서 거부해요(R10).
 --   3) 면접관·후보자 화면 함수가 완료 여부(completed)를 함께 돌려줘요.
 -- 함수 권한(grant)은 기존 그대로 유지돼요(create or replace는 권한을 바꾸지 않아요).
@@ -41,7 +41,7 @@ begin
   select * into v_iv from public.interviewers where token = p_token;
   if not found then raise exception '링크가 올바르지 않아요.'; end if;
   if exists (select 1 from public.positions where id = v_iv.position_id and completed_at is not null) then
-    raise exception '채용이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
+    raise exception '면접이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
   end if;
   -- 같은 슬롯의 예약과 동시에 일어나지 않게 슬롯 행을 잠가요
   select * into v_slot from public.slots where id = p_slot and position_id = v_iv.position_id for update;
@@ -94,7 +94,7 @@ begin
   if not found then raise exception '링크가 올바르지 않아요.'; end if;
   select * into v_pos from public.positions where id = v_c.position_id;
   if v_pos.completed_at is not null then
-    raise exception '채용이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
+    raise exception '면접이 끝난 포지션이에요. 담당자에게 문의해 주세요.';           -- R10
   end if;
   -- 같은 슬롯을 노리는 다른 예약·체크 해제가 끝날 때까지 기다리게 슬롯 행을 잠가요 (R1·R4)
   select * into v_slot from public.slots where id = p_slot and position_id = v_c.position_id for update;

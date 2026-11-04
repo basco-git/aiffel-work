@@ -274,7 +274,7 @@
     if (state.position) select.value = state.position.id;
   }
 
-  // 채용 완료(completed_at 있음) 포지션은 기록 화면으로 가고, 메인 목록·확정 일정에서는 빠져요.
+  // 면접 완료(completed_at 있음) 포지션은 기록 화면으로 가고, 메인 목록·확정 일정에서는 빠져요.
   const isCompleted = (positionId) =>
     Boolean((state.positions.find((p) => p.id === positionId) || {}).completed_at);
   const activePositions = () => state.positions.filter((p) => !p.completed_at);
@@ -327,7 +327,7 @@
     const list = $("#records-list");
     const rows = completedPositions();
     if (!rows.length) {
-      list.innerHTML = `<li class="empty">아직 채용 완료 처리한 포지션이 없어요.</li>`;
+      list.innerHTML = `<li class="empty">아직 면접 완료 처리한 포지션이 없어요.</li>`;
       return;
     }
     list.innerHTML = rows
@@ -338,7 +338,7 @@
             <button class="position-item" type="button" data-open-position="${esc(position.id)}">
               <span>
                 <h3 class="position-title-row"><span class="position-title">${esc(position.title)}</span><span class="position-confirmed muted">면접 ${done}건</span></h3>
-                <p>채용 완료 ${esc(APP.fmtDay(position.completed_at))} ·필요한 면접관 ${position.required_interviewers}명</p>
+                <p>면접 완료 ${esc(APP.fmtDay(position.completed_at))} ·필요한 면접관 ${position.required_interviewers}명</p>
               </span>
               <span class="badge">기록</span>
             </button>
@@ -609,7 +609,7 @@
     const position = state.positions.find((p) => p.id === positionId);
     if (!position) return false;
     const message = completed
-      ? `'${position.title}' 포지션을 채용 완료 처리할까요?\n진행 중 목록에서 빠지고 '완료된 면접 기록'으로 옮겨져요.\n면접관 체크와 후보자 예약은 더 받지 않아요. 기록은 그대로 남아요.`
+      ? `'${position.title}' 포지션을 면접 완료 처리할까요?\n진행 중 목록에서 빠지고 '완료된 면접 기록'으로 옮겨져요.\n면접관 체크와 후보자 예약은 더 받지 않아요. 기록은 그대로 남아요.`
       : `'${position.title}' 포지션을 다시 진행할까요?\n진행 중 목록으로 돌아가고, 면접관 체크·후보자 예약을 다시 받아요.`;
     if (!window.confirm(message)) return false;
     const { error } = await db
@@ -620,7 +620,7 @@
       APP.toast(APP.errorText(error, "포지션 상태를 바꾸지 못했어요."), true);
       return false;
     }
-    APP.toast(completed ? "채용 완료로 옮겼어요. 완료된 면접 기록에서 볼 수 있어요." : "진행 중 목록으로 되돌렸어요.");
+    APP.toast(completed ? "면접 완료로 옮겼어요. 완료된 면접 기록에서 볼 수 있어요." : "진행 중 목록으로 되돌렸어요.");
     return true;
   }
 
@@ -776,11 +776,11 @@
     $("#pos-sub").textContent = !pos
       ? "포지션을 고르거나 새로 만들어 주세요."
       : pos.completed_at
-        ? `채용 완료 ${APP.fmtDay(pos.completed_at)} · 기록 보기 중이에요. 면접관 체크·후보자 예약은 더 받지 않아요.`
+        ? `면접 완료 ${APP.fmtDay(pos.completed_at)} · 기록 보기 중이에요. 면접관 체크·후보자 예약은 더 받지 않아요.`
         : `필요 면접관 ${pos.required_interviewers}명 · 면접관이 ${pos.required_interviewers}명 이상 가능한 시간만 후보자에게 열려요.`;
     const toggle = $("#complete-toggle");
     toggle.hidden = !pos;
-    if (pos) toggle.textContent = pos.completed_at ? "다시 진행" : "채용 완료";
+    if (pos) toggle.textContent = pos.completed_at ? "다시 진행" : "면접 완료";
 
     renderPeople($("#iv-list"), state.interviewers, "interviewer");
     renderPeople($("#cand-list"), state.candidates, "candidate");
