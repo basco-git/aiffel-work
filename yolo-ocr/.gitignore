@@ -1,2 +1,6 @@
 # ultralytics가 자동으로 내려받는 모델 가중치 (필요하면 직접 추가)
 *.pt
+
+# PaddleOCR 가상환경
+.venv/
+__pycache__/

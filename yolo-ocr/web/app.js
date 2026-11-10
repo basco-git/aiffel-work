@@ -299,7 +299,7 @@ document.addEventListener("paste", (event) => {
 el.sampleBtn.addEventListener("click", async () => {
   try {
     setStatus("샘플 이미지를 불러오는 중…");
-    // 로컬(/web/)과 GitHub Pages(/yolo-cor/) 모두에서 같은 파일을 찾습니다.
+    // 로컬(/web/)과 GitHub Pages(/yolo-ocr/) 모두에서 같은 파일을 찾습니다.
     const sampleUrl = location.pathname.includes("/web/") ? "../ocr-test.png" : "ocr-test.png";
     const response = await fetch(sampleUrl);
     if (!response.ok) throw new Error("샘플 이미지를 찾을 수 없습니다.");
