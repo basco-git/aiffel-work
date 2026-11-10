@@ -1,0 +1,85 @@
+{
+  "_설명": "Census Table 1 처리 설정과 원본 대조 기록. ocr_table.py가 읽는다. corrections는 사람이 원본 이미지를 확대해 대조한 뒤 적는다.",
+  "id": "census-table1",
+  "input": "input/census-table.png",
+  "title": "Table 1. Area",
+  "source": {
+    "collection": "미국 인구조사국(U.S. Census Bureau). 아이펠 13번 교안 과제 B에서 제공한 표 이미지(원문에서 표 부분만 200 dpi로 추출)",
+    "document": "1910 인구조사 보고서 Volume 1 (1913년 발행)",
+    "page": "PDF 2쪽 · 인쇄 22쪽",
+    "url": "https://www2.census.gov/library/publications/decennial/1910/volume-1/volume-1-p3.pdf",
+    "license": "미국 연방정부 발행 퍼블릭 도메인 자료 (13번 교안 출처 표기 기준)"
+  },
+  "ocr": {
+    "lang": "en",
+    "ocr_version": "PP-OCRv5",
+    "text_detection_model_name": "PP-OCRv5_server_det",
+    "text_recognition_model_name": "en_PP-OCRv5_mobile_rec",
+    "use_doc_orientation_classify": false,
+    "use_doc_unwarping": false,
+    "use_textline_orientation": false,
+    "enable_mkldnn": false,
+    "device": "cpu"
+  },
+  "layout": {
+    "header_y": [0, 100],
+    "body_y": [100, 450],
+    "footer_y": [450, 505],
+    "title_pattern": "^Table",
+    "columns": [
+      {"key": "area", "csv": "area", "x": [0, 670], "type": "label"},
+      {"key": "gross_area_sq_mi", "csv": "gross_area_sq_mi", "x": [670, 860], "type": "number"},
+      {"key": "population_1910", "csv": "population_1910", "x": [860, 1050], "type": "number"}
+    ],
+    "child_x1": [55, 85],
+    "low_score": 0.95
+  },
+  "checks": [
+    {"name": "속령 합계", "total": "Outlying possessions", "parts": "children"},
+    {"name": "미국 전체 합계", "total": "United States, with outlying possessions",
+     "parts": ["United States, exclusive of outlying possessions", "Outlying possessions"]}
+  ],
+  "corrections": [
+    {"row": "Philippine Islands", "col": "population_1910", "raw": "17, 635, 426",
+     "value": "7635426", "footnote": "1", "status": "수정",
+     "reason": "원본은 위첨자 각주 ¹ + 7, 635, 426. 각주 1(Population in 1903)이 숫자 앞에 붙어 읽힘. 속령 인구 합계 9,143,221과 일치"},
+    {"row": "Panama Canal Zone", "col": "population_1910", "raw": "262, 810",
+     "value": "62810", "footnote": "2", "status": "수정",
+     "reason": "원본은 위첨자 각주 ² + 62, 810. 각주 2(Population in 1912)가 숫자 앞에 붙어 읽힘. 속령 인구 합계와 일치"},
+    {"row": "Philippine Islands", "col": "gross_area_sq_mi", "raw": "1.15, 026",
+     "value": "115026", "status": "수정",
+     "reason": "원본은 115, 026. 숫자 사이 점은 인쇄 얼룩. 속령 면적 합계 716,517과 일치"},
+    {"row": "Porto Rico", "col": "population_1910", "raw": "1, 118, 01.2",
+     "value": "1118012", "status": "수정",
+     "reason": "원본은 1, 118, 012. 끝자리 앞 점은 인쇄 얼룩. 속령 인구 합계와 일치"},
+    {"row": "Military and naval service abroad", "col": "gross_area_sq_mi", "raw": "",
+     "value": "", "status": "확인 필요",
+     "reason": "원본 칸에 숫자 없이 점선만 있음. 값이 0인지, 해당 없음인지 표에 설명이 없어 빈칸으로 둠"},
+    {"row": "Guam (population estimated)", "col": "population_1910", "raw": "9,000",
+     "value": "9000", "status": "원본 일치",
+     "reason": "OCR 신뢰도 0.855로 낮아 확대 대조. 원본 9, 000과 같음. 행 이름대로 추정치"},
+    {"row": "Samoa (population estimated)", "col": "population_1910", "raw": "6, 100",
+     "value": "6100", "status": "원본 일치",
+     "reason": "OCR 신뢰도 0.908로 낮아 확대 대조. 원본 6, 100과 같음. 행 이름대로 추정치"},
+    {"row": "Porto Rico", "col": "gross_area_sq_mi", "raw": "3, 435",
+     "value": "3435", "status": "원본 일치",
+     "reason": "원본 확대 시 첫 자리가 3인지 8인지 흐림. 속령 면적 합계 716,517이 3,435일 때만 맞아 3으로 확인"},
+    {"row": "Alaska", "col": "area", "raw": "Alaska..",
+     "value": "Alaska", "status": "원본 일치",
+     "reason": "행 이름 대조: 끝의 점은 점선 리더라 지움. 원본 Alaska와 같음"}
+  ],
+  "header_corrections": [
+    {"col": "population_1910", "raw": "Population: 19010", "value": "Population: 1910", "status": "수정",
+     "reason": "열 제목 대조: 원본 두 줄 'Population:' / '1910'(굵은 글씨). 1910을 19010으로 읽음"},
+    {"col": "gross_area_sq_mi", "raw": "Gross area (land and water) in square miles.",
+     "value": "Gross area (land and water) in square miles", "status": "원본 일치",
+     "reason": "열 제목 대조: 원본 세 줄을 위에서 아래로 이어 한 열 이름으로 펼침"},
+    {"col": "area", "raw": "AREA.", "value": "Area", "status": "원본 일치",
+     "reason": "행 이름 열의 제목. 원본 AREA."}
+  ],
+  "text_corrections": [
+    {"raw": "Table l", "value": "Table 1", "reason": "표 제목: 숫자 1을 영문 l로 읽음"},
+    {"raw": "2 Population in 1012.", "value": "² Population in 1912.", "reason": "각주 2: 1912를 1012로 읽음. 원본 확대 대조"},
+    {"raw": "1 Population in 1903.", "value": "¹ Population in 1903.", "reason": "각주 1: 위첨자 표시만 일반 숫자로 읽힘"}
+  ]
+}

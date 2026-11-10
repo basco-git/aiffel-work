@@ -1,0 +1,140 @@
+{
+  "task": "아이펠 과제 B: OCR 표 이미지 문서화",
+  "table": "Table 1. Area",
+  "source": {
+    "collection": "미국 인구조사국(U.S. Census Bureau). 아이펠 13번 교안 과제 B에서 제공한 표 이미지(원문에서 표 부분만 200 dpi로 추출)",
+    "document": "1910 인구조사 보고서 Volume 1 (1913년 발행)",
+    "page": "PDF 2쪽 · 인쇄 22쪽",
+    "url": "https://www2.census.gov/library/publications/decennial/1910/volume-1/volume-1-p3.pdf",
+    "license": "미국 연방정부 발행 퍼블릭 도메인 자료 (13번 교안 출처 표기 기준)"
+  },
+  "input": {
+    "file": "input/census-table.png",
+    "copy": "outputs/ocr/census-table.png",
+    "sha256": "5dffbcdc57a1c7701fbe54aa13750e8b8a5ccd2aea9575943e326023a11c13c7",
+    "size_px": [
+      1050,
+      505
+    ]
+  },
+  "models": {
+    "lang": "en",
+    "ocr_version": "PP-OCRv5",
+    "text_detection": "PP-OCRv5_server_det",
+    "text_recognition": "en_PP-OCRv5_mobile_rec",
+    "cache_dir": "~/.paddlex/official_models (PaddleOCR가 처음 실행할 때 내려받음)"
+  },
+  "packages": {
+    "paddlepaddle": "3.3.1",
+    "paddleocr": "3.7.0",
+    "paddlex": "3.7.2",
+    "opencv-contrib-python": "4.10.0.84",
+    "numpy": "2.3.5",
+    "pillow": "13.0.0"
+  },
+  "run": {
+    "location": "로컬 PC (Windows 11, CPU, GPU 없음)",
+    "python": "3.12.15",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "command": "python ocr_table.py --reuse",
+    "started_at": "2026-11-10T17:18:46+09:00"
+  },
+  "ocr_run": {
+    "seconds": 61.53
+  },
+  "settings": {
+    "lang": "en",
+    "ocr_version": "PP-OCRv5",
+    "text_detection_model_name": "PP-OCRv5_server_det",
+    "text_recognition_model_name": "en_PP-OCRv5_mobile_rec",
+    "use_doc_orientation_classify": false,
+    "use_doc_unwarping": false,
+    "use_textline_orientation": false,
+    "enable_mkldnn": false,
+    "device": "cpu",
+    "text_det_params": {
+      "limit_side_len": 64,
+      "limit_type": "min",
+      "thresh": 0.3,
+      "max_side_limit": 4000,
+      "box_thresh": 0.6,
+      "unclip_ratio": 1.5
+    },
+    "text_rec_score_thresh": 0.0,
+    "layout": {
+      "header_y": [
+        0,
+        100
+      ],
+      "body_y": [
+        100,
+        450
+      ],
+      "footer_y": [
+        450,
+        505
+      ],
+      "title_pattern": "^Table",
+      "columns": [
+        {
+          "key": "area",
+          "csv": "area",
+          "x": [
+            0,
+            670
+          ],
+          "type": "label"
+        },
+        {
+          "key": "gross_area_sq_mi",
+          "csv": "gross_area_sq_mi",
+          "x": [
+            670,
+            860
+          ],
+          "type": "number"
+        },
+        {
+          "key": "population_1910",
+          "csv": "population_1910",
+          "x": [
+            860,
+            1050
+          ],
+          "type": "number"
+        }
+      ],
+      "child_x1": [
+        55,
+        85
+      ],
+      "low_score": 0.95
+    },
+    "spec_file": "review/census-table1.json"
+  },
+  "results": {
+    "ocr_lines": 41,
+    "rows": 11,
+    "value_cells": 22,
+    "reviews": {
+      "수정": 5,
+      "확인 필요": 1,
+      "원본 일치": 6
+    },
+    "unassigned_lines": [],
+    "checks_passed": "4/4",
+    "warnings": []
+  },
+  "outputs": [
+    "outputs/ocr/census-table.png",
+    "outputs/ocr/raw_ocr.json",
+    "outputs/ocr/ocr_lines.csv",
+    "outputs/ocr/ocr_boxes.png",
+    "outputs/ocr/ocr_vis_paddle.png",
+    "outputs/table.csv",
+    "outputs/document.md",
+    "outputs/review_marks.png",
+    "outputs/viewer.html",
+    "outputs/manifest.json"
+  ]
+}
