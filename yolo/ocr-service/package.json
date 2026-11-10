@@ -1,0 +1,21 @@
+{
+  "name": "ocr-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "이미지에서 글자를 추출(OCR)하고 결과를 저장·다운로드하는 웹 서비스",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.0",
+    "sharp": "^0.35.5",
+    "tesseract.js": "^7.0.0"
+  }
+}
