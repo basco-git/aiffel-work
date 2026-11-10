@@ -1,5 +1,8 @@
 # yolo-ocr
 
+> **공개 웹 주소: <https://basco-git.github.io/aiffel-work/yolo-ocr/>**
+> 설치 없이 브라우저에서 바로 표 이미지 OCR을 실행할 수 있습니다.
+
 아이펠 선택 과제 **B. OCR 표 이미지 문서화** 제출 폴더입니다.
 Census **Table 1** 표 이미지를 PaddleOCR(영어 모델)로 읽었습니다. 행 이름과 열 제목을 연결한 `table.csv`와 `document.md`를 만들고,
 원본과 대조한 수정 내역과 "확인 필요" 칸을 원본 위치와 함께 남겼습니다.
