@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OCR Studio — 이미지에서 텍스트·표 추출</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">OCR</span>
+        <div>
+          <h1>OCR Studio</h1>
+          <p>이미지를 넣으면 글자를 뽑아 텍스트와 표(CSV)로 저장합니다</p>
+        </div>
+      </div>
+      <span class="badge" id="engineBadge">브라우저에서 실행</span>
+    </header>
+
+    <p class="notice">
+      서버 없이 <strong>브라우저 안에서</strong> 글자를 인식합니다. 결과는 이 브라우저에 저장되고
+      TXT · CSV로 내려받을 수 있습니다. (서버 저장판은 저장소의 <code>yolo-cor/ocr-service</code>)
+    </p>
+
+    <main class="layout">
+      <section class="card">
+        <h2>
+          <span class="step">1</span> 이미지 선택
+          <span class="hint">여러 장 한 번에 가능</span>
+        </h2>
+
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="이미지 선택">
+          <input type="file" id="fileInput" accept="image/*" multiple hidden />
+          <div class="dz-empty" id="dzEmpty">
+            <span class="dz-icon">＋</span>
+            <strong>이미지를 끌어다 놓거나 클릭하세요</strong>
+            <small>PNG · JPG · WEBP · TIFF, 장당 최대 20MB · Ctrl+V 붙여넣기도 됩니다</small>
+          </div>
+        </div>
+
+        <div class="thumbs" id="thumbs" hidden></div>
+
+        <div class="sample-row">
+          <button type="button" class="link" id="sampleBtn">샘플 이미지(ocr-test.png) 불러오기</button>
+          <span class="file-meta" id="fileMeta"></span>
+        </div>
+
+        <h2><span class="step">2</span> 인식 설정</h2>
+        <div class="settings">
+          <label>
+            언어
+            <select id="language"></select>
+          </label>
+          <label>
+            페이지 모드
+            <select id="psm"></select>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="preprocess" checked />
+            자동 보정 (확대·대비·샤프닝)
+          </label>
+          <label class="check">
+            <input type="checkbox" id="tableMode" checked />
+            표 자동 추출 (CSV)
+          </label>
+          <label class="check">
+            <input type="checkbox" id="autoSave" checked />
+            결과를 이 브라우저에 저장
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="runBtn" class="primary" disabled>OCR 시작</button>
+          <button id="resetBtn" class="ghost">초기화</button>
+        </div>
+        <p class="status" id="status" aria-live="polite"></p>
+
+        <ul class="queue" id="queue" hidden></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2><span class="step">3</span> 추출 결과</h2>
+          <span class="stats" id="stats"></span>
+        </div>
+        <textarea
+          id="result"
+          spellcheck="false"
+          placeholder="OCR을 실행하면 추출된 텍스트가 여기에 표시됩니다. 필요하면 직접 고쳐서 저장하세요."
+        ></textarea>
+        <div class="row">
+          <button id="copyBtn">복사</button>
+          <button id="downloadBtn">TXT 다운로드</button>
+          <button id="saveBtn" class="primary">저장</button>
+        </div>
+        <p class="status" id="resultStatus" aria-live="polite"></p>
+
+        <div class="csv-panel" id="csvPanel" hidden>
+          <div class="csv-head">
+            <strong>표 추출 결과</strong>
+            <span id="csvMeta"></span>
+            <button id="csvDownload" class="small">CSV 다운로드</button>
+          </div>
+          <div class="table-wrap">
+            <table id="csvPreview"></table>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card history">
+        <div class="card-head">
+          <h2>저장된 기록</h2>
+          <button id="refreshBtn" class="ghost small">새로고침</button>
+        </div>
+        <ul id="historyList" class="history-list">
+          <li class="empty">아직 저장된 결과가 없습니다.</li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer>
+      결과는 이 브라우저(<code>localStorage</code>)에 저장됩니다. 처음 인식할 때 언어 데이터를
+      내려받기 때문에 시간이 조금 걸릴 수 있습니다.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

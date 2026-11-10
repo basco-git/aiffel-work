@@ -4,6 +4,9 @@
 [tesseract.js](https://github.com/naptha/tesseract.js)(WASM)로 인식하고, 결과를 서버의
 `outputs/` 폴더에 `.txt` + `.json`(메타데이터) + `.csv`(표가 있을 때)로 저장합니다.
 
+> 설치 없이 쓰는 **공개 웹 버전**: <https://basco-git.github.io/aiffel-work/yolo-cor/>
+> (OCR이 브라우저에서 실행되고, 결과는 브라우저에 저장됩니다. 아래 서버 버전은 파일로 저장합니다.)
+
 ## 기능
 
 - **이미지 여러 장 한 번에** 선택 → 순서대로 OCR (한 번에 최대 20장)

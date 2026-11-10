@@ -9,6 +9,8 @@ on:
       - 'interview-booking/**'
       - 'Pair Quest-gmae/**'
       - 'my-game_rpg/**'
+      - 'yolo-cor/web/**'
+      - 'yolo-cor/ocr-test*.png'
       - '.github/workflows/deploy-cargame.yml'
   workflow_dispatch:
 
@@ -54,6 +56,9 @@ jobs:
           mkdir -p _site/louis-ramen
           cp "Pair Quest-gmae"/index.html "Pair Quest-gmae"/styles.css "Pair Quest-gmae"/script.js _site/louis-ramen/
           cp -r my-game_rpg/apps/client/dist _site/my-game_rpg
+          mkdir -p _site/yolo-cor
+          cp -r yolo-cor/web/. _site/yolo-cor/
+          cp yolo-cor/ocr-test.png yolo-cor/ocr-test2.png yolo-cor/yolo-test.jpg _site/yolo-cor/
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
