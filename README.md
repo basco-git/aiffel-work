@@ -11,7 +11,7 @@
 | 7 | todo | 할 일 앱: 로컬 SQLite(길 A) → Supabase·로그인·RLS(길 B) 전환 | [실행](https://basco-todo.onrender.com) | [제출 문서](todo/SUBMISSION.md) |
 | 7-1 | todo-Subquest | todo 앱 AI 도구 연동: 터미널 명령 `todo`, 작업 규칙 `AGENTS.md`, 스킬 `todo-summary`, MCP 서버 `todo-files` | [사용법](todo/README.md#ai-도구-연동-터미널-명령--스킬--mcp) | [제출 문서 (길 C)](todo/SUBMISSION.md#길-c--ai-도구-연동-cli--스킬--mcp) |
 | 8 | skills | 반복하던 일을 Claude Code 스킬 3개로: 제출 전 점검, 확인 장면 캡처, 과제 정리 | [설치법](skills/README.md#설치) | [제출 내용](skills/README.md#8-스킬-만들기-제출-내용) |
-| 9 | interview-booking | at~once의 면접 예약 서비스 interview-booking: 면접관 2~3명 일정이 모인 시간만 후보자에게 열림 | [실행](https://basco-git.github.io/aiffel-work/interview-booking/) | [폴더](interview-booking/) |
+| 9 | interview-booking | at~once의 면접 예약 서비스 interview-booking: 면접관 다수 일정이 모인 시간만 후보자에게 열림 | [실행](https://basco-git.github.io/aiffel-work/interview-booking/) | [폴더](interview-booking/) |
 | 10 | yolo-ocr | 과제 B OCR 표 문서화: Census Table 1을 PaddleOCR로 읽어 원본 대조 기록·확인 필요를 남긴 CSV·문서 (+ OCR 웹 서비스) | [검토 화면](https://basco-git.github.io/aiffel-work/yolo-ocr/table1/viewer.html) | [폴더](yolo-ocr/) |
 
 과제 진행 내용, 확인 장면, 회고는 각 프로젝트 폴더의 README에 있습니다.
