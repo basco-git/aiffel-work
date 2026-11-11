@@ -16,7 +16,7 @@
 |---|---|---|
 | `pose_tool.ipynb` | 원본 FLUX.2-klein 4B + ComfyUI 이미지 생성 노트 | 로컬 보관. 기존 텍스트 이미지 생성 확인, 포즈 조건 기능은 없음 |
 | `pose_controlnet_colab_실습전.ipynb` | OpenPose + ControlNet 포즈 생성 실습 초안 | 공개용 실행 전 노트. 실행 완료 노트는 로컬 보관, 패키지 설정 보완 필요 |
-| `pose_sdxl_experiment.ipynb` | SDXL + 호환 OpenPose ControlNet 별도 개선 실험 | 노트 작성, Colab 실행과 결과는 아직 확인 전. 인페인팅은 미포함 |
+| `pose_sdxl_experiment.ipynb` | SDXL + 호환 OpenPose ControlNet 별도 개선 실험 | 모델 로드 후 생성 중 RAM 부족으로 종료. 인페인팅은 미포함 |
 | `pose_light_experiment_실습전.ipynb` | SD 1.5에서 포즈 조건 적용 시점을 비교하는 별도 실험 | 공개용 실행 전 노트. Colab T4에서 실행했으나 얼굴 품질은 여전히 아쉬움 |
 | `experiments/04-light-pose-a/`, `05-light-pose-b/` | 가벼운 비교 실험 결과 | 포즈별 원본·뼈대·결과 두 장·설정 보관 |
 | `experiments/` | 다운로드한 SD 1.5 실험 결과 | 스튜디오 포즈 결과 공개, 초기 춤 사진 결과는 로컬 보관 |
@@ -24,25 +24,62 @@
 
 두 노트는 다른 실행 경로입니다. 원본 노트의 FLUX.2-klein에 SD 1.5용 ControlNet을 그대로 결합하지 않고, 원문에서 허용한 비슷한 모델 경로로 [Stable Diffusion 1.5](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5)와 [OpenPose ControlNet](https://huggingface.co/lllyasviel/control_v11p_sd15_openpose)을 사용해 시험했습니다. 최종 노트 이름은 제출 조건에 맞게 정리해야 합니다. 각 모델 카드와 라이선스·사용 조건을 확인합니다.
 
-## 진행 과정
+## 원하는 포즈로 만들기 진행 과정
 
 | 순서 | 한 일 | 확인한 결과 |
 |---|---|---|
-| 1 | 원문교안의 과제 조건과 제출 구조 확인 | 포즈 조건 생성, 두 종류의 조건 비교, Colab 튜토리얼과 GitHub URL 제출이 목표임을 확인 |
-| 2 | GitHub `aiffel-work` 아래 `openpose/` 준비 | 빈 폴더를 추적할 `.gitkeep`을 추가하고 `main`에 푸시함. 과제 파일은 별도 PR로 정리할 예정 |
-| 3 | 기존 FLUX.2-klein + ComfyUI Colab 노트 확인 | 프롬프트에서 이미지를 생성하는 구조이며 OpenPose 포즈 입력은 없음을 확인 |
-| 4 | 기존 노트 실행과 포트 충돌 대응 | Gradio의 7860 포트 충돌이 발생해 고정 포트 지정을 제거하는 방법을 안내했고, 이후 사용자가 이미지 생성 성공을 확인함 |
-| 5 | 호환 가능한 포즈 생성 경로 구성 | 별도 초안에 사진 업로드 → OpenPose 뼈대 → SD 1.5용 ControlNet → 세 조건 생성·다운로드를 작성함 |
-| 6 | Colab 라이브러리 설치 문제 대응 | 초안의 고정 버전 설치에서 `tokenizers` 빌드 오류가 발생함. 버전 범위를 조정한 설치에서는 설치 성공 메시지와 함께 기존 Gradio·huggingface-hub 의존성 충돌 경고가 표시됨 |
-| 7 | 역동적인 1인 춤 이미지 2장으로 실험 | Colab에서 뼈대와 생성 이미지가 나왔지만 일부 관절이 빠지거나 겹쳐 보이고 결과의 팔다리가 부자연스러웠음 |
-| 8 | 밝은 배경의 단독 댄서 이미지 2장으로 재실험 | 뼈대의 몸통과 팔·다리 방향이 이전보다 잘 보였으나 생성 결과에서 얼굴이 작고 흐릿하고 몸 앞에 팔처럼 보이는 형태가 나타남 |
-| 9 | 생성 설정 조정 후 결과 확인 | `steps=30`, `control_strength=0.8`로 실행한 뒤에도 얼굴은 흐릿했고, A 포즈는 어느 정도 반영됐으나 B1은 팔이 세 개처럼 생성됐다고 사용자가 확인함. 결과 파일 정리는 남아 있음 |
-| 10 | A1·A2·B1 결과 비교 | `steps=30`, `control_strength=0.5`에서 A1은 팔과 다리의 큰 방향이 보이고 A2는 우주복 일러스트가 나옴. B1은 원본 B의 몸 앞 팔 동작과 달라짐. 얼굴과 자세의 부자연스러움이 관찰됨 |
-| 11 | 개선 실험 준비 | SDXL 기본 모델과 호환 OpenPose ControlNet을 사용하는 별도 노트를 작성함. GPU 실행·품질 개선 여부는 미확인 |
-| 12 | SDXL ControlNet 로드 오류 수정 | `thibaud` 저장소에 Diffusers가 요구한 이름의 safetensors 파일이 없어 로드 오류가 발생함. 해당 파일이 있는 `xinsir` SDXL OpenPose 모델로 변경하고 모델 로드까지 진행함 |
-| 13 | SDXL 실행과 가벼운 대안 준비 | SDXL 이미지 생성 중 Colab RAM을 모두 사용해 세션이 종료됨. 이후 기존 SD 1.5로 포즈 조건 적용 시점을 비교함 |
-| 14 | 가벼운 포즈 조건 비교 실행 | Tesla T4에서 포즈 A 사진으로 `control_guidance_end` 1.0과 0.8을 비교함. 두 결과의 전체 자세는 비슷하고 얼굴은 여전히 흐릿함. B 포즈의 개선 여부는 이 실험에서 확인하지 못함 |
-| 15 | B 포즈 조건 비교 실행 | 동일 설정으로 포즈 B를 시험함. 두 결과 모두 팔이 세 개처럼 나타났고, 적용 종료 시점 1.0과 0.8 사이에 눈에 띄는 개선은 없었음. 설정·원본·뼈대·두 결과를 보관함 |
+| 1 | 과제와 기존 Colab 확인 | 기존 FLUX.2-klein + ComfyUI는 텍스트 이미지 생성용이며 포즈 입력이 없어 별도 조건 연결이 필요했음 |
+| 2 | 기존 생성 기능부터 검증 | Gradio 7860 포트 충돌을 고정 포트 지정 제거로 대응한 뒤 이미지 한 장 생성에 성공함 |
+| 3 | 호환 포즈 생성 경로 구성 | FLUX.2-klein에 SD 1.5용 ControlNet을 그대로 붙이지 않고 SD 1.5 + OpenPose ControlNet으로 사진·뼈대·생성을 연결함 |
+| 4 | 설치 오류 해결 후 첫 포즈 시험 | `tokenizers` 빌드 오류에 대응해 설치 버전을 변경함. 설치는 성공했지만 Gradio 의존성 충돌 경고가 남았음. 역동적인 자세는 관절 누락·겹침과 부자연스러운 팔다리가 나타남 |
+| 5 | 추출과 생성 문제를 나눠 확인 | 밝은 배경의 단독 댄서 A·B 이미지를 새로 사용함. 뼈대는 더 알아보기 쉬워졌지만 B 결과는 여분의 팔이 생기고 얼굴이 흐릿했음 |
+| 6 | 생성 설정과 조건 비교 | 시드 42를 유지하며 스텝·포즈 조건 강도를 조정하고 A1·A2·B1을 비교함. 0.8·0.5의 관찰은 대화에 남아 있으나 해당 파일의 설정 대응은 확인하지 못함 |
+| 7 | 더 큰 모델 시험 | 얼굴·신체 개선 가능성을 보려고 SDXL을 시도함. 가중치 파일명 오류를 다른 SDXL용 ControlNet으로 해결했으나 생성 중 Colab RAM 부족으로 세션이 종료됨 |
+| 8 | 가벼운 방식으로 재비교 | SD 1.5에서 포즈 조건 적용 종료 시점만 1.0·0.8로 바꿔 A·B를 시험함. 두 설정은 큰 차이가 없었고 B에는 여분의 팔이 남았음 |
+
+## 왜 여러 번 바꿔 봤을까?
+
+첫 결과가 어색했을 때 **사진에서 관절을 잘못 추출한 것인지, 뼈대는 맞지만 생성 모델이 잘못 그린 것인지** 구분할 필요가 있었습니다. 그래서 역동적인 사진을 밝고 팔다리가 잘 보이는 사진으로 바꿔 뼈대부터 확인했습니다. 그 뒤에도 B의 팔과 얼굴이 부자연스러워 포즈 조건과 생성 설정을 비교했고, 숫자 조정만으로 개선되지 않자 모델을 바꾸는 방안도 시험했습니다.
+
+`steps`는 생성 중 계산 단계 수, `control_strength`는 포즈 조건의 반영 강도입니다. `seed`는 무작위 출발점을 정합니다. 원인을 비교할 때는 **바꾸려는 값 하나를 제외한 조건을 유지**해야 합니다. 초기에 여러 값을 함께 바꾼 결과는 원인을 하나로 나눌 수 없고, SDXL 시도는 모델과 해상도가 함께 달라 단일 원인을 비교할 수 없습니다.
+
+## 실제 결과: 사진 → 뼈대 → 생성
+
+### A 포즈: 큰 자세는 따라가지만 얼굴은 작고 흐릿함
+
+| 참조 A | 추출한 뼈대 A | 생성 A1 |
+|---|---|---|
+| ![팔을 벌린 댄서 참조 A](experiments/03-studio-steps30-control1/samples/pose_A.png) | ![A의 OpenPose 뼈대](experiments/03-studio-steps30-control1/samples/skeleton_A.png) | ![A 뼈대로 생성한 댄서 A1](experiments/03-studio-steps30-control1/samples/result_A1.png) |
+
+참조 이미지의 팔과 다리 방향은 뼈대에 대체로 나타났고, 결과에서도 벌린 자세를 알아볼 수 있습니다. 다만 512×512 전신 이미지에서 얼굴이 작고 선명하지 않았습니다. 이것이 포즈 강도 하나 때문이라고 단정하지 않았습니다.
+
+### 과제 조건 비교: 같은 포즈·다른 프롬프트 / 다른 포즈·같은 프롬프트
+
+| A1 · 포즈 A + 댄서 | A2 · 포즈 A + 우주인 | B1 · 포즈 B + 댄서 |
+|---|---|---|
+| ![A1 댄서](experiments/03-studio-steps30-control1/samples/result_A1.png) | ![A2 우주인 일러스트](experiments/03-studio-steps30-control1/samples/result_A2.png) | ![B1 댄서](experiments/03-studio-steps30-control1/samples/result_B1.png) |
+
+이 세 결과는 같은 [설정 기록](experiments/03-studio-steps30-control1/experiment_settings.json)에 따라 `seed=42`, `steps=30`, `control_strength=1.0`으로 생성됐습니다. A1과 A2는 같은 뼈대에 프롬프트를 바꾸자 댄서 사진과 우주인 일러스트로 달라졌습니다. A1과 B1은 같은 댄서 프롬프트에서 뼈대를 바꾼 비교지만, B의 몸 앞 팔 동작이 정확히 재현됐다고 보기는 어렵습니다.
+
+### B 포즈: 뼈대가 보이더라도 신체가 정확하지 않을 수 있음
+
+| 참조 B | 추출한 뼈대 B | 조건 적용 100% | 조건 적용 80% |
+|---|---|---|---|
+| ![몸 앞에 팔을 둔 댄서 참조 B](experiments/05-light-pose-b/reference.png) | ![B의 OpenPose 뼈대](experiments/05-light-pose-b/skeleton.png) | ![조건 적용 종료 1.0 결과](experiments/05-light-pose-b/baseline_end1.png) | ![조건 적용 종료 0.8 결과](experiments/05-light-pose-b/experiment_end08.png) |
+
+팔이 몸 앞을 지나는 B 이미지로 포즈 조건 적용을 끝까지 유지한 결과와 80%까지만 적용한 결과를 비교했습니다. 두 그림 모두 **팔이 세 개처럼 보이는 문제**가 남았고, 눈에 띄는 개선은 없었습니다. 뼈대가 생성의 조건이지 관절을 정확히 고정하는 보장은 아니라는 한계가 드러났습니다.
+
+공통 설정은 `seed=42`, `steps=30`, `control_strength=0.8`, `guidance_scale=7.5`, 512×512, Tesla T4이고 `control_guidance_end`만 바꿨습니다. [B 설정 기록](experiments/05-light-pose-b/settings.json) · [A 설정 기록](experiments/04-light-pose-a/settings.json)
+
+## 오류와 대응 기록
+
+| 상황 | 왜 확인했나 / 어떻게 대응했나 | 남은 점 |
+|---|---|---|
+| Gradio `7860` 포트 충돌 | 기존 FLUX 이미지 생성부터 되는지 확인하던 중 발생. `server_port=7860`을 제거해 빈 포트를 찾도록 한 뒤 이미지 생성 확인 | 기존 FLUX 노트에는 포즈 제어가 없음 |
+| `tokenizers` 빌드 실패 | SD 1.5 실습 초안의 고정 버전 설치가 현재 Colab과 맞지 않았음. 설치 버전을 바꿔 설치 성공 메시지를 확인 | 기존 Gradio와 `huggingface-hub` 의존성 충돌 경고가 있었으며, 포즈 실습은 Gradio를 쓰지 않음 |
+| SDXL 가중치 파일 오류 | `thibaud` 저장소에서 지정한 이름의 Diffusers safetensors를 찾지 못함. 해당 파일이 있는 `xinsir` SDXL용 모델로 변경 | 모델 로드가 된 것과 결과 생성 성공은 별개 |
+| `pipe` 변수가 없음 | 모델 로드 출력과 현재 런타임 상태가 다른지 확인함. 진단 셀로 변수가 없는 것을 확인하고 로드 후 다시 존재함을 확인 | 런타임이 재시작되면 사진·뼈대·모델 변수도 사라짐 |
+| SDXL 실행 중 Colab RAM 부족 | 더 좋은 얼굴·신체 표현을 기대해 시도했지만 이미지 생성 중 세션이 종료됨 | SDXL 생성 결과는 없음. 기존 SD 1.5로 돌아가 비교함 |
 
 ## 실험 비교 계획
 
