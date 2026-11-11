@@ -1,0 +1,38 @@
+[
+  {
+    "name": "baseline_end1",
+    "prompt": "a single dancer in casual clothes in a bright dance studio, full body, photograph",
+    "seed": 42,
+    "steps": 30,
+    "control_strength": 0.8,
+    "control_guidance_end": 1.0,
+    "guidance_scale": 7.5,
+    "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "size": [
+      512,
+      512
+    ],
+    "gpu": "Tesla T4",
+    "diffusers": "0.39.0",
+    "input_file": "korean_dancer_white_studio_2.jpg"
+  },
+  {
+    "name": "experiment_end08",
+    "prompt": "a single dancer in casual clothes in a bright dance studio, full body, photograph",
+    "seed": 42,
+    "steps": 30,
+    "control_strength": 0.8,
+    "control_guidance_end": 0.8,
+    "guidance_scale": 7.5,
+    "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "size": [
+      512,
+      512
+    ],
+    "gpu": "Tesla T4",
+    "diffusers": "0.39.0",
+    "input_file": "korean_dancer_white_studio_2.jpg"
+  }
+]

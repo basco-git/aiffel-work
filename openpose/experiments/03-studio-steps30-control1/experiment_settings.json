@@ -1,0 +1,35 @@
+[
+  {
+    "id": "A1",
+    "prompt": "a single dancer in casual clothes in a bright dance studio, full body, photograph",
+    "seed": 42,
+    "steps": 30,
+    "guidance_scale": 7.5,
+    "control_strength": 1.0,
+    "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "output": "samples/result_A1.png"
+  },
+  {
+    "id": "A2",
+    "prompt": "a single astronaut in a space station, full body, cinematic illustration",
+    "seed": 42,
+    "steps": 30,
+    "guidance_scale": 7.5,
+    "control_strength": 1.0,
+    "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "output": "samples/result_A2.png"
+  },
+  {
+    "id": "B1",
+    "prompt": "a single dancer in casual clothes in a bright dance studio, full body, photograph",
+    "seed": 42,
+    "steps": 30,
+    "guidance_scale": 7.5,
+    "control_strength": 1.0,
+    "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "output": "samples/result_B1.png"
+  }
+]
