@@ -14,6 +14,6 @@
 | 9 | interview-booking | at~once의 면접 예약 서비스 interview-booking: 면접관 다수 일정이 모인 시간만 후보자에게 열림 | [실행](https://basco-git.github.io/aiffel-work/interview-booking/) | [폴더](interview-booking/) |
 | 10 | yolo-ocr | 과제 B OCR 표 문서화: Census Table 1을 PaddleOCR로 읽어 원본 대조 기록·확인 필요를 남긴 CSV·문서 (+ OCR 웹 서비스) | [검토 화면](https://basco-git.github.io/aiffel-work/yolo-ocr/table1/viewer.html) | [폴더](yolo-ocr/) |
 | 11 | openpose | 참조 사진의 포즈를 조건으로 이미지를 생성하는 Colab 튜토리얼 만들기 (진행 중) | - | [폴더](openpose/) |
-| 12 | open-space | 곰 피규어 3D: 폰 영상 → MapAnything 점 → 가우시안 스플랫 → SOG(7.3MB) 웹 뷰어, 형식별 크기 비교 | [보기](https://basco-git.github.io/open-space/) | [저장소](https://github.com/basco-git/open-space) |
+| 12 | open-space | 곰 피규어 3D: 폰 영상 3편 → MapAnything 점(신뢰도 거름) → 가우시안 스플랫 → SOG(11.5MB) 웹 뷰어, 형식별 크기 비교 | [보기](https://basco-git.github.io/open-space/) | [저장소](https://github.com/basco-git/open-space) |
 
 과제 진행 내용, 확인 장면, 회고는 각 프로젝트 폴더의 README에 있습니다.
