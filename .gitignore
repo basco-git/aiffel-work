@@ -11,3 +11,6 @@
 # 의존성 / 빌드 결과물
 node_modules/
 .next/
+
+# 3D 뷰어 과제 작업 폴더 (원본 영상 약 200MB, 공개본은 basco-git/open-space 저장소)
+open-space/
