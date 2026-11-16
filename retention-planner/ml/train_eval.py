@@ -27,6 +27,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 import allocate
+from generate_data import read_data
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -196,8 +197,8 @@ def main():
     seed = a.seed
     rng = np.random.default_rng(seed + 1000)
 
-    obs = {sc: pd.read_csv(DATA / f"employees_{sc}.csv") for sc in "AB"}
-    truth = {sc: pd.read_csv(DATA / f"truth_{sc}.csv") for sc in "AB"}
+    obs = {sc: read_data(DATA / f"employees_{sc}.csv") for sc in "AB"}
+    truth = {sc: read_data(DATA / f"truth_{sc}.csv") for sc in "AB"}
     gen = {sc: json.loads((DATA / f"gen_info_{sc}.json").read_text(encoding="utf-8")) for sc in "AB"}
     base = obs["A"]
     n = len(base)

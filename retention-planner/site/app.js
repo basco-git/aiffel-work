@@ -46,7 +46,7 @@ const S2_STYLE = {
   expert: { color: 'var(--s-aqua)' },
 };
 const S2_LABEL = { random: '무작위', risk: '위험 순', expert: 'HR 전문가 규칙', uplift: '효과 순(T-learner)', oracle: '진짜 효과 순(상한)' };
-const EXPERT_NOTE = '모델 없이 현업 지식(사유 × 면담자 권한)만 쓴 기준선이에요. 시나리오 B를 같은 현업 경험으로 만들었으므로 B에서 유리한 것은 자기 가정과 맞춘 비교이며, 규칙이 실제로 맞다는 증거가 아니에요.';
+const EXPERT_NOTE = '모델 없이 현업 지식(사유 × 면담자 권한)만 쓴 기준선이에요. 시나리오 B와 이 규칙은 같은 현업 경험으로 만들었어요. 시험 문제를 낸 사람이 직접 답을 쓴 셈이라 B에서 규칙이 앞서는 것은 당연하고, 규칙이 실제 회사에서도 맞다는 증거는 아니에요.';
 const styleOf = (map, id) => map[id] ?? { color: 'var(--s-ink)', dash: '1 3', cls: 'dot' };
 const swatch = (st) => `<span class="swatch ${st.cls ?? ''}" style="color:${st.color}" aria-hidden="true"></span>`;
 
