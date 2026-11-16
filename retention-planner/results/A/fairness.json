@@ -1,0 +1,120 @@
+{
+ "inputs": {
+  "k": 0.2,
+  "m": 135,
+  "C_replace": 30000000,
+  "C_lead": 300000,
+  "C_exec": 1500000
+ },
+ "groups": [
+  {
+   "group": "30세 미만",
+   "type": "age",
+   "share": 0.570741,
+   "risk": {
+    "exec_rate": 0.050616,
+    "lead_rate": 0.225827,
+    "capture": 0.728723
+   },
+   "expert": {
+    "exec_rate": 0.050616,
+    "lead_rate": 0.210902
+   },
+   "uplift": {
+    "exec_rate": 0.051265,
+    "lead_rate": 0.217391
+   }
+  },
+  {
+   "group": "30대",
+   "type": "age",
+   "share": 0.364074,
+   "risk": {
+    "exec_rate": 0.050865,
+    "lead_rate": 0.170905,
+    "capture": 0.605263
+   },
+   "expert": {
+    "exec_rate": 0.050865,
+    "lead_rate": 0.188199
+   },
+   "uplift": {
+    "exec_rate": 0.045778,
+    "lead_rate": 0.183113
+   }
+  },
+  {
+   "group": "40대",
+   "type": "age",
+   "share": 0.06037,
+   "risk": {
+    "exec_rate": 0.042945,
+    "lead_rate": 0.147239,
+    "capture": 0.666667
+   },
+   "expert": {
+    "exec_rate": 0.042945,
+    "lead_rate": 0.171779
+   },
+   "uplift": {
+    "exec_rate": 0.067485,
+    "lead_rate": 0.141104
+   }
+  },
+  {
+   "group": "50세 이상",
+   "type": "age",
+   "share": 0.004815,
+   "risk": {
+    "exec_rate": 0.0,
+    "lead_rate": 0.0,
+    "capture": 0.0
+   },
+   "expert": {
+    "exec_rate": 0.0,
+    "lead_rate": 0.153846
+   },
+   "uplift": {
+    "exec_rate": 0.0,
+    "lead_rate": 0.153846
+   }
+  },
+  {
+   "group": "남",
+   "type": "gender",
+   "share": 0.567037,
+   "risk": {
+    "exec_rate": 0.050294,
+    "lead_rate": 0.200523,
+    "capture": 0.681818
+   },
+   "expert": {
+    "exec_rate": 0.050294,
+    "lead_rate": 0.198563
+   },
+   "uplift": {
+    "exec_rate": 0.048334,
+    "lead_rate": 0.203135
+   }
+  },
+  {
+   "group": "여",
+   "type": "gender",
+   "share": 0.432963,
+   "risk": {
+    "exec_rate": 0.049615,
+    "lead_rate": 0.199316,
+    "capture": 0.666667
+   },
+   "expert": {
+    "exec_rate": 0.049615,
+    "lead_rate": 0.201882
+   },
+   "uplift": {
+    "exec_rate": 0.052181,
+    "lead_rate": 0.195894
+   }
+  }
+ ],
+ "note": "포착률은 시험 자료의 관측 퇴사자 기준"
+}
