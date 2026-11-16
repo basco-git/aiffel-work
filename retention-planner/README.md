@@ -24,11 +24,9 @@
 | 가상 직원 데이터 (관측 / 진짜 값) | [data/](data/) |
 | 분석 보고서 (초안) | [docs/REPORT.md](docs/REPORT.md) |
 
-| 예시값 · 시나리오 B (넓은 화면) | 휴대폰 폭 390px |
-| --- | --- |
-| ![시나리오 B 화면](docs/screenshots/desktop-scenario-b.png) | ![휴대폰 화면](docs/screenshots/mobile-example.png) |
+![공개 주소 첫 화면](docs/screenshots/live-top.png)
 
-- 캡처: 2026-11-16 22:21, 로컬 서버(`http://localhost:8000/?example=1&scenario=B`)를 크롬 헤드리스로 찍었습니다. 시나리오 A 전체 화면은 [desktop-example.png](docs/screenshots/desktop-example.png)에 있습니다.
+- 공개 주소 첫 화면(2026-11-16 22:32 캡처, 예시값). 전체 화면 캡처: [시나리오 A](docs/screenshots/desktop-example.png) · [시나리오 B](docs/screenshots/desktop-scenario-b.png)
 - 주소에 `?example=1`을 붙이면 예시값이 채워진 상태로, `&scenario=B`를 더하면 시나리오 B로 열립니다.
 
 ## 왜 이 프로젝트를 했나
