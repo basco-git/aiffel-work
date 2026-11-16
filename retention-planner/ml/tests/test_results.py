@@ -92,6 +92,17 @@ class TestResults(unittest.TestCase):
         # 위험 순: 0번 임원, 1번 팀장
         self.assertEqual(allocate.assign("risk", d, 1, 1 / 3, 100, 1, 5).tolist(), ["exec", "lead", ""])
 
+    def test_전문가_규칙_팀장_부족시_실제_인원으로_비용(self):
+        # 4명: 위험 순서 0>1>2>3, 권한 필요 = 3번만, 갈등 = 1·2번 → 임원 3번, 팀장 후보는 0번뿐
+        d = {"tiebreak": np.array([0, 1, 2, 3]), "risk": np.array([0.9, 0.8, 0.7, 0.6]),
+             "needs_authority": np.array([0, 0, 0, 1]), "leader_conflict": np.array([0, 1, 1, 0]),
+             "tau_lead": np.array([0.1, 0.1, 0.1, 0.1]), "tau_exec": np.array([0.2, 0.2, 0.2, 0.2])}
+        a = allocate.assign("expert", d, 1, 0.75, 100, 1, 5)  # L = 3 요청
+        self.assertEqual(a.tolist(), ["lead", "", "", "exec"])
+        r = allocate.stage2("expert", d, 1, 0.75, 100, 1, 5)
+        self.assertEqual(r["lead"], 1)  # 요청 3명보다 적음
+        self.assertAlmostEqual(r["net"], (0.2 + 0.1) * 100 - 5 - 1 * 1)  # 비용은 실제 1명분
+
     def test_고지_가능한_값_범위(self):
         for sc in "AB":
             s2 = self.scores[sc]["stage2"]

@@ -112,6 +112,7 @@ L = round(n × k)
   expert : risk 내림차순(동점 tiebreak) 순서에서
            임원 = needs_authority = 1 인 행을 앞에서 m명, 모자라면 나머지 행을 같은 순서로 채움
            팀장 = 남은 행 중 leader_conflict = 0 인 행을 같은 순서로 앞 L명 (모자라면 L보다 적게)
+           비용은 요청한 L이 아니라 **실제 배정 인원**으로 계산한다 (Python·JS 동일, 테스트로 확인)
   uplift : τ = (tau_hat_lead, tau_hat_exec) 로 아래 "가치 배분"
   oracle : τ = (tau_lead, tau_exec)         로 아래 "가치 배분"
 
