@@ -1,0 +1,109 @@
+{
+ "mock": false,
+ "seed": 42,
+ "n": 9000,
+ "generated_at": "2026-11-16T21:22:16+09:00",
+ "runtime_sec": 62.8,
+ "versions": {
+  "python": "3.15.1",
+  "numpy": "2.5.5",
+  "pandas": "3.1.1",
+  "scikit-learn": "1.9.1"
+ },
+ "split": {
+  "train": 6300,
+  "test": 2700,
+  "stage1_test": 1080,
+  "stage2_test": 2700
+ },
+ "assignment": {
+  "none": 0.4,
+  "lead": 0.3,
+  "exec": 0.3
+ },
+ "best_stage1_model": "logit",
+ "default_inputs": {
+  "k": 0.2,
+  "m": 135,
+  "r": 0.3,
+  "C_replace": 30000000,
+  "C_lead": 300000,
+  "C_exec": 1500000
+ },
+ "scenarios": {
+  "A": {
+   "leave_rate": {
+    "none": 0.1453,
+    "lead": 0.123,
+    "exec": 0.0774
+   },
+   "decided_rate": 0.0,
+   "uplift_method": "t_hgb",
+   "mean_tau": {
+    "lead": 0.0328,
+    "exec": 0.06
+   },
+   "negative_tau_lead_share": 0.0
+  },
+  "B": {
+   "leave_rate": {
+    "none": 0.1453,
+    "lead": 0.1274,
+    "exec": 0.0744
+   },
+   "decided_rate": 0.0759,
+   "uplift_method": "t_hgb",
+   "mean_tau": {
+    "lead": 0.0266,
+    "exec": 0.0627
+   },
+   "negative_tau_lead_share": 0.122
+  }
+ },
+ "generation": {
+  "sigma": 1.0,
+  "b0": -2.848,
+  "target_leave_rate": 0.15,
+  "coefficients": {
+   "sat_pay": -0.6,
+   "sat_job_fit": -0.6,
+   "sat_direction": -0.5,
+   "overtime_hours_month": 0.5,
+   "sat_benefits": -0.3,
+   "years_since_promotion": 0.3,
+   "monthly_income_rank": -0.3,
+   "commute_minutes": 0.2,
+   "training_hours_year": -0.2,
+   "age": -0.25,
+   "leader_conflict": 0.9,
+   "tenure_under_1": 0.4
+  },
+  "effect": {
+   "A": {
+    "lead": 0.4,
+    "exec": 0.8
+   },
+   "B": {
+    "lead": {
+     "base": 0.3,
+     "low_job_fit": 0.3,
+     "low_direction": 0.1,
+     "leader_conflict": -0.8,
+     "floor": -0.4
+    },
+    "exec": {
+     "base": 0.2,
+     "low_pay": 0.6,
+     "low_job_fit": 0.5,
+     "low_benefits": 0.2,
+     "leader_conflict": 0.7,
+     "low_direction": 0.6
+    }
+   }
+  },
+  "strength": {
+   "A": 0.0,
+   "B": 1.0
+  }
+ }
+}

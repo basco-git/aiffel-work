@@ -1,0 +1,96 @@
+{
+ "inputs": {
+  "k": 0.2,
+  "m": 135,
+  "C_replace": 30000000,
+  "C_lead": 300000,
+  "C_exec": 1500000
+ },
+ "groups": [
+  {
+   "group": "30세 미만",
+   "type": "age",
+   "share": 0.570741,
+   "risk": {
+    "exec_rate": 0.050616,
+    "lead_rate": 0.225827,
+    "capture": 0.713542
+   },
+   "uplift": {
+    "exec_rate": 0.047372,
+    "lead_rate": 0.219987
+   }
+  },
+  {
+   "group": "30대",
+   "type": "age",
+   "share": 0.364074,
+   "risk": {
+    "exec_rate": 0.050865,
+    "lead_rate": 0.170905,
+    "capture": 0.565217
+   },
+   "uplift": {
+    "exec_rate": 0.052899,
+    "lead_rate": 0.178026
+   }
+  },
+  {
+   "group": "40대",
+   "type": "age",
+   "share": 0.06037,
+   "risk": {
+    "exec_rate": 0.042945,
+    "lead_rate": 0.147239,
+    "capture": 0.705882
+   },
+   "uplift": {
+    "exec_rate": 0.06135,
+    "lead_rate": 0.153374
+   }
+  },
+  {
+   "group": "50세 이상",
+   "type": "age",
+   "share": 0.004815,
+   "risk": {
+    "exec_rate": 0.0,
+    "lead_rate": 0.0,
+    "capture": 0.0
+   },
+   "uplift": {
+    "exec_rate": 0.0,
+    "lead_rate": 0.076923
+   }
+  },
+  {
+   "group": "남",
+   "type": "gender",
+   "share": 0.567037,
+   "risk": {
+    "exec_rate": 0.050294,
+    "lead_rate": 0.200523,
+    "capture": 0.657609
+   },
+   "uplift": {
+    "exec_rate": 0.048334,
+    "lead_rate": 0.206401
+   }
+  },
+  {
+   "group": "여",
+   "type": "gender",
+   "share": 0.432963,
+   "risk": {
+    "exec_rate": 0.049615,
+    "lead_rate": 0.199316,
+    "capture": 0.65035
+   },
+   "uplift": {
+    "exec_rate": 0.052181,
+    "lead_rate": 0.191617
+   }
+  }
+ ],
+ "note": "포착률은 시험 자료의 관측 퇴사자 기준"
+}
