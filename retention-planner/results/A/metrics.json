@@ -91,7 +91,7 @@
    },
    {
     "id": "hgb",
-    "label": "HistGradientBoosting",
+    "label": "히스토그램 부스팅",
     "accuracy": 0.842593,
     "auc": 0.772486,
     "brier_raw": 0.127648,
@@ -159,7 +159,7 @@
    },
    {
     "id": "uplift",
-    "label": "효과 순(T-learner(로지스틱))",
+    "label": "효과 순(두 모델 비교법·로지스틱)",
     "qini_lead": 0.003615,
     "corr_lead": 0.507698,
     "qini_exec": 0.004947,
@@ -882,16 +882,16 @@
   },
   "uplift_selection": {
    "chosen": "t_logit",
-   "label": "T-learner(로지스틱)",
+   "label": "두 모델 비교법·로지스틱",
    "cv_qini": {
     "t_hgb": 0.000146,
     "t_logit": 0.004151,
     "s_logit": 0.004111
    },
    "labels": {
-    "t_hgb": "T-learner(HistGB)",
-    "t_logit": "T-learner(로지스틱)",
-    "s_logit": "S-learner(로지스틱+상호작용)"
+    "t_hgb": "두 모델 비교법·부스팅",
+    "t_logit": "두 모델 비교법·로지스틱",
+    "s_logit": "한 모델 상호작용법·로지스틱"
    },
    "rule": "훈련 자료 5겹 교차 검증의 관측 Qini(팀장·임원 평균) 최대"
   }

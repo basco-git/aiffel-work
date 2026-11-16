@@ -402,7 +402,9 @@ function renderStage2() {
       </article>`;
     }
     const gap = all.oracle.net > 0 && all.uplift.pct != null && all.risk.pct != null
-      ? `<div class="note" style="margin-top:12px">지금 입력에서 효과 순(추정 효과로 배분)의 순이익은 위험 순보다 <b>${all.uplift.net >= all.risk.net ? '높아요' : '낮아요'}</b>(상한 대비 효과 순 ${all.uplift.pct.toFixed(1)}%, 위험 순 ${all.risk.pct.toFixed(1)}%). 진짜 효과를 알면(상한) ${fmtWon(all.oracle.net)}까지 가능하지만, <b>개인별 효과를 이 규모의 시범 기록(면담 갈래마다 수백 명)으로 추정하기는 어려워요.</b> 상한과의 격차가 곧 그 추정의 어려움이에요.</div>`
+      ? `<div class="note" style="margin-top:12px">지금 입력에서 효과 순(추정 효과로 배분)의 순이익은 위험 순보다 <b>${all.uplift.net >= all.risk.net ? '높아요' : '낮아요'}</b>(상한 대비 효과 순 ${all.uplift.pct.toFixed(1)}%, 위험 순 ${all.risk.pct.toFixed(1)}%). 진짜 효과를 알면(상한) ${fmtWon(all.oracle.net)}까지 가능해요. ${all.uplift.net >= all.risk.net
+        ? '<b>추정한 효과로도 위험 순을 넘었지만, 상한과의 격차만큼 개인별 추정 오차가 남아 있어요.</b> 이 결과는 효과 추정 방법 선택에 크게 좌우돼요(아래 민감도 표).'
+        : '<b>이 조건에서는 추정한 효과가 위험 순보다 못해요.</b> 효과가 모두 비슷하면 위험 순이 이미 최선에 가깝고, 효과 차이가 있어도 추정 오차가 크면 이득이 사라져요.'}</div>`
       : '';
     const expertNote = all.expert ? `<div class="note"><b>HR 전문가 규칙:</b> ${esc(EXPERT_NOTE)}</div>` : '';
     html += `</div>${gap}${expertNote}<p class="caption">역효과 배정 = 팀장 면담에 배정됐지만 진짜 팀장 면담 효과가 음수인 사람(예: 팀장 갈등이 사유). 막은 퇴사 수와 순이익은 진짜 효과로 채점한 값이며, 실제 자료에서는 알 수 없어요.</p>`;
@@ -666,6 +668,14 @@ async function main() {
   });
   document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { state.scenario = b.dataset.scn; schedule(); }));
   $('btn-copy').addEventListener('click', copySummary);
+
+  // 주소 옵션: ?example=1 → 예시값을 채운 상태로 열기, ?scenario=B → 시나리오 B로 열기 (제출 문서 링크·화면 캡처용)
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('scenario') === 'B') state.scenario = 'B';  // 버튼 눌림 표시는 렌더링에서 맞춘다
+  if (qs.has('example')) {
+    const ex = exampleValues();
+    for (const f of FIELDS) $(`in-${f}`).value = ex[f];
+  }
 
   renderFooter();
   update();

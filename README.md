@@ -16,5 +16,6 @@
 | 11 | openpose | 참조 사진의 포즈를 조건으로 이미지를 생성하는 Colab 튜토리얼 만들기 (진행 중) | - | [폴더](openpose/) |
 | 12 | open-space | 곰 피규어 3D: 폰 영상 3편 → MapAnything 점(신뢰도 거름) → 가우시안 스플랫 → SOG(11.5MB) 웹 뷰어, 형식별 크기 비교 | [보기](https://basco-git.github.io/open-space/) | [저장소](https://github.com/basco-git/open-space) |
 | 12-1 | bear-climb | 곰 머리 오르기: 12번 스플랫 장면에 캐릭터·나선 발판·충돌체를 넣은 점프 게임 (PC·폰) | [플레이](https://basco-git.github.io/bear-climb/) | [저장소](https://github.com/basco-git/bear-climb) |
+| 13 | retention-planner | 누구를, 누가 면담해야 퇴사를 막나: 가상 직원 9천 명으로 위험 예측·업리프트·HR 전문가 규칙을 비교하고 면담 예산 순이익을 계산하는 시뮬레이터 | [실행](https://basco-git.github.io/aiffel-work/retention-planner/?example=1) | [폴더](retention-planner/) |
 
 과제 진행 내용, 확인 장면, 회고는 각 프로젝트 폴더의 README에 있습니다.

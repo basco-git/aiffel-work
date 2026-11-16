@@ -25,8 +25,8 @@
   "scenario_base": "B"
  },
  "representative_learner": "t_logit",
- "note": "순이익은 원 단위, benefit_ratio = 효과 순 ÷ 위험 순(대표 추정기), expert_ratio = 규칙 ÷ 위험 순, uplift_wins = 시드 중 효과 순이 이긴 횟수",
- "runtime_sec": 187.6,
+ "note": "값은 위험 순 대비 순이익 비율(1보다 크면 위험 순보다 나음)이고, 시드 3개의 평균입니다. 효과 순은 본 실행에서 고른 추정 방법(두 모델 비교법·로지스틱) 기준이며, 두 추정 방법의 값은 보고서에 함께 있습니다.",
+ "runtime_sec": 201.5,
  "cells": [
   {
    "n": 9000,

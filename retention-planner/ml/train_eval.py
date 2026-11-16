@@ -75,7 +75,7 @@ def make_models(seed):
         "rf": ("랜덤 포레스트", "model",
                Pipeline([("p", prep()), ("m", RandomForestClassifier(n_estimators=300, min_samples_leaf=5,
                                                                     n_jobs=-1, random_state=seed))])),
-        "hgb": ("HistGradientBoosting", "model",
+        "hgb": ("히스토그램 부스팅", "model",
                 Pipeline([("p", prep()), ("m", HistGradientBoostingClassifier(random_state=seed))])),
         "gb": ("그래디언트 부스팅", "model",
                Pipeline([("p", prep()), ("m", GradientBoostingClassifier(random_state=seed))])),
@@ -134,9 +134,9 @@ class SLogit:
 
 
 UPLIFT_CANDIDATES = {
-    "t_hgb": ("T-learner(HistGB)", lambda s: TLearner(uplift_hgb, s)),
-    "t_logit": ("T-learner(로지스틱)", lambda s: TLearner(uplift_logit, s)),
-    "s_logit": ("S-learner(로지스틱+상호작용)", lambda s: SLogit(s)),
+    "t_hgb": ("두 모델 비교법·부스팅", lambda s: TLearner(uplift_hgb, s)),
+    "t_logit": ("두 모델 비교법·로지스틱", lambda s: TLearner(uplift_logit, s)),
+    "s_logit": ("한 모델 상호작용법·로지스틱", lambda s: SLogit(s)),
 }
 
 
@@ -392,7 +392,7 @@ def main():
                 imp_up.append({"feature": f, "label": LABELS[f], "mean": rnd(np.mean(shifts)), "std": rnd(np.std(shifts))})
             imp = {"risk": sorted(imp_risk, key=lambda x: -x["mean"]),
                    "uplift_exec": sorted(imp_up, key=lambda x: -x["mean"]),
-                   "note": "risk: 시험 대조군 AUC 하락량, uplift_exec: 임원 면담 추정 효과의 평균 변화량(정답 미사용)"}
+                   "note": "위험 요인: 시험 대조군에서 그 열을 섞었을 때 AUC가 떨어진 양. 효과 요인: 그 열을 섞었을 때 임원 면담 추정 효과가 평균적으로 변한 양(정답 미사용)"}
             (sc_dir / "importance.json").write_text(json.dumps(imp, ensure_ascii=False, indent=1), encoding="utf-8")
 
             # 공정성 (기본 입력 k 20%, m 5%)

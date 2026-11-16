@@ -12,6 +12,7 @@ on:
       - 'yolo-ocr/web/**'
       - 'yolo-ocr/ocr-test*.png'
       - 'yolo-ocr/outputs/**'
+      - 'retention-planner/site/**'
       - '.github/workflows/deploy-cargame.yml'
   workflow_dispatch:
 
@@ -62,6 +63,9 @@ jobs:
           cp yolo-ocr/ocr-test.png yolo-ocr/ocr-test2.png yolo-ocr/yolo-test.jpg _site/yolo-ocr/
           mkdir -p _site/yolo-ocr/table1
           cp -r yolo-ocr/outputs/. _site/yolo-ocr/table1/
+          mkdir -p _site/retention-planner
+          cp -r retention-planner/site/. _site/retention-planner/
+          rm -rf _site/retention-planner/mock
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
