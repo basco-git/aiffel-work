@@ -1,0 +1,452 @@
+{
+ "cases": [
+  {
+   "scenario": "A",
+   "inputs": {
+    "k": 0.2,
+    "m": 135,
+    "r": 0.3,
+    "C_replace": 30000000,
+    "C_lead": 300000,
+    "C_exec": 1500000
+   },
+   "stage1": {
+    "random": {
+     "S": 216,
+     "TP": 46,
+     "unneeded": 170,
+     "net": 349200000.0,
+     "capture": 0.265896
+    },
+    "tenure": {
+     "S": 216,
+     "TP": 33,
+     "unneeded": 183,
+     "net": 232200000.0,
+     "capture": 0.190751
+    },
+    "logit": {
+     "S": 216,
+     "TP": 90,
+     "unneeded": 126,
+     "net": 745200000.0,
+     "capture": 0.520231,
+     "threshold": {
+      "S": 860,
+      "TP": 167,
+      "net": 1245000000.0
+     }
+    },
+    "rf": {
+     "S": 216,
+     "TP": 88,
+     "unneeded": 128,
+     "net": 727200000.0,
+     "capture": 0.508671,
+     "threshold": {
+      "S": 901,
+      "TP": 171,
+      "net": 1268700000.0
+     }
+    },
+    "hgb": {
+     "S": 216,
+     "TP": 84,
+     "unneeded": 132,
+     "net": 691200000.0,
+     "capture": 0.485549,
+     "threshold": {
+      "S": 984,
+      "TP": 171,
+      "net": 1243800000.0
+     }
+    },
+    "gb": {
+     "S": 216,
+     "TP": 85,
+     "unneeded": 131,
+     "net": 700200000.0,
+     "capture": 0.491329,
+     "threshold": {
+      "S": 921,
+      "TP": 167,
+      "net": 1226700000.0
+     }
+    }
+   },
+   "stage2": {
+    "random": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 27.371513,
+     "net": 456645390.0,
+     "backfire": 0
+    },
+    "risk": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 57.484402,
+     "net": 1360032060.0,
+     "backfire": 0
+    },
+    "expert": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 55.087531,
+     "net": 1288125930.0,
+     "backfire": 0
+    },
+    "uplift": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 51.729756,
+     "net": 1187392680.0,
+     "backfire": 0
+    },
+    "oracle": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 68.532178,
+     "net": 1691465340.0,
+     "backfire": 0
+    }
+   }
+  },
+  {
+   "scenario": "A",
+   "inputs": {
+    "k": 0.1,
+    "m": 50,
+    "r": 0.3,
+    "C_replace": 30000000,
+    "C_lead": 300000,
+    "C_exec": 1500000
+   },
+   "stage1": {
+    "random": {
+     "S": 108,
+     "TP": 31,
+     "unneeded": 77,
+     "net": 246600000.0,
+     "capture": 0.179191
+    },
+    "tenure": {
+     "S": 108,
+     "TP": 17,
+     "unneeded": 91,
+     "net": 120600000.0,
+     "capture": 0.098266
+    },
+    "logit": {
+     "S": 108,
+     "TP": 55,
+     "unneeded": 53,
+     "net": 462600000.0,
+     "capture": 0.317919,
+     "threshold": {
+      "S": 860,
+      "TP": 167,
+      "net": 1245000000.0
+     }
+    },
+    "rf": {
+     "S": 108,
+     "TP": 56,
+     "unneeded": 52,
+     "net": 471600000.0,
+     "capture": 0.323699,
+     "threshold": {
+      "S": 901,
+      "TP": 171,
+      "net": 1268700000.0
+     }
+    },
+    "hgb": {
+     "S": 108,
+     "TP": 49,
+     "unneeded": 59,
+     "net": 408600000.0,
+     "capture": 0.283237,
+     "threshold": {
+      "S": 984,
+      "TP": 171,
+      "net": 1243800000.0
+     }
+    },
+    "gb": {
+     "S": 108,
+     "TP": 57,
+     "unneeded": 51,
+     "net": 480600000.0,
+     "capture": 0.32948,
+     "threshold": {
+      "S": 921,
+      "TP": 167,
+      "net": 1226700000.0
+     }
+    }
+   },
+   "stage2": {
+    "random": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 12.320652,
+     "net": 213619560.0,
+     "backfire": 0
+    },
+    "risk": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 28.354329,
+     "net": 694629870.0,
+     "backfire": 0
+    },
+    "expert": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 27.447434,
+     "net": 667423020.0,
+     "backfire": 0
+    },
+    "uplift": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 25.443233,
+     "net": 607296990.0,
+     "backfire": 0
+    },
+    "oracle": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 35.22757,
+     "net": 900827100.0,
+     "backfire": 0
+    }
+   }
+  },
+  {
+   "scenario": "B",
+   "inputs": {
+    "k": 0.2,
+    "m": 135,
+    "r": 0.3,
+    "C_replace": 30000000,
+    "C_lead": 300000,
+    "C_exec": 1500000
+   },
+   "stage1": {
+    "random": {
+     "S": 216,
+     "TP": 46,
+     "unneeded": 170,
+     "net": 349200000.0,
+     "capture": 0.265896
+    },
+    "tenure": {
+     "S": 216,
+     "TP": 33,
+     "unneeded": 183,
+     "net": 232200000.0,
+     "capture": 0.190751
+    },
+    "logit": {
+     "S": 216,
+     "TP": 90,
+     "unneeded": 126,
+     "net": 745200000.0,
+     "capture": 0.520231,
+     "threshold": {
+      "S": 860,
+      "TP": 167,
+      "net": 1245000000.0
+     }
+    },
+    "rf": {
+     "S": 216,
+     "TP": 88,
+     "unneeded": 128,
+     "net": 727200000.0,
+     "capture": 0.508671,
+     "threshold": {
+      "S": 901,
+      "TP": 171,
+      "net": 1268700000.0
+     }
+    },
+    "hgb": {
+     "S": 216,
+     "TP": 84,
+     "unneeded": 132,
+     "net": 691200000.0,
+     "capture": 0.485549,
+     "threshold": {
+      "S": 984,
+      "TP": 171,
+      "net": 1243800000.0
+     }
+    },
+    "gb": {
+     "S": 216,
+     "TP": 85,
+     "unneeded": 131,
+     "net": 700200000.0,
+     "capture": 0.491329,
+     "threshold": {
+      "S": 921,
+      "TP": 167,
+      "net": 1226700000.0
+     }
+    }
+   },
+   "stage2": {
+    "random": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 25.309098,
+     "net": 394772940.0,
+     "backfire": 71
+    },
+    "risk": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 53.212197,
+     "net": 1231865910.0,
+     "backfire": 137
+    },
+    "expert": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 69.651789,
+     "net": 1725053670.0,
+     "backfire": 0
+    },
+    "uplift": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 62.918113,
+     "net": 1523043390.0,
+     "backfire": 30
+    },
+    "oracle": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 97.729483,
+     "net": 2567384490.0,
+     "backfire": 0
+    }
+   }
+  },
+  {
+   "scenario": "B",
+   "inputs": {
+    "k": 0.1,
+    "m": 50,
+    "r": 0.3,
+    "C_replace": 30000000,
+    "C_lead": 300000,
+    "C_exec": 1500000
+   },
+   "stage1": {
+    "random": {
+     "S": 108,
+     "TP": 31,
+     "unneeded": 77,
+     "net": 246600000.0,
+     "capture": 0.179191
+    },
+    "tenure": {
+     "S": 108,
+     "TP": 17,
+     "unneeded": 91,
+     "net": 120600000.0,
+     "capture": 0.098266
+    },
+    "logit": {
+     "S": 108,
+     "TP": 55,
+     "unneeded": 53,
+     "net": 462600000.0,
+     "capture": 0.317919,
+     "threshold": {
+      "S": 860,
+      "TP": 167,
+      "net": 1245000000.0
+     }
+    },
+    "rf": {
+     "S": 108,
+     "TP": 56,
+     "unneeded": 52,
+     "net": 471600000.0,
+     "capture": 0.323699,
+     "threshold": {
+      "S": 901,
+      "TP": 171,
+      "net": 1268700000.0
+     }
+    },
+    "hgb": {
+     "S": 108,
+     "TP": 49,
+     "unneeded": 59,
+     "net": 408600000.0,
+     "capture": 0.283237,
+     "threshold": {
+      "S": 984,
+      "TP": 171,
+      "net": 1243800000.0
+     }
+    },
+    "gb": {
+     "S": 108,
+     "TP": 57,
+     "unneeded": 51,
+     "net": 480600000.0,
+     "capture": 0.32948,
+     "threshold": {
+      "S": 921,
+      "TP": 167,
+      "net": 1226700000.0
+     }
+    }
+   },
+   "stage2": {
+    "random": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 10.987999,
+     "net": 173639970.0,
+     "backfire": 36
+    },
+    "risk": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 20.404568,
+     "net": 456137040.0,
+     "backfire": 101
+    },
+    "expert": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 35.246963,
+     "net": 901408890.0,
+     "backfire": 0
+    },
+    "uplift": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 28.74155,
+     "net": 706246500.0,
+     "backfire": 18
+    },
+    "oracle": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 55.416219,
+     "net": 1506486570.0,
+     "backfire": 0
+    }
+   }
+  }
+ ]
+}

@@ -92,6 +92,34 @@ class TestResults(unittest.TestCase):
         # 위험 순: 0번 임원, 1번 팀장
         self.assertEqual(allocate.assign("risk", d, 1, 1 / 3, 100, 1, 5).tolist(), ["exec", "lead", ""])
 
+    def test_전문가_규칙_팀장_부족시_실제_인원으로_비용(self):
+        # 4명: 위험 순서 0>1>2>3, 권한 필요 = 3번만, 갈등 = 1·2번 → 임원 3번, 팀장 후보는 0번뿐
+        d = {"tiebreak": np.array([0, 1, 2, 3]), "risk": np.array([0.9, 0.8, 0.7, 0.6]),
+             "needs_authority": np.array([0, 0, 0, 1]), "leader_conflict": np.array([0, 1, 1, 0]),
+             "tau_lead": np.array([0.1, 0.1, 0.1, 0.1]), "tau_exec": np.array([0.2, 0.2, 0.2, 0.2])}
+        a = allocate.assign("expert", d, 1, 0.75, 100, 1, 5)  # L = 3 요청
+        self.assertEqual(a.tolist(), ["lead", "", "", "exec"])
+        r = allocate.stage2("expert", d, 1, 0.75, 100, 1, 5)
+        self.assertEqual(r["lead"], 1)  # 요청 3명보다 적음
+        self.assertAlmostEqual(r["net"], (0.2 + 0.1) * 100 - 5 - 1 * 1)  # 비용은 실제 1명분
+
+    @unittest.skipUnless((RES / "sensitivity.json").exists(), "민감도 결과 없음")
+    def test_본_실행과_민감도의_같은_조건은_같은_방향(self):
+        """2026-11-16 22:1x 추가: 민감도가 추정기를 고정해 본 실행과 모순됐던 일을 다시 막는다.
+
+        본 실행(9,000명, 시나리오 B = 궁합 1.0)에서 효과 순이 위험 순을 이겼는지와,
+        민감도의 같은 칸(대표 추정기)에서 이긴 시드가 과반인지가 같아야 한다.
+        """
+        sens = json.loads((RES / "sensitivity.json").read_text(encoding="utf-8"))
+        cell = next(c for c in sens["cells"] if c["n"] == self.meta["n"] and c["strength"] == 1.0)
+        main_learner = self.meta["scenarios"]["B"]["uplift_method"]
+        self.assertEqual(sens.get("representative_learner"), main_learner,
+                         "민감도 대표 추정기가 본 실행의 선택과 다름 — run_all.ps1 -Sensitivity로 다시 실행")
+        case = next(c for c in self.ref["cases"] if c["scenario"] == "B" and c["inputs"]["k"] == 0.2)
+        main_wins = case["stage2"]["uplift"]["net"] > case["stage2"]["risk"]["net"]
+        sens_wins = cell["uplift_wins"] * 2 > len(cell["seeds"])
+        self.assertEqual(main_wins, sens_wins, "본 실행과 민감도(같은 조건)의 승패 방향이 다름")
+
     def test_고지_가능한_값_범위(self):
         for sc in "AB":
             s2 = self.scores[sc]["stage2"]

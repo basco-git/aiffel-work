@@ -110,4 +110,7 @@ if ((Test-Path $results) -and (Test-Path $site)) {
     Write-Log '[건너뜀] 결과 복사 - results 또는 site 폴더 없음(구현 전)'
 }
 
+# 7. 보고서 표 갱신 (docs/REPORT.md의 표시 구간)
+Invoke-Step '보고서 표 갱신' 'make_report_tables.py' @()
+
 Write-Log '===== 실행 끝 ====='

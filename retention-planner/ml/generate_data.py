@@ -70,6 +70,35 @@ EFFECT_B = {
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
+# CSV 열 이름 (코드 이름 → 파일에 쓰는 한글 이름)
+COLUMNS_KO = {
+    "emp_id": "직원번호", "department": "부서", "job_level": "직급", "tenure_years": "근속연수",
+    "years_since_promotion": "승진후기간", "monthly_income_rank": "급여상대수준",
+    "overtime_hours_month": "월야근시간", "commute_minutes": "통근분", "training_hours_year": "연교육시간",
+    "sat_pay": "연봉만족", "sat_job_fit": "원하는업무", "sat_benefits": "복지만족",
+    "leader_conflict": "팀장등갈등", "sat_direction": "회사방향신뢰",
+    "age": "나이", "gender": "성별", "marital_status": "혼인", "talk_by": "면담", "left": "퇴사",
+    "decided": "이미결심", "p_none": "퇴사확률_면담없음", "p_lead": "퇴사확률_팀장면담",
+    "p_exec": "퇴사확률_임원면담", "tau_lead": "효과_팀장면담", "tau_exec": "효과_임원면담",
+}
+TALK_KO = {"none": "면담없음", "lead": "팀장", "exec": "임원"}
+
+
+def to_ko(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.rename(columns=COLUMNS_KO)
+    if "면담" in out:
+        out["면담"] = out["면담"].map(TALK_KO)
+    return out
+
+
+def read_data(path: Path) -> pd.DataFrame:
+    """한글 CSV를 읽어 코드용 영문 열 이름·값으로 되돌린다."""
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df = df.rename(columns={v: k for k, v in COLUMNS_KO.items()})
+    if "talk_by" in df:
+        df["talk_by"] = df["talk_by"].map({v: k for k, v in TALK_KO.items()})
+    return df
+
 
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
@@ -89,9 +118,13 @@ def _draw_population(n: int, seed: int) -> dict:
     rng = np.random.default_rng(seed)
     d = {}
     d["department"] = rng.choice(DEPARTMENTS, size=n, p=DEPT_PROB)
-    tenure = np.minimum(rng.exponential(5.0, n), 25.0)
+    # 나이를 먼저 뽑는다(평균 38세, 22~60세). 2026-11-16 21:5x 수정:
+    # 이전에는 근속(평균 5년)에서 나이를 계산해 30세 미만이 57%로 비현실적이었다.
+    age = np.clip(np.round(rng.normal(38, 8, n)), 22, 60).astype(int)
+    # 근속은 나이가 많을수록 길고, 입사 가능 기간(나이 − 22년)과 25년을 넘지 않는다.
+    tenure = np.minimum(np.minimum(rng.exponential(2 + 0.25 * (age - 22), n), age - 22 + 0.5), 25.0)
     d["tenure_years"] = np.round(tenure, 1)
-    d["age"] = np.clip(np.round(24 + 0.9 * tenure + rng.normal(0, 5, n)), 21, 60).astype(int)
+    d["age"] = age
     d["job_level"] = np.clip(np.round(1 + tenure / 5 + rng.normal(0, 0.8, n)), 1, 5).astype(int)
     d["years_since_promotion"] = np.round(tenure * rng.beta(2, 3, n), 1)
     income = rng.uniform(0, 1, n)
@@ -229,8 +262,10 @@ def main():
 
     obs, truth, info = generate(a.scenario, a.seed, a.n, a.sigma, a.strength)
     a.out.mkdir(parents=True, exist_ok=True)
-    obs.to_csv(a.out / f"employees_{a.scenario}.csv", index=False, encoding="utf-8", lineterminator="\n")
-    truth.to_csv(a.out / f"truth_{a.scenario}.csv", index=False, encoding="utf-8", lineterminator="\n")
+    # 사람이 여는 CSV는 한글 열 이름·값으로, BOM 포함 UTF-8로 저장한다(엑셀 더블클릭 시 한글 깨짐 방지).
+    # 코드 안에서는 영문 열 이름을 쓰고, 읽을 때 read_data()로 되돌린다. — 2026-11-16 사용자 요청
+    to_ko(obs).to_csv(a.out / f"employees_{a.scenario}.csv", index=False, encoding="utf-8-sig", lineterminator="\n")
+    to_ko(truth).to_csv(a.out / f"truth_{a.scenario}.csv", index=False, encoding="utf-8-sig", lineterminator="\n")
     (a.out / f"gen_info_{a.scenario}.json").write_text(json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"시나리오 {a.scenario}: {a.n}명, 시드 {a.seed}, σ {a.sigma}, 궁합 강도 {info['strength']}, b0 {info['b0']}")

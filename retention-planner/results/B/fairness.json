@@ -10,109 +10,109 @@
   {
    "group": "30세 미만",
    "type": "age",
-   "share": 0.570741,
+   "share": 0.138889,
    "risk": {
-    "exec_rate": 0.050616,
-    "lead_rate": 0.225827,
-    "capture": 0.713542
+    "exec_rate": 0.053333,
+    "lead_rate": 0.192,
+    "capture": 0.592593
    },
    "expert": {
-    "exec_rate": 0.050616,
-    "lead_rate": 0.210902
+    "exec_rate": 0.053333,
+    "lead_rate": 0.210667
    },
    "uplift": {
-    "exec_rate": 0.047372,
-    "lead_rate": 0.219987
+    "exec_rate": 0.056,
+    "lead_rate": 0.216
    }
   },
   {
    "group": "30대",
    "type": "age",
-   "share": 0.364074,
+   "share": 0.444444,
    "risk": {
-    "exec_rate": 0.050865,
-    "lead_rate": 0.170905,
-    "capture": 0.565217
+    "exec_rate": 0.043333,
+    "lead_rate": 0.201667,
+    "capture": 0.630573
    },
    "expert": {
-    "exec_rate": 0.050865,
-    "lead_rate": 0.188199
+    "exec_rate": 0.043333,
+    "lead_rate": 0.1925
    },
    "uplift": {
-    "exec_rate": 0.052899,
-    "lead_rate": 0.178026
+    "exec_rate": 0.05,
+    "lead_rate": 0.190833
    }
   },
   {
    "group": "40대",
    "type": "age",
-   "share": 0.06037,
+   "share": 0.33963,
    "risk": {
-    "exec_rate": 0.042945,
-    "lead_rate": 0.147239,
-    "capture": 0.705882
+    "exec_rate": 0.054526,
+    "lead_rate": 0.201745,
+    "capture": 0.700935
    },
    "expert": {
-    "exec_rate": 0.042945,
-    "lead_rate": 0.171779
+    "exec_rate": 0.054526,
+    "lead_rate": 0.199564
    },
    "uplift": {
-    "exec_rate": 0.06135,
-    "lead_rate": 0.153374
+    "exec_rate": 0.052345,
+    "lead_rate": 0.206107
    }
   },
   {
    "group": "50세 이상",
    "type": "age",
-   "share": 0.004815,
+   "share": 0.077037,
    "risk": {
-    "exec_rate": 0.0,
-    "lead_rate": 0.0,
-    "capture": 0.0
+    "exec_rate": 0.0625,
+    "lead_rate": 0.197115,
+    "capture": 0.551724
    },
    "expert": {
-    "exec_rate": 0.0,
-    "lead_rate": 0.153846
+    "exec_rate": 0.0625,
+    "lead_rate": 0.225962
    },
    "uplift": {
-    "exec_rate": 0.0,
-    "lead_rate": 0.076923
+    "exec_rate": 0.028846,
+    "lead_rate": 0.197115
    }
   },
   {
    "group": "남",
    "type": "gender",
-   "share": 0.567037,
+   "share": 0.57,
    "risk": {
-    "exec_rate": 0.050294,
-    "lead_rate": 0.200523,
-    "capture": 0.657609
+    "exec_rate": 0.049383,
+    "lead_rate": 0.20013,
+    "capture": 0.675393
    },
    "expert": {
-    "exec_rate": 0.050294,
-    "lead_rate": 0.198563
+    "exec_rate": 0.049383,
+    "lead_rate": 0.206628
    },
    "uplift": {
-    "exec_rate": 0.048334,
-    "lead_rate": 0.206401
+    "exec_rate": 0.048733,
+    "lead_rate": 0.20078
    }
   },
   {
    "group": "여",
    "type": "gender",
-   "share": 0.432963,
+   "share": 0.43,
    "risk": {
-    "exec_rate": 0.049615,
-    "lead_rate": 0.199316,
-    "capture": 0.65035
+    "exec_rate": 0.050818,
+    "lead_rate": 0.199828,
+    "capture": 0.596154
    },
    "expert": {
-    "exec_rate": 0.049615,
-    "lead_rate": 0.201882
+    "exec_rate": 0.050818,
+    "lead_rate": 0.191214
    },
    "uplift": {
-    "exec_rate": 0.052181,
-    "lead_rate": 0.191617
+    "exec_rate": 0.05168,
+    "lead_rate": 0.198966
    }
   }
  ],

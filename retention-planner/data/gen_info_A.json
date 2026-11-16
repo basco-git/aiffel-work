@@ -4,7 +4,7 @@
   "n": 9000,
   "sigma": 1.0,
   "strength": 0.0,
-  "b0": -2.848,
+  "b0": -2.8717,
   "target_leave_rate": 0.15,
   "coefficients": {
     "sat_pay": -0.6,
@@ -44,9 +44,9 @@
     }
   },
   "leave_rate": {
-    "none": 0.1453,
-    "lead": 0.123,
-    "exec": 0.0774
+    "none": 0.1606,
+    "lead": 0.1222,
+    "exec": 0.0878
   },
   "decided_rate": 0.0,
   "mean_delta": {
@@ -54,9 +54,9 @@
     "exec": 0.8
   },
   "mean_tau": {
-    "lead": 0.0328,
-    "exec": 0.06
+    "lead": 0.0327,
+    "exec": 0.0598
   },
   "negative_tau_lead_share": 0.0,
-  "leader_conflict_rate": 0.1386
+  "leader_conflict_rate": 0.1418
 }

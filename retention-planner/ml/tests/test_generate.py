@@ -74,6 +74,17 @@ class TestGenerate(unittest.TestCase):
         self.assertTrue((t.loc[dec, "tau_lead"].abs() < 1e-9).all())
         self.assertTrue((t.loc[dec, "tau_exec"].abs() < 1e-9).all())
 
+    def test_한글_CSV로_쓰고_읽어도_같다(self):
+        import tempfile
+        from generate_data import read_data, to_ko
+        with tempfile.TemporaryDirectory() as d:
+            for df in (self.b[0], self.b[1]):
+                path = Path(d) / "t.csv"
+                to_ko(df).to_csv(path, index=False, encoding="utf-8-sig")
+                self.assertTrue(path.read_bytes().startswith(b"\xef\xbb\xbf"))  # BOM
+                back = read_data(path)
+                pd.testing.assert_frame_equal(df.reset_index(drop=True), back, check_dtype=False, atol=1e-6)
+
     def test_궁합_강도_0이면_A와_같다(self):
         _, t0, _ = generate("B", 42, N, strength=0.0)
         np.testing.assert_allclose(t0["tau_exec"], self.a[1]["tau_exec"])
