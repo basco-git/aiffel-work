@@ -225,6 +225,17 @@
   - `.github/workflows/deploy-cargame.yml`에 `retention-planner/site/**` 경로와 복사 단계를 넣었다(`mock/`은 제외).
   - `main`에 병합해야 배포된다. 병합은 사용자가 화면을 본 뒤 결정한다.
 
+### 22:24~22:33 · 배포 (PR #40 병합)
+- **병합:** 22:24에 `basco-git` 계정으로 병합되었다(병합 커밋 `b2e86bc`). 사용자가 GitHub에서 직접 병합한 것으로 보이며, 22:31에 Claude가 병합하려 했을 때는 이미 병합된 상태였다.
+- **배포:** Pages 워크플로 실행 `43875441213`이 33초 만에 성공했다.
+- **확인 (22:32):**
+  - 응답 200: `retention-planner/`, `app.js`, `data/meta.json`, `data/B/scores.json`, `data/sensitivity.json`
+  - 응답 404: `mock/`(의도대로 배포에서 뺐음)
+  - 기존 프로젝트(my-cargame, yolo-ocr, interview-booking)도 200
+  - 배포된 결과의 생성 시각: 22:17:26(가장 최근 실행)
+  - 공개 주소(`?example=1&scenario=B`)를 크롬 헤드리스로 그려 1단계 카드와 한글 이름표가 정상임을 확인했다.
+- **남은 차이:** 병합 뒤에 올린 커밋(`0dd0990`: TabICL 계획 기록)과 이 문서 갱신은 아직 `retention-planner` 브랜치에만 있다. 11-17 TabICL 작업과 함께 다음 PR로 `main`에 반영한다.
+
 ---
 
 ## 다음에 기록할 것
