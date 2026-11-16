@@ -1,6 +1,6 @@
 # retention-planner
 
-> **공개 웹 주소: `https://basco-git.github.io/aiffel-work/retention-planner/`** (배포 예정)
+> **공개 웹 주소: <https://basco-git.github.io/aiffel-work/retention-planner/?example=1>** (예시값이 채워진 상태로 열림)
 > 비용과 면담 인원을 바꿔 가며 "누구를, 누가 면담해야 퇴사를 막는가"를 브라우저에서 바로 계산합니다.
 
 아이펠 「AI 이해하고 사용하기」(10~17번) 마무리 개발 과제 제출 폴더입니다.
@@ -9,13 +9,13 @@
 
 > ⚠️ 모든 결과는 **직접 만든 가상 데이터**에서 나왔고 실제 회사의 성능을 뜻하지 않습니다. 점수는 면담·지원 대상의 **우선순위**를 정하는 데만 쓰며, 개인 평가·징계·해고의 근거로 쓰지 않습니다. 요인은 원인이 아니라 상관입니다.
 
-- 상태(2026-11-16 22:06 기준): 분석·웹 P0·P1 완료, 분석 보고서 초안 작성, 배포 남음 · 제출 마감 2026-11-18 22:00
+- 상태(2026-11-16 22:24 배포): 분석·웹 P0·P1 완료, 보고서 초안, GitHub Pages 배포 완료(PR #40). 남은 일: TabICL 시도(11-17), 보고서 다듬기 · 제출 마감 2026-11-18 22:00
 
 ## 결과 한눈에
 
 | 결과물 | 위치 |
 | --- | --- |
-| 웹 시뮬레이터 | 배포 예정 · [site/](site/) (로컬 실행: [실행 방법](#실행-방법)) |
+| 웹 시뮬레이터 | [공개 주소](https://basco-git.github.io/aiffel-work/retention-planner/?example=1) · [시나리오 B](https://basco-git.github.io/aiffel-work/retention-planner/?example=1&scenario=B) · [site/](site/) |
 | 분석 기록부 (시각순: 무엇을·왜·결과·한계) | [docs/ANALYSIS_LOG.md](docs/ANALYSIS_LOG.md) |
 | 설계 결정 인터뷰 (Q1~Q10, 사용자 결정과 Claude 판단 구분) | [docs/INTERVIEW.md](docs/INTERVIEW.md) |
 | 요구사항 (데이터 생성 규칙, 평가 방법, 비용 식) | [docs/PRD.md](docs/PRD.md) |
@@ -24,11 +24,9 @@
 | 가상 직원 데이터 (관측 / 진짜 값) | [data/](data/) |
 | 분석 보고서 (초안) | [docs/REPORT.md](docs/REPORT.md) |
 
-| 예시값 · 시나리오 B (넓은 화면) | 휴대폰 폭 390px |
-| --- | --- |
-| ![시나리오 B 화면](docs/screenshots/desktop-scenario-b.png) | ![휴대폰 화면](docs/screenshots/mobile-example.png) |
+![공개 주소 첫 화면](docs/screenshots/live-top.png)
 
-- 캡처: 2026-11-16 22:21, 로컬 서버(`http://localhost:8000/?example=1&scenario=B`)를 크롬 헤드리스로 찍었습니다. 시나리오 A 전체 화면은 [desktop-example.png](docs/screenshots/desktop-example.png)에 있습니다.
+- 공개 주소 첫 화면(2026-11-16 22:32 캡처, 예시값). 전체 화면 캡처: [시나리오 A](docs/screenshots/desktop-example.png) · [시나리오 B](docs/screenshots/desktop-scenario-b.png)
 - 주소에 `?example=1`을 붙이면 예시값이 채워진 상태로, `&scenario=B`를 더하면 시나리오 B로 열립니다.
 
 ## 왜 이 프로젝트를 했나
