@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RES = ROOT / "results"
-REPORT = ROOT / "docs" / "REPORT.md"
+REPORT = ROOT / "docs" / "REPORT.md"  # README.md도 함께 채움
 
 NAME1 = {"random": "무작위", "tenure": "근속 짧은 순", "logit": "로지스틱 회귀", "rf": "랜덤 포레스트",
          "hgb": "히스토그램 부스팅(HistGradientBoosting)", "gb": "그래디언트 부스팅"}
@@ -139,9 +139,18 @@ def build():
             r1.append([f"{n:,}명"] + [f"{cells[(n, s)]['benefit_ratio']['mean']:.2f} ({cells[(n, s)]['benefit_ratio']['min']:.2f}~{cells[(n, s)]['benefit_ratio']['max']:.2f}), {cells[(n, s)]['uplift_wins']}/{sens['repeats']}승"
                                       for s in sens["strength"]])
             r2.append([f"{n:,}명"] + [f"{cells[(n, s)]['expert_ratio']['mean']:.2f}" for s in sens["strength"]])
-        t["민감도"] = ("**효과 순 ÷ 위험 순** (시드 3개 평균, 최소~최대, 이긴 횟수)\n\n" + table(head, r1)
-                     + "\n\n**HR 전문가 규칙 ÷ 위험 순** (시드 3개 평균)\n\n" + table(head, r2)
-                     + f"\n\n1.0보다 크면 위험 순보다 낫다. 고정 조건: 위험 모델 로지스틱(보정), 효과 추정기 두 모델 비교법·부스팅, 잡음 σ 1.0. 실행 {sens['runtime_sec']}초.")
+        rep = sens.get("representative_learner", "t_hgb")
+        names = {"t_hgb": "두 모델 비교법·부스팅", "t_logit": "두 모델 비교법·로지스틱"}
+        extra = ""
+        if all("by_learner" in c for c in sens["cells"]):
+            r3 = [[f"{n:,}명"] + [" / ".join(f"{cells[(n, s)]['by_learner'][l]['benefit_ratio']['mean']:.2f}"
+                                           f" ({cells[(n, s)]['by_learner'][l]['uplift_wins']}승)" for l in ("t_hgb", "t_logit"))
+                                for s in sens["strength"]] for n in sens["n"]]
+            extra = "\n\n**추정기별 효과 순 ÷ 위험 순** (부스팅 / 로지스틱, 시드 3개 평균, 이긴 횟수)\n\n" + table(head, r3)
+        t["민감도"] = (f"**효과 순 ÷ 위험 순** — 대표 추정기: {names[rep]} (시드 3개 평균, 최소~최대, 이긴 횟수)\n\n" + table(head, r1)
+                     + "\n\n**HR 전문가 규칙 ÷ 위험 순** (시드 3개 평균)\n\n" + table(head, r2) + extra
+                     + "\n\n1.0보다 크면 위험 순보다 낫다. 대표 추정기는 본 실행(9,000명)의 시나리오 B 교차검증에서 고른 것. "
+                     + f"고정 조건: 위험 모델 로지스틱(보정), 잡음 σ 1.0. 실행 {sens['runtime_sec']}초.")
 
     # 공정성 (B)
     fp = RES / "B" / "fairness.json"
@@ -178,12 +187,14 @@ def fill(text: str, tables: dict) -> tuple[str, list]:
 
 def main():
     tables = build()
-    if not REPORT.exists():
-        print(f"  REPORT.md 없음: {REPORT}")
-        return
-    text, missing = fill(REPORT.read_text(encoding="utf-8"), tables)
-    REPORT.write_text(text, encoding="utf-8")
-    print(f"  표 {len(tables) - len(missing)}개 갱신" + (f", 표시 구간 없음: {', '.join(missing)}" if missing else ""))
+    # 보고서와 README 둘 다 채운다. 각 문서에 있는 표시 구간만 바뀐다.
+    for doc in (REPORT, ROOT / "README.md"):
+        if not doc.exists():
+            print(f"  없음: {doc}")
+            continue
+        text, missing = fill(doc.read_text(encoding="utf-8"), tables)
+        doc.write_text(text, encoding="utf-8")
+        print(f"  {doc.name}: 표 {len(tables) - len(missing)}개 갱신")
 
 
 if __name__ == "__main__":

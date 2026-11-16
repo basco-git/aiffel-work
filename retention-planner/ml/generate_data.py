@@ -118,9 +118,13 @@ def _draw_population(n: int, seed: int) -> dict:
     rng = np.random.default_rng(seed)
     d = {}
     d["department"] = rng.choice(DEPARTMENTS, size=n, p=DEPT_PROB)
-    tenure = np.minimum(rng.exponential(5.0, n), 25.0)
+    # 나이를 먼저 뽑는다(평균 38세, 22~60세). 2026-11-16 21:5x 수정:
+    # 이전에는 근속(평균 5년)에서 나이를 계산해 30세 미만이 57%로 비현실적이었다.
+    age = np.clip(np.round(rng.normal(38, 8, n)), 22, 60).astype(int)
+    # 근속은 나이가 많을수록 길고, 입사 가능 기간(나이 − 22년)과 25년을 넘지 않는다.
+    tenure = np.minimum(np.minimum(rng.exponential(2 + 0.25 * (age - 22), n), age - 22 + 0.5), 25.0)
     d["tenure_years"] = np.round(tenure, 1)
-    d["age"] = np.clip(np.round(24 + 0.9 * tenure + rng.normal(0, 5, n)), 21, 60).astype(int)
+    d["age"] = age
     d["job_level"] = np.clip(np.round(1 + tenure / 5 + rng.normal(0, 0.8, n)), 1, 5).astype(int)
     d["years_since_promotion"] = np.round(tenure * rng.beta(2, 3, n), 1)
     income = rng.uniform(0, 1, n)

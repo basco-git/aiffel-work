@@ -185,7 +185,7 @@ L = round(n × k)
 }
 ```
 
-- `expert`는 점수가 아니라 배분 규칙이라 Qini·상관이 `null`이다. 화면에는 "모델 없이 현업 지식만 쓴 기준선. 시나리오 B를 같은 경험으로 만들어 문제를 낸 사람이 직접 답을 쓴 셈이라 B에서 앞서는 것은 당연하며, 실제로 맞다는 증거는 아님"를 함께 표시한다.
+- `expert`는 점수가 아니라 배분 규칙이라 Qini·상관이 `null`이다. 화면에는 "모델 없이 현업 지식만 쓴 기준선. 시나리오 B와 같은 경험으로 만들어 앞서는 게 당연하며, 실제로 맞다는 증거는 아님"을 함께 표시한다.
 - `stage2.methods`의 `uplift` 라벨은 선택된 추정기 이름을 포함한다(예: "효과 순(T-learner(HistGB))").
 - 점수가 없는 기준선(`random`, `tenure`)은 `accuracy`, `brier_*`가 `null`.
 - `corr_*`: 스피어만 순위 상관(점수 vs 진짜 효과). `risk`는 위험 확률과 진짜 효과의 상관.
@@ -238,6 +238,7 @@ L = round(n × k)
             "corr_exec": {"mean": 0.3, "min": 0.2, "max": 0.4}, "corr_lead": {"mean": 0.2, "min": 0.1, "max": 0.3}}]}
 ```
 
+- **2026-11-16 22:02 추가:** `representative_learner`(대표 추정기, 본 실행 B의 교차검증 선택), 칸마다 `by_learner.{t_hgb,t_logit}.{net_uplift, benefit_ratio, uplift_wins, corr_exec, corr_lead}`. 칸의 최상위 `net_uplift`·`benefit_ratio`·`uplift_wins`·`corr_*`는 대표 추정기 값이다.
 - 순이익은 원 단위. `benefit_ratio` = 효과 순 ÷ 위험 순, `expert_ratio` = 전문가 규칙 ÷ 위험 순 (위험 순 ≤ 0인 시드는 제외), `uplift_wins` = 시드 중 효과 순이 위험 순을 이긴 횟수.
 - 화면 표(F16): 행 = n, 열 = 궁합 강도, 칸 = `benefit_ratio.mean`(최소~최대)과 `uplift_wins`/3. 같은 모양으로 `expert_ratio` 표도 둔다.
 

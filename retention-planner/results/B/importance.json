@@ -1,162 +1,162 @@
 {
  "risk": [
   {
-   "feature": "sat_job_fit",
-   "label": "원하는 업무",
-   "mean": 0.056655,
-   "std": 0.010635
-  },
-  {
    "feature": "sat_pay",
    "label": "연봉 만족",
-   "mean": 0.046778,
-   "std": 0.007668
+   "mean": 0.061449,
+   "std": 0.012588
+  },
+  {
+   "feature": "sat_job_fit",
+   "label": "원하는 업무",
+   "mean": 0.050617,
+   "std": 0.002591
   },
   {
    "feature": "overtime_hours_month",
    "label": "월 야근 시간",
-   "mean": 0.027893,
-   "std": 0.006806
-  },
-  {
-   "feature": "sat_direction",
-   "label": "회사 방향·성장 신뢰",
-   "mean": 0.027413,
-   "std": 0.00593
-  },
-  {
-   "feature": "tenure_years",
-   "label": "근속 연수",
-   "mean": 0.025687,
-   "std": 0.004051
+   "mean": 0.03242,
+   "std": 0.007411
   },
   {
    "feature": "sat_benefits",
    "label": "복지·보상 만족",
-   "mean": 0.023706,
-   "std": 0.00533
+   "mean": 0.019833,
+   "std": 0.002322
   },
   {
-   "feature": "job_level",
-   "label": "직급",
-   "mean": 0.016373,
-   "std": 0.003152
-  },
-  {
-   "feature": "years_since_promotion",
-   "label": "승진 후 기간",
-   "mean": 0.015175,
-   "std": 0.005876
-  },
-  {
-   "feature": "monthly_income_rank",
-   "label": "급여 상대 수준",
-   "mean": 0.009433,
-   "std": 0.003705
+   "feature": "sat_direction",
+   "label": "회사 방향·성장 신뢰",
+   "mean": 0.017757,
+   "std": 0.007158
   },
   {
    "feature": "leader_conflict",
    "label": "팀장 등 갈등",
-   "mean": 0.006857,
-   "std": 0.00309
+   "mean": 0.016021,
+   "std": 0.005337
   },
   {
-   "feature": "commute_minutes",
-   "label": "통근 시간",
-   "mean": 0.006363,
-   "std": 0.002684
+   "feature": "monthly_income_rank",
+   "label": "급여 상대 수준",
+   "mean": 0.011382,
+   "std": 0.003233
   },
   {
-   "feature": "department",
-   "label": "부서",
-   "mean": 0.002821,
-   "std": 0.001194
+   "feature": "years_since_promotion",
+   "label": "승진 후 기간",
+   "mean": 0.010945,
+   "std": 0.001215
   },
   {
    "feature": "training_hours_year",
    "label": "연 교육 시간",
-   "mean": 0.001885,
-   "std": 0.00226
+   "mean": 0.006949,
+   "std": 0.004295
+  },
+  {
+   "feature": "department",
+   "label": "부서",
+   "mean": 0.00403,
+   "std": 0.00214
+  },
+  {
+   "feature": "commute_minutes",
+   "label": "통근 시간",
+   "mean": 0.002118,
+   "std": 0.004077
+  },
+  {
+   "feature": "job_level",
+   "label": "직급",
+   "mean": -0.000841,
+   "std": 0.00176
+  },
+  {
+   "feature": "tenure_years",
+   "label": "근속 연수",
+   "mean": -0.000859,
+   "std": 0.001948
   }
  ],
  "uplift_exec": [
   {
-   "feature": "monthly_income_rank",
-   "label": "급여 상대 수준",
-   "mean": 0.060004,
-   "std": 0.000552
-  },
-  {
    "feature": "overtime_hours_month",
    "label": "월 야근 시간",
-   "mean": 0.058284,
-   "std": 0.000827
+   "mean": 0.035204,
+   "std": 0.000267
   },
   {
    "feature": "sat_pay",
    "label": "연봉 만족",
-   "mean": 0.054152,
-   "std": 0.00126
-  },
-  {
-   "feature": "tenure_years",
-   "label": "근속 연수",
-   "mean": 0.052303,
-   "std": 0.000755
-  },
-  {
-   "feature": "sat_direction",
-   "label": "회사 방향·성장 신뢰",
-   "mean": 0.050069,
-   "std": 0.000856
-  },
-  {
-   "feature": "sat_job_fit",
-   "label": "원하는 업무",
-   "mean": 0.047738,
-   "std": 0.000959
-  },
-  {
-   "feature": "training_hours_year",
-   "label": "연 교육 시간",
-   "mean": 0.044867,
-   "std": 0.000787
-  },
-  {
-   "feature": "commute_minutes",
-   "label": "통근 시간",
-   "mean": 0.04164,
-   "std": 0.000466
-  },
-  {
-   "feature": "sat_benefits",
-   "label": "복지·보상 만족",
-   "mean": 0.03208,
-   "std": 0.000812
-  },
-  {
-   "feature": "years_since_promotion",
-   "label": "승진 후 기간",
-   "mean": 0.03055,
-   "std": 0.000798
+   "mean": 0.030393,
+   "std": 0.000484
   },
   {
    "feature": "leader_conflict",
    "label": "팀장 등 갈등",
-   "mean": 0.023104,
-   "std": 0.000953
+   "mean": 0.025026,
+   "std": 0.000397
+  },
+  {
+   "feature": "sat_benefits",
+   "label": "복지·보상 만족",
+   "mean": 0.024183,
+   "std": 0.000314
+  },
+  {
+   "feature": "sat_job_fit",
+   "label": "원하는 업무",
+   "mean": 0.021393,
+   "std": 0.000377
   },
   {
    "feature": "department",
    "label": "부서",
-   "mean": 0.021633,
-   "std": 0.00055
+   "mean": 0.020566,
+   "std": 0.00047
   },
   {
    "feature": "job_level",
    "label": "직급",
-   "mean": 0.015905,
-   "std": 0.000251
+   "mean": 0.017161,
+   "std": 0.00019
+  },
+  {
+   "feature": "training_hours_year",
+   "label": "연 교육 시간",
+   "mean": 0.016445,
+   "std": 0.000156
+  },
+  {
+   "feature": "sat_direction",
+   "label": "회사 방향·성장 신뢰",
+   "mean": 0.015635,
+   "std": 0.000187
+  },
+  {
+   "feature": "monthly_income_rank",
+   "label": "급여 상대 수준",
+   "mean": 0.012019,
+   "std": 9.6e-05
+  },
+  {
+   "feature": "commute_minutes",
+   "label": "통근 시간",
+   "mean": 0.010127,
+   "std": 4.1e-05
+  },
+  {
+   "feature": "tenure_years",
+   "label": "근속 연수",
+   "mean": 0.009296,
+   "std": 0.000117
+  },
+  {
+   "feature": "years_since_promotion",
+   "label": "승진 후 기간",
+   "mean": 0.005119,
+   "std": 7.3e-05
   }
  ],
  "note": "risk: 시험 대조군 AUC 하락량, uplift_exec: 임원 면담 추정 효과의 평균 변화량(정답 미사용)"
