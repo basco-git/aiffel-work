@@ -172,6 +172,14 @@
     "corr_lead": 1.0,
     "qini_exec": 0.009556,
     "corr_exec": 1.0
+   },
+   {
+    "id": "expert",
+    "label": "HR 전문가 규칙",
+    "qini_lead": null,
+    "qini_exec": null,
+    "corr_lead": null,
+    "corr_exec": null
    }
   ],
   "qini_curves": {

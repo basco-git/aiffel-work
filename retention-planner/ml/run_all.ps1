@@ -96,6 +96,16 @@ if ((Test-Path $results) -and (Test-Path $site)) {
     if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
     Copy-Item -Recurse $results $dest
     Write-Log "[완료] 결과 복사 → site\data"
+    # 웹 계산(alloc.js)이 Python 기대값(reference.json)과 같은지 대조
+    $jsTest = Join-Path $site 'alloc.test.mjs'
+    if ((Test-Path $jsTest) -and (Get-Command node -ErrorAction SilentlyContinue)) {
+        Write-Log '[시작] 웹 계산 대조 (node alloc.test.mjs)'
+        $out = & node $jsTest $dest 2>&1 | ForEach-Object { "$_" }
+        $code = $LASTEXITCODE
+        $out | Select-Object -Last 3 | ForEach-Object { Write-Log "    $_" }
+        if ($code -ne 0) { Write-Log "[실패] 웹 계산 대조 (종료 코드 $code)"; exit 1 }
+        Write-Log '[완료] 웹 계산 대조'
+    }
 } else {
     Write-Log '[건너뜀] 결과 복사 - results 또는 site 폴더 없음(구현 전)'
 }

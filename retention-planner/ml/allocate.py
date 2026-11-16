@@ -44,6 +44,18 @@ def assign(method, d, m, k, c_replace, c_lead, c_exec):
         out[order[:m]] = "exec"
         out[order[m:m + L]] = "lead"
         return out
+    if method == "expert":
+        # HR 전문가 규칙 (INTERVIEW Q9·Q10): 모델 없이 사유 × 면담자 권한 표만 사용
+        order = order_desc(np.asarray(d["risk"], dtype=float), tb)
+        need = np.asarray(d["needs_authority"])[order] == 1
+        ex = np.concatenate([order[need], order[~need]])[:m]  # 권한 필요자 우선, 모자라면 위험 순으로 채움
+        out[ex] = "exec"
+        taken = np.zeros(n, dtype=bool)
+        taken[ex] = True
+        conflict = np.asarray(d["leader_conflict"])
+        rest = [i for i in order if not taken[i] and conflict[i] == 0]  # 팀장 갈등자는 팀장 면담 제외
+        out[np.asarray(rest[:L], dtype=int)] = "lead"
+        return out
     if method == "uplift":
         t_lead, t_exec = np.asarray(d["tau_hat_lead"]), np.asarray(d["tau_hat_exec"])
     elif method == "oracle":

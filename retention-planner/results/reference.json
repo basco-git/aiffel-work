@@ -89,6 +89,13 @@
      "net": 1326961470.0,
      "backfire": 0
     },
+    "expert": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 54.321597,
+     "net": 1265147910.0,
+     "backfire": 0
+    },
     "uplift": {
      "exec": 135,
      "lead": 540,
@@ -192,6 +199,13 @@
      "lead": 270,
      "saved": 28.619618,
      "net": 702588540.0,
+     "backfire": 0
+    },
+    "expert": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 27.74987,
+     "net": 676496100.0,
      "backfire": 0
     },
     "uplift": {
@@ -299,6 +313,13 @@
      "net": 1261770570.0,
      "backfire": 123
     },
+    "expert": {
+     "exec": 135,
+     "lead": 540,
+     "saved": 67.903891,
+     "net": 1672616730.0,
+     "backfire": 0
+    },
     "uplift": {
      "exec": 135,
      "lead": 540,
@@ -403,6 +424,13 @@
      "saved": 26.293338,
      "net": 632800140.0,
      "backfire": 69
+    },
+    "expert": {
+     "exec": 50,
+     "lead": 270,
+     "saved": 36.627284,
+     "net": 942818520.0,
+     "backfire": 0
     },
     "uplift": {
      "exec": 50,

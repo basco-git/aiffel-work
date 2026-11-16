@@ -1,5 +1,5 @@
 # 가상환경과 실행 부산물
 ml/.venv/
-ml/run_log.txt
+# ml/run_log.txt 는 분석 기록의 근거라 커밋한다 (docs/ANALYSIS_LOG.md)
 __pycache__/
 *.pyc

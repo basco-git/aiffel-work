@@ -176,6 +176,12 @@ def qini(score, tiebreak, arm_mask, ctrl_mask, retained):
     return coef, pts
 
 
+def needs_authority(df):
+    """전문가 규칙의 '권한 필요': 팀장 갈등, 또는 연봉·원하는 업무·회사 방향 만족 중 하나라도 2 이하."""
+    low = df[["sat_pay", "sat_job_fit", "sat_direction"]].min(axis=1) <= 2
+    return ((df["leader_conflict"] == 1) | low).astype(int).values
+
+
 def age_band(a):
     return np.select([a < 30, a < 40, a < 50], ["30세 미만", "30대", "40대"], "50세 이상")
 
@@ -295,6 +301,7 @@ def main():
             "tau_hat_lead": rnd(tau_hat["lead"]), "tau_hat_exec": rnd(tau_hat["exec"]),
             "tau_lead": rnd(tau["lead"]), "tau_exec": rnd(tau["exec"]),
             "tiebreak": tb2.tolist(), "leader_conflict": df.loc[te_idx, "leader_conflict"].tolist(),
+            "needs_authority": needs_authority(df.loc[te_idx]).tolist(),
             "age_band": age_band(ages).tolist(), "gender": df.loc[te_idx, "gender"].tolist(),
         }
         # 웹과 같은 값으로 계산하도록 반올림된 값을 그대로 쓴다
@@ -308,6 +315,8 @@ def main():
         labels = {"random": "무작위", "risk": "위험 순", "uplift": f"효과 순({UPLIFT_CANDIDATES[chosen][0]})",
                   "oracle": "진짜 효과 순(상한)"}
         s2_methods, curves = [], {}
+        s2_methods_tail = [{"id": "expert", "label": "HR 전문가 규칙", "qini_lead": None, "qini_exec": None,
+                            "corr_lead": None, "corr_exec": None}]
         for mid in ("random", "risk", "uplift", "oracle"):
             row = {"id": mid, "label": labels[mid]}
             curves[mid] = {}
@@ -321,6 +330,8 @@ def main():
             print(f"  2단계 {sc} {labels[mid]}: Qini 팀장 {row['qini_lead']}, 임원 {row['qini_exec']}, "
                   f"진짜 효과 상관 팀장 {row['corr_lead']}, 임원 {row['corr_exec']}")
 
+        s2_methods += s2_methods_tail
+        labels["expert"] = "HR 전문가 규칙"
         metrics = {"scenario": sc, "stage1": stage1_metrics,
                    "stage2": {"n_test": n2, "arms": {k: int((talk_te == k).sum()) for k in ("none", "lead", "exec")},
                               "methods": s2_methods, "qini_curves": curves}}
@@ -336,7 +347,7 @@ def main():
                 if "threshold" in res:
                     c1[meth["id"]]["threshold"] = {kk: rnd(v) for kk, v in res["threshold"].items()}
             c2 = {}
-            for mid in ("random", "risk", "uplift", "oracle"):
+            for mid in ("random", "risk", "expert", "uplift", "oracle"):
                 res = allocate.stage2(mid, d2np, m, k, EXAMPLE["C_replace"], EXAMPLE["C_lead"], EXAMPLE["C_exec"])
                 c2[mid] = {kk: rnd(v) for kk, v in res.items() if kk != "assign"}
             ref_cases.append({"scenario": sc, "inputs": inp, "stage1": c1, "stage2": c2})
@@ -385,14 +396,14 @@ def main():
 
             # 공정성 (기본 입력 k 20%, m 5%)
             asg = {mid: allocate.assign(mid, d2np, m_default, 0.2, EXAMPLE["C_replace"], EXAMPLE["C_lead"], EXAMPLE["C_exec"])
-                   for mid in ("risk", "uplift")}
+                   for mid in ("risk", "expert", "uplift")}
             bands = d2np["age_band"]
             gender = d2np["gender"]
             groups = []
             for gtype, gname, mask in ([("age", b, bands == b) for b in ["30세 미만", "30대", "40대", "50세 이상"]]
                                        + [("gender", g, gender == g) for g in ["남", "여"]]):
                 row = {"group": gname, "type": gtype, "share": rnd(mask.mean())}
-                for mid in ("risk", "uplift"):
+                for mid in ("risk", "expert", "uplift"):
                     asn = asg[mid][mask]
                     row[mid] = {"exec_rate": rnd((asn == "exec").mean()), "lead_rate": rnd((asn == "lead").mean())}
                 lv = mask & (left_te == 1)
