@@ -164,3 +164,22 @@ footer dd{margin:0;overflow-wrap:anywhere}
   .card{padding:14px}
   .warn{box-shadow:3px 3px 0 var(--ink)}
 }
+
+/* 빠른 입력 막대(11-17): 위쪽 입력칸이 화면 밖으로 나가면 화면 아래에 고정 */
+.quickbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--paper);border-top:2px solid var(--lav-2);box-shadow:0 -6px 18px rgba(20,16,40,.10);padding:8px 16px}
+.qb-row{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.86rem}
+.qb-title{font-weight:700;color:var(--purple-ink)}
+.qb-f{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.qb-f b{font-variant-numeric:tabular-nums;min-width:3.5em}
+.qb-f input[type=range]{width:130px;accent-color:var(--purple)}
+.qb-f input[type=number]{width:84px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink);font:inherit}
+.quickbar .seg button{padding:3px 10px;font-size:.84rem}
+.quickbar .btn{padding:3px 12px;font-size:.84rem}
+.qb-toggle{margin-left:auto;border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit;text-decoration:underline}
+.quickbar.collapsed .qb-f,.quickbar.collapsed .seg,.quickbar.collapsed .qb-all{display:none}
+body.qb-on{padding-bottom:84px}
+@media (max-width:560px){
+  .qb-row{gap:6px 12px}
+  .qb-f input[type=range]{width:96px}
+  body.qb-on{padding-bottom:190px}
+}
