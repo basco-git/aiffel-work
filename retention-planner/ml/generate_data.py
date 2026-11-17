@@ -30,6 +30,10 @@
                + 0.7·leader_conflict + 0.6·low_direction
       decided = 1 이면 둘 다 0, 그 뒤 평균이 A와 같도록(0.4, 0.8) 배율 조정
    궁합 강도 s(민감도용): δ = (1 - s)·δ_A + s·δ_B   (A는 s = 0, B는 기본 s = 1)
+
+③ 회사 유형(company_type.py용, 2026-11-17 추가): 연봉·복지 만족의 잠재값을 ±COMPANY_SHIFT만큼 옮긴다.
+   퇴사 위험은 "기준" 회사의 표준화 기준과 b0를 그대로 써서 계산한다(그래야 만족도 차이가 퇴사율 차이로 나타남).
+   기본값 "기준"은 이전과 같은 데이터를 만든다.
 """
 
 from __future__ import annotations
@@ -67,6 +71,10 @@ EFFECT_B = {
     "exec": {"base": 0.2, "low_pay": 0.6, "low_job_fit": 0.5, "low_benefits": 0.2,
              "leader_conflict": 0.7, "low_direction": 0.6},
 }
+
+# 회사 유형: 연봉(sat_pay)·복지(sat_benefits) 만족 잠재값의 이동량. 대기업 ≈ 연봉·복지가 좋음(INTERVIEW 11-17 대명제).
+# 크기는 국내 연구의 대기업:중소기업 정규직 청년 이직률 비율(17.2% : 약 25%, 약 1.5배)에 가깝도록 정했다(ANALYSIS_LOG 11-17).
+COMPANY_SHIFT = {"기준": 0.0, "대기업형": 0.4, "중소기업형": -0.4}
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -113,7 +121,7 @@ def _likert(latent):
     return np.clip(np.round(3 + latent), 1, 5).astype(int)
 
 
-def _draw_population(n: int, seed: int) -> dict:
+def _draw_population(n: int, seed: int, shift: float = 0.0) -> dict:
     """시나리오와 무관한 모든 난수를 고정 순서로 뽑는다."""
     rng = np.random.default_rng(seed)
     d = {}
@@ -138,9 +146,9 @@ def _draw_population(n: int, seed: int) -> dict:
     g = rng.normal(0, 1, n)
     def item(extra=0.0):
         return 0.5 * g + np.sqrt(0.75) * rng.normal(0, 1, n) + extra
-    d["sat_pay"] = _likert(item(1.2 * (income - 0.5)))
+    d["sat_pay"] = _likert(item(1.2 * (income - 0.5) + shift))
     d["sat_job_fit"] = _likert(item())
-    d["sat_benefits"] = _likert(item())
+    d["sat_benefits"] = _likert(item(shift))
     d["leader_conflict"] = (rng.uniform(0, 1, n) < sigmoid(-1.9 - 0.5 * g)).astype(int)
     d["sat_direction"] = _likert(item())
 
@@ -171,24 +179,33 @@ def _solve_b0(rest: np.ndarray, target: float) -> float:
     return (lo + hi) / 2
 
 
-def generate(scenario: str = "A", seed: int = 42, n: int = 9000,
-             sigma: float = 1.0, strength: float | None = None):
-    """관측 데이터, 진짜 값, 생성 정보를 돌려준다.
-
-    strength: 궁합 강도 s. None이면 A → 0, B → 1.
-    """
-    if scenario not in ("A", "B"):
-        raise ValueError("scenario는 A 또는 B")
-    s = (0.0 if scenario == "A" else 1.0) if strength is None else float(strength)
-    d = _draw_population(n, seed)
-
+def _risk_rest(d: dict, ref: dict, sigma: float) -> np.ndarray:
+    """logit0에서 b0를 뺀 부분. 표준화 기준(평균·표준편차)은 ref 집단에서 가져온다."""
     tenure_under_1 = (d["tenure_years"] < 1).astype(int)
     rest = sigma * d["_eps"]
     for col, c in RISK_COEF.items():
-        rest = rest + c * _z(d[col])
-    rest = rest + RAW_COEF["leader_conflict"] * d["leader_conflict"] + RAW_COEF["tenure_under_1"] * tenure_under_1
-    b0 = _solve_b0(rest, TARGET_LEAVE_RATE)
-    logit0 = b0 + rest
+        x, r = np.asarray(d[col], dtype=float), np.asarray(ref[col], dtype=float)
+        rest = rest + c * (x - r.mean()) / r.std()
+    return rest + RAW_COEF["leader_conflict"] * d["leader_conflict"] + RAW_COEF["tenure_under_1"] * tenure_under_1
+
+
+def generate(scenario: str = "A", seed: int = 42, n: int = 9000,
+             sigma: float = 1.0, strength: float | None = None, company: str = "기준"):
+    """관측 데이터, 진짜 값, 생성 정보를 돌려준다.
+
+    strength: 궁합 강도 s. None이면 A → 0, B → 1.
+    company: 회사 유형(기준·대기업형·중소기업형). 기준이 아니면 기준 회사의 표준화 기준과 b0를 쓴다.
+    """
+    if scenario not in ("A", "B"):
+        raise ValueError("scenario는 A 또는 B")
+    if company not in COMPANY_SHIFT:
+        raise ValueError(f"company는 {list(COMPANY_SHIFT)} 중 하나")
+    s = (0.0 if scenario == "A" else 1.0) if strength is None else float(strength)
+    ref = _draw_population(n, seed)
+    d = ref if company == "기준" else _draw_population(n, seed, COMPANY_SHIFT[company])
+
+    b0 = _solve_b0(_risk_rest(ref, ref, sigma), TARGET_LEAVE_RATE)
+    logit0 = b0 + _risk_rest(d, ref, sigma)
     p_none = sigmoid(logit0)
 
     decided = (d["_u_decided"] < 0.5 * p_none).astype(int)
@@ -236,7 +253,7 @@ def generate(scenario: str = "A", seed: int = 42, n: int = 9000,
 
     rates = {arm: round(float(left[d["talk_by"] == arm].mean()), 4) for arm in ASSIGNMENT}
     info = {
-        "scenario": scenario, "seed": seed, "n": n, "sigma": sigma, "strength": s,
+        "scenario": scenario, "seed": seed, "n": n, "sigma": sigma, "strength": s, "company": company,
         "b0": round(float(b0), 4), "target_leave_rate": TARGET_LEAVE_RATE,
         "coefficients": {**RISK_COEF, **RAW_COEF},
         "effect": {"A": EFFECT_A, "B": EFFECT_B},

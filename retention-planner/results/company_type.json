@@ -1,0 +1,450 @@
+{
+ "question": "연봉·복지 수준이 다른 회사 유형에서도 결론이 유지되는가",
+ "premise": "연봉·복지 만족이 낮을수록 이직이 많다(정규직 청년 이직률 대기업 17.2%, 중소·소기업 약 25%; 문영만·홍장표 2017)",
+ "shift": {
+  "기준": 0.0,
+  "대기업형": 0.4,
+  "중소기업형": -0.4
+ },
+ "seeds": [
+  42,
+  43,
+  44
+ ],
+ "fixed": {
+  "risk_model": "로지스틱(보정)",
+  "uplift": "두 모델 비교법·로지스틱",
+  "inputs": {
+   "r": 0.3,
+   "C_replace": 30000000,
+   "C_lead": 300000,
+   "C_exec": 1500000,
+   "k": 0.2,
+   "m_rule": "시험 인원의 5%"
+  }
+ },
+ "note": "값은 시드 3개 평균. 2단계 순이익과 막은 퇴사는 진짜 효과로 채점(가상 데이터라서 가능).",
+ "runtime_sec": 12.8,
+ "cells": [
+  {
+   "company": "대기업형",
+   "scenario": "A",
+   "profile": {
+    "mean_sat_pay": 3.386,
+    "mean_sat_benefits": 3.3793,
+    "low_pay_share": 0.1932,
+    "needs_authority_share": 0.606,
+    "decided_rate": 0.0,
+    "leave_rate": {
+     "none": 0.1214,
+     "lead": 0.0999,
+     "exec": 0.0725
+    }
+   },
+   "stage1": {
+    "auc": 0.8096,
+    "leavers": 131.0,
+    "n_test": 1080,
+    "top20_net": 598200000.0,
+    "top20_TP": 73.6667,
+    "threshold_S": 759.0,
+    "threshold_net": 900300000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 308476220.0,
+     "saved": 22.4325,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.2578,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1196383930.0,
+     "saved": 52.0295,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1106339440.0,
+     "saved": 49.028,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.9248,
+     "wins_over_risk": 0
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 953441790.0,
+     "saved": 43.9314,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.7972,
+     "wins_over_risk": 0
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 1521510160.0,
+     "saved": 62.867,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.2718,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "risk",
+   "m": 135,
+   "n_test2": 2700
+  },
+  {
+   "company": "대기업형",
+   "scenario": "B",
+   "profile": {
+    "mean_sat_pay": 3.386,
+    "mean_sat_benefits": 3.3793,
+    "low_pay_share": 0.1932,
+    "needs_authority_share": 0.606,
+    "decided_rate": 0.0606,
+    "leave_rate": {
+     "none": 0.1214,
+     "lead": 0.1057,
+     "exec": 0.0683
+    }
+   },
+   "stage1": {
+    "auc": 0.815,
+    "leavers": 131.0,
+    "n_test": 1080,
+    "top20_net": 607200000.0,
+    "top20_TP": 74.6667,
+    "threshold_S": 761.6667,
+    "threshold_net": 908500000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 215756680.0,
+     "saved": 19.3419,
+     "backfire": 63.0,
+     "ratio_to_risk": 0.2,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1078994450.0,
+     "saved": 48.1165,
+     "backfire": 115.6667,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1422081230.0,
+     "saved": 59.5527,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.3178,
+     "wins_over_risk": 3
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 1147415500.0,
+     "saved": 50.3972,
+     "backfire": 17.6667,
+     "ratio_to_risk": 1.0625,
+     "wins_over_risk": 2
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 2142142380.0,
+     "saved": 83.5547,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.9856,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "expert",
+   "m": 135,
+   "n_test2": 2700
+  },
+  {
+   "company": "기준",
+   "scenario": "A",
+   "profile": {
+    "mean_sat_pay": 3.0061,
+    "mean_sat_benefits": 2.9976,
+    "low_pay_share": 0.3156,
+    "needs_authority_share": 0.653,
+    "decided_rate": 0.0,
+    "leave_rate": {
+     "none": 0.1534,
+     "lead": 0.1204,
+     "exec": 0.0884
+    }
+   },
+   "stage1": {
+    "auc": 0.7911,
+    "leavers": 165.6667,
+    "n_test": 1080,
+    "top20_net": 721200000.0,
+    "top20_TP": 87.3333,
+    "threshold_S": 824.6667,
+    "threshold_net": 1189600000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 419761660.0,
+     "saved": 26.1421,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.3154,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1330397630.0,
+     "saved": 56.4966,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1253939540.0,
+     "saved": 53.948,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.9425,
+     "wins_over_risk": 0
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 1155446930.0,
+     "saved": 50.6649,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.868,
+     "wins_over_risk": 0
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 1663394150.0,
+     "saved": 67.5965,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.2505,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "risk",
+   "m": 135,
+   "n_test2": 2700
+  },
+  {
+   "company": "기준",
+   "scenario": "B",
+   "profile": {
+    "mean_sat_pay": 3.0061,
+    "mean_sat_benefits": 2.9976,
+    "low_pay_share": 0.3156,
+    "needs_authority_share": 0.653,
+    "decided_rate": 0.0746,
+    "leave_rate": {
+     "none": 0.1534,
+     "lead": 0.1281,
+     "exec": 0.087
+    }
+   },
+   "stage1": {
+    "auc": 0.7809,
+    "leavers": 165.6667,
+    "n_test": 1080,
+    "top20_net": 670200000.0,
+    "top20_TP": 81.6667,
+    "threshold_S": 801.6667,
+    "threshold_net": 1184500000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 308958230.0,
+     "saved": 22.4486,
+     "backfire": 68.3333,
+     "ratio_to_risk": 0.2663,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1157329130.0,
+     "saved": 50.7276,
+     "backfire": 120.6667,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1588721350.0,
+     "saved": 65.1074,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.3746,
+     "wins_over_risk": 3
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 1395801550.0,
+     "saved": 58.6767,
+     "backfire": 21.3333,
+     "ratio_to_risk": 1.2045,
+     "wins_over_risk": 3
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 2387997660.0,
+     "saved": 91.7499,
+     "backfire": 0.0,
+     "ratio_to_risk": 2.0661,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "expert",
+   "m": 135,
+   "n_test2": 2700
+  },
+  {
+   "company": "중소기업형",
+   "scenario": "A",
+   "profile": {
+    "mean_sat_pay": 2.6307,
+    "mean_sat_benefits": 2.6124,
+    "low_pay_share": 0.4607,
+    "needs_authority_share": 0.7132,
+    "decided_rate": 0.0,
+    "leave_rate": {
+     "none": 0.1837,
+     "lead": 0.1469,
+     "exec": 0.1079
+    }
+   },
+   "stage1": {
+    "auc": 0.8103,
+    "leavers": 198.3333,
+    "n_test": 1080,
+    "top20_net": 895200000.0,
+    "top20_TP": 106.6667,
+    "threshold_S": 844.0,
+    "threshold_net": 1489800000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 540413530.0,
+     "saved": 30.1638,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.3817,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1415694350.0,
+     "saved": 59.3398,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1344051910.0,
+     "saved": 56.9517,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.9494,
+     "wins_over_risk": 0
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 1212731640.0,
+     "saved": 52.5744,
+     "backfire": 0.0,
+     "ratio_to_risk": 0.8568,
+     "wins_over_risk": 0
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 1772656770.0,
+     "saved": 71.2386,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.2521,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "risk",
+   "m": 135,
+   "n_test2": 2700
+  },
+  {
+   "company": "중소기업형",
+   "scenario": "B",
+   "profile": {
+    "mean_sat_pay": 2.6307,
+    "mean_sat_benefits": 2.6124,
+    "low_pay_share": 0.4607,
+    "needs_authority_share": 0.7132,
+    "decided_rate": 0.0905,
+    "leave_rate": {
+     "none": 0.1837,
+     "lead": 0.1526,
+     "exec": 0.1089
+    }
+   },
+   "stage1": {
+    "auc": 0.8039,
+    "leavers": 198.3333,
+    "n_test": 1080,
+    "top20_net": 871200000.0,
+    "top20_TP": 104.0,
+    "threshold_S": 840.3333,
+    "threshold_net": 1505900000.0
+   },
+   "stage2": {
+    "random": {
+     "label": "무작위",
+     "net": 405749800.0,
+     "saved": 25.675,
+     "backfire": 60.0,
+     "ratio_to_risk": 0.3258,
+     "wins_over_risk": 0
+    },
+    "risk": {
+     "label": "위험 순",
+     "net": 1249732950.0,
+     "saved": 53.8078,
+     "backfire": 110.0,
+     "ratio_to_risk": 1.0,
+     "wins_over_risk": 0
+    },
+    "expert": {
+     "label": "HR 전문가 규칙",
+     "net": 1705392550.0,
+     "saved": 68.9964,
+     "backfire": 0.0,
+     "ratio_to_risk": 1.365,
+     "wins_over_risk": 3
+    },
+    "uplift": {
+     "label": "효과 순(추정)",
+     "net": 1528933700.0,
+     "saved": 63.1145,
+     "backfire": 11.3333,
+     "ratio_to_risk": 1.2235,
+     "wins_over_risk": 3
+    },
+    "oracle": {
+     "label": "진짜 효과 순(상한)",
+     "net": 2693321740.0,
+     "saved": 101.9274,
+     "backfire": 0.0,
+     "ratio_to_risk": 2.1621,
+     "wins_over_risk": 3
+    }
+   },
+   "best_non_oracle": "expert",
+   "m": 135,
+   "n_test2": 2700
+  }
+ ]
+}
