@@ -24,6 +24,7 @@ uv pip install -p .venv -r requirements.txt
 | `train_eval.py` | 분할(시험 30% 고정) → 1단계 위험 모델 6종(기준선 포함) + 확률 보정 → 2단계 업리프트 후보 3종 중 훈련 CV Qini로 선택 → 지표·공정성·중요도·보정 곡선 | `data/` → `results/A·B/*.json`, `meta.json`, `reference.json` |
 | `allocate.py` | 웹 배분 규칙의 Python 참조 구현(무작위·위험 순·전문가 규칙·효과 순·상한) | 웹 대조용 기대값 생성 |
 | `sensitivity.py` | 시범 인원 × 궁합 강도 × 시드 3개 | → `results/sensitivity.json` |
+| `tabicl_trial.py` | TabICL 1단계 추가 비교(같은 분할·지표). torch가 필요해 **Python 3.13 별도 환경** `.venv-tabicl`에서 실행, `run_all.ps1`에는 넣지 않음(약 17분) | `data/split.json` → `results/tabicl_trial.json` |
 | `tests/` | 생성 10개(재현성·범위·비율·A/B 동일성 등) + 결과 8개(분할 겹침·지표 재계산·순위·배분 손계산) | — |
 | `run_log.txt` | 실행 기록(시각·수치) | — |
 
