@@ -3,7 +3,7 @@
 import {
   countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2All, stage2Curve, validateInputs, fairnessTable, STAGE2_METHODS, availableMethods,
-} from './alloc.js?v=20261117f';
+} from './alloc.js?v=20261117g';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -581,7 +581,7 @@ function renderP1() {
     const cell = (n, st) => sens.cells.find((c) => c.n === n && c.strength === st);
     const stLabel = (st) => (st === 0 ? '0 (균일)' : st === 1 ? '1.0 (시나리오 B)' : String(st));
     const table = (key, title, winsKey) => {
-      let t = `<h3 style="font-size:.95rem;margin:12px 0 6px">${esc(title)}</h3><div class="tw"><table style="min-width:440px"><thead><tr><th>시범 인원 n \\ 궁합 강도 s</th>${sens.strength.map((st) => `<th class="n">${esc(stLabel(st))}</th>`).join('')}</tr></thead><tbody>`;
+      let t = `<h3 style="font-size:.95rem;margin:12px 0 6px">${esc(title)}</h3><div class="tw"><table style="min-width:440px"><thead><tr><th>행: 시범 인원 n · 열: 궁합 강도 s</th>${sens.strength.map((st) => `<th class="n">${esc(stLabel(st))}</th>`).join('')}</tr></thead><tbody>`;
       for (const n of sens.n) {
         t += `<tr><td>${fmtInt(n)}명</td>${sens.strength.map((st) => {
           const c = cell(n, st);
