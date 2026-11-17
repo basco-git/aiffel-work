@@ -3,7 +3,7 @@
 import {
   countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2All, stage2Curve, validateInputs, fairnessTable, STAGE2_METHODS, availableMethods,
-} from './alloc.js?v=20261117e';
+} from './alloc.js?v=20261117f';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -48,7 +48,7 @@ const S2_STYLE = {
   expert: { color: 'var(--s-aqua)' },
 };
 const S2_LABEL = { random: '무작위', risk: '위험 순', expert: 'HR 전문가 규칙', uplift: '효과 순(T-learner)', oracle: '진짜 효과 순(상한)' };
-const EXPERT_NOTE = '모델 없이 현업 지식만 쓴 기준선입니다. 시나리오 B와 같은 경험으로 만들어 앞서는 게 당연하며, 실제로 맞다는 증거는 아닙니다.';
+const EXPERT_NOTE = '위험 점수(1단계 모델)로 순서를 정하고, 현업 경험의 사유 × 면담자 권한 규칙으로 면담자를 고르는 방법입니다. 시나리오 B와 같은 경험으로 만들어 앞서는 게 당연하며, 실제로 맞다는 증거는 아닙니다.';
 const styleOf = (map, id) => map[id] ?? { color: 'var(--s-ink)', dash: '1 3', cls: 'dot' };
 const swatch = (st) => `<span class="swatch ${st.cls ?? ''}" style="color:${st.color}" aria-hidden="true"></span>`;
 
@@ -326,7 +326,7 @@ function renderStage1() {
         <div class="formula">= 면담 후 재직 ${fmtPpl(top.TP * vals.r)}명 × ${fmtWon(vals.C_replace)} − 면담 ${fmtInt(top.S)}명 × ${fmtWon(vals.C_lead)}</div>
         ${thr ? `<div class="sub">비용 기준으로 고르면: <b>${fmtInt(thr.S)}명</b> 면담 · 면담 후 재직(예상) <b>${fmtPpl(thr.TP * vals.r)}명</b> · 순이익 <b>${fmtWon(thr.net)}</b></div>`
     : '<div class="sub mu">확률이 없는 순서 규칙이라 비용 기준 선택을 쓸 수 없습니다.</div>'}
-        ${m.id === 'tabicl' ? '<div class="sub mu">교안 17번의 사전학습 표 모델입니다. 브라우저에서 돌릴 수 없어 별도 환경(Python 3.13, CPU 약 17분)에서 미리 계산한 점수를 씁니다. 대표 모델 선택에는 넣지 않았습니다.</div>' : ''}
+        ${m.id === 'tabicl' ? '<div class="sub mu">교안 17번의 사전학습 표 모델입니다. 브라우저에서 돌릴 수 없어 별도 환경(Python 3.13, CPU 약 23분)에서 미리 계산한 점수를 씁니다. 대표 모델 선택에는 넣지 않았습니다.</div>' : ''}
       </article>`;
     }
     html += '</div>';
