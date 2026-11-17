@@ -1,0 +1,41 @@
+{
+ "trial": "TabICL 1단계 비교 (PRD T14)",
+ "run_at": "2026-11-17T09:40:15+09:00",
+ "env": {
+  "python": "3.13.17",
+  "tabicl": "2.2.0",
+  "torch": "2.15.0+cpu",
+  "scikit-learn": "1.9.1",
+  "device": "cpu",
+  "n_estimators": 8
+ },
+ "same_as_train_eval": "data/split.json 분할, 대조군, FEATURES, 동점 순서, 보정 방식",
+ "n_train": 2520,
+ "n_test": 1080,
+ "cv_auc": 0.801372,
+ "auc": 0.794479,
+ "auc_raw": 0.795202,
+ "accuracy": 0.851852,
+ "brier_raw": 0.110771,
+ "brier_cal": 0.110622,
+ "capture": {
+  "5": 0.179191,
+  "10": 0.317919,
+  "20": 0.49711,
+  "30": 0.653179
+ },
+ "lift": {
+  "5": 3.583815,
+  "10": 3.179191,
+  "20": 2.485549,
+  "30": 2.177264
+ },
+ "cost_top": {
+  "k": 20,
+  "n": 216,
+  "found": 86,
+  "unneeded": 130,
+  "net": 709200000.0
+ },
+ "seconds": 1013.4
+}
