@@ -26,7 +26,7 @@ uv pip install -p .venv -r requirements.txt
 | `sensitivity.py` | 시범 인원 × 궁합 강도 × 시드 3개 | → `results/sensitivity.json` |
 | `company_type.py` | 회사 유형(대기업형·기준·중소기업형) × 시나리오 A·B × 시드 3. 연봉·복지 만족만 옮긴 회사에서 같은 분석 반복(약 15초) | → `results/company_type.json` |
 | `failure_cases.py` | 본 실행 결과와 진짜 값을 합쳐 실패 사례 유형별 건수와 대표 사례를 뽑음(임원 면담 낭비, 역효과 우려, 놓친 퇴사자, 효과 추정 빗나감) | `results/*/scores.json`, `data/` → `results/failure_cases.json` |
-| `tabicl_trial.py` | TabICL 1단계 추가 비교(같은 분할·지표). torch가 필요해 **Python 3.13 별도 환경** `.venv-tabicl`에서 실행, `run_all.ps1`에는 넣지 않음(약 17분) | `data/split.json` → `results/tabicl_trial.json` |
+| `tabicl_trial.py` | TabICL 1단계 추가 비교(같은 분할·지표). torch가 필요해 **Python 3.13 별도 환경** `.venv-tabicl`에서 실행, `run_all.ps1`에는 넣지 않음(약 23분) | `data/split.json` → `results/tabicl_trial.json` |
 | `tests/` | 생성 12개(재현성·범위·비율·A/B 동일성·한글 CSV·회사 유형 등) + 결과 9개(분할 겹침·지표 재계산·순위·배분 손계산·본 실행과 민감도의 일관성) | — |
 | `run_log.txt` | 실행 기록(시각·수치) | — |
 
