@@ -4,6 +4,7 @@
   "n": 9000,
   "sigma": 1.0,
   "strength": 0.0,
+  "company": "기준",
   "b0": -2.8717,
   "target_leave_rate": 0.15,
   "coefficients": {

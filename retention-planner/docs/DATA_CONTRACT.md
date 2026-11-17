@@ -79,18 +79,18 @@ site/data/
 }
 ```
 
-- `stage1.rank[i]`: i번째 행의 순위. **0 = 가장 위험**, 0~n−1의 중복 없는 순열. 동점은 Python이 고정 시드로 이미 깼다.
+- `stage1.rank[i]`: i번째 행의 순위. **0 = 가장 위험**, 0-n−1의 중복 없는 순열. 동점은 Python이 고정 시드로 이미 깼다.
 - `stage1.prob`: 보정 확률(모델·로지스틱만). 무작위·근속 기준선은 `null`.
 - `stage1.methods`에 P1 모델 `gb`(그래디언트 부스팅)가 추가될 수 있다. 웹은 배열을 그대로 돌며 그린다.
 - `stage2.risk`: 1단계 대표 모델(`best`)의 보정 위험 확률. 시험 전체 행에 대해 예측한 값이다.
 - `tau_hat_*`: T-learner 추정 효과. `tau_*`: 진짜 효과(가상 데이터라서만 존재).
-- `tiebreak`: 0~n−1 순열. 동점 처리와 무작위 방법에 쓴다(작을수록 먼저).
+- `tiebreak`: 0-n−1 순열. 동점 처리와 무작위 방법에 쓴다(작을수록 먼저).
 - `needs_authority`: HR 전문가 규칙의 "권한 필요"(팀장 갈등 있음 또는 연봉·원하는 업무·회사 방향 만족 중 하나라도 2 이하) 0/1.
 - `age_band` 값: `"30세 미만" | "30대" | "40대" | "50세 이상"`, `gender` 값: `"남" | "여"`
 
 ## 웹 계산 규칙 (PRD §7, §6.3을 코드 수준으로)
 
-**1단계** — 입력 `k`(0~1), `r`, `C_replace`, `C_lead`
+**1단계** — 입력 `k`(0-1), `r`, `C_replace`, `C_lead`
 
 ```
 S  = round(n × k)
@@ -189,7 +189,7 @@ L = round(n × k)
 - `stage2.methods`의 `uplift` 라벨은 선택된 추정기 이름을 포함한다(예: "효과 순(T-learner(HistGB))").
 - 점수가 없는 기준선(`random`, `tenure`)은 `accuracy`, `brier_*`가 `null`.
 - `corr_*`: 스피어만 순위 상관(점수 vs 진짜 효과). `risk`는 위험 확률과 진짜 효과의 상관.
-- `qini_curves`: x = 대상 비율(0~1), y = 누적으로 막은 퇴사 수(관측 기반). 21개 점(0, 0.05, …, 1).
+- `qini_curves`: x = 대상 비율(0-1), y = 누적으로 막은 퇴사 수(관측 기반). 21개 점(0, 0.05, …, 1).
 
 ## {A,B}/calibration.json (P1)
 
@@ -240,7 +240,7 @@ L = round(n × k)
 
 - **2026-11-16 22:02 추가:** `representative_learner`(대표 추정기, 본 실행 B의 교차검증 선택), 칸마다 `by_learner.{t_hgb,t_logit}.{net_uplift, benefit_ratio, uplift_wins, corr_exec, corr_lead}`. 칸의 최상위 `net_uplift`·`benefit_ratio`·`uplift_wins`·`corr_*`는 대표 추정기 값이다.
 - 순이익은 원 단위. `benefit_ratio` = 효과 순 ÷ 위험 순, `expert_ratio` = 전문가 규칙 ÷ 위험 순 (위험 순 ≤ 0인 시드는 제외), `uplift_wins` = 시드 중 효과 순이 위험 순을 이긴 횟수.
-- 화면 표(F16): 행 = n, 열 = 궁합 강도, 칸 = `benefit_ratio.mean`(최소~최대)과 `uplift_wins`/3. 같은 모양으로 `expert_ratio` 표도 둔다.
+- 화면 표(F16): 행 = n, 열 = 궁합 강도, 칸 = `benefit_ratio.mean`(최소-최대)과 `uplift_wins`/3. 같은 모양으로 `expert_ratio` 표도 둔다.
 
 ## 그 밖의 필드 (실제 결과에 있음)
 

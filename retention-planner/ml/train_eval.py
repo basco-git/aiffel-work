@@ -248,6 +248,25 @@ def main():
         print(f"  1단계 {label}: 훈련 CV AUC {cv_auc:.3f}, 시험 AUC {roc_auc_score(y1te, p_cal):.3f}")
     best = max(fitted, key=lambda m: next(x["cv_auc"] for x in s1_metrics if x["id"] == m))
     print(f"  1단계 대표 모델(훈련 CV 기준): {best}")
+
+    # TabICL(11-17 추가, 사용자 요청 "정식 카드로 추가"): torch가 필요해 Python 3.13 별도 환경에서
+    # tabicl_trial.py로 미리 계산한 사람별 확률을 읽어 1단계 방법에 넣는다. 같은 분할·같은 대조군 순서일 때만 넣고,
+    # 대표 모델 선택(best)에는 넣지 않는다(이미 위에서 정함). 파일이 없거나 분할이 다르면 건너뛴다.
+    tab_path = RESULTS / "tabicl_trial.json"
+    if tab_path.exists():
+        tab = json.loads(tab_path.read_text(encoding="utf-8"))
+        if tab.get("test_rows") == [int(i) for i in te1] and tab.get("prob_cal"):
+            p_cal, p_raw = np.asarray(tab["prob_cal"], dtype=float), np.asarray(tab["prob_raw"], dtype=float)
+            rk = ranks(p_cal, tb1)
+            cap, lift = capture_lift(rk, y1te)
+            s1_methods.append({"id": "tabicl", "label": "TabICL(사전학습)", "kind": "model", "rank": rk.tolist(), "prob": rnd(p_cal)})
+            s1_metrics.append({"id": "tabicl", "label": "TabICL(사전학습)", "accuracy": accuracy_score(y1te, p_cal >= 0.5),
+                               "auc": roc_auc_score(y1te, p_cal), "brier_raw": brier_score_loss(y1te, p_raw),
+                               "brier_cal": brier_score_loss(y1te, p_cal), "capture": cap, "lift": lift,
+                               "cv_auc": tab.get("cv_auc"), "note": "별도 환경(Python 3.13, CPU 약 17분)에서 미리 계산"})
+            print(f"  1단계 TabICL(미리 계산): 훈련 CV AUC {tab.get('cv_auc')}, 시험 AUC {roc_auc_score(y1te, p_cal):.3f}")
+        else:
+            print("  1단계 TabICL: 분할이 달라 건너뜀(tabicl_trial.py를 다시 실행해야 함)")
     for x in s1_metrics:
         x.update({k: rnd(v) for k, v in x.items() if isinstance(v, (float, np.floating))})
         x["capture"] = {k: rnd(v) for k, v in x["capture"].items()}
