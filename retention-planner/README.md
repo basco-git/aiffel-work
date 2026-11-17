@@ -153,18 +153,66 @@
 ## 5. 분석 흐름도
 
 ```mermaid
-flowchart TD
-  A["가상 직원 9,000명 만들기<br/>퇴사 사유·근무 조건<br/>+ 시범 면담 무작위 배정"] --> B{"훈련 70% / 시험 30%<br/>한 번 나누고 고정"}
-  B --> C["1단계: 퇴사 위험 점수<br/>'면담 안 하면 떠날 확률'"]
-  C --> D["비용으로 문턱 정하기<br/>몇 명을 면담할까 (Q2)"]
-  B --> E["2단계: 면담 효과 예측<br/>'면담하면 얼마나 남을까'"]
-  C --> F["배정 방법 비교<br/>무작위 · 위험 순 · HR 규칙 · 효과 순"]
+flowchart LR
+  subgraph S1["데이터 준비"]
+    direction TB
+    A["① 가상 직원<br/>9,000명"] --> B["② 훈련 70%<br/>시험 30%"]
+  end
+  subgraph S2["AI 예측"]
+    direction TB
+    C["③ 1단계<br/>퇴사 위험"]
+    E["④ 2단계<br/>면담 효과"]
+  end
+  subgraph S3["결정·채점"]
+    direction TB
+    D["⑤ 면담 인원<br/>비용 문턱"]
+    F["⑥ 배정 방법<br/>4가지 비교"]
+    G["⑦ 순이익<br/>채점"]
+  end
+  subgraph S4["확인·활용"]
+    direction TB
+    H["⑧ 민감도<br/>시범 인원"]
+    J["⑨ 회사 유형<br/>대기업·중소"]
+    I["⑩ 웹<br/>시뮬레이터"]
+  end
+  B --> C
+  B --> E
+  C --> D
+  C --> F
   E --> F
-  F --> G["순이익으로 채점<br/>같은 시험 자료, 같은 인원 (Q3·Q5)"]
-  G --> H["민감도: 시범 인원을 바꿔 반복<br/>몇 명이면 판단이 서나 (Q4)"]
-  G --> J["회사 유형: 대기업형·중소기업형으로 반복<br/>결론이 유지되나 (Q6)"]
-  G --> I["웹 시뮬레이터<br/>비용·인원을 바꿔 바로 계산"]
+  F --> G
+  G --> H
+  G --> J
+  G --> I
+
+  classDef data fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D2A4A
+  classDef model fill:#EDE7F6,stroke:#7E57C2,stroke-width:2px,color:#2A1A4A
+  classDef decide fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px,color:#4A2A00
+  classDef check fill:#E8F5E9,stroke:#43A047,stroke-width:2px,color:#14381A
+  class A,B data
+  class C,E model
+  class D,F,G decide
+  class H,J,I check
+  style S1 fill:#F5FAFF,stroke:#90CAF9,color:#0D2A4A
+  style S2 fill:#F8F5FD,stroke:#B39DDB,color:#2A1A4A
+  style S3 fill:#FFFAF2,stroke:#FFCC80,color:#4A2A00
+  style S4 fill:#F4FBF4,stroke:#A5D6A7,color:#14381A
 ```
+
+**색 규칙:** 🟦 파랑 = 데이터 준비 · 🟪 보라 = AI 예측(모델) · 🟧 주황 = 결정·채점(비용과 배정) · 🟩 초록 = 확인·활용(반복 검증과 웹)
+
+| 번호 | 하는 일 |
+| --- | --- |
+| ① | 퇴사 사유·근무 조건을 가진 가상 직원 9,000명을 만들고, 시범 면담(면담 없음·팀장·임원)을 무작위로 배정 |
+| ② | 70%는 훈련 자료(연습 문제), 30%는 시험 자료(본시험)로 한 번 나누고 끝까지 고정 |
+| ③ | 1단계: "면담 안 하면 떠날 확률"(퇴사 위험 점수)을 예측 (Q1) |
+| ④ | 2단계: "면담하면 얼마나 남을까"(면담 효과)를 시범 면담 기록으로 예측 |
+| ⑤ | 회사 비용으로 몇 명을 면담할지 문턱을 정함 (Q2) |
+| ⑥ | 무작위 · 위험 순 · HR 전문가 규칙 · 효과 순, 네 가지 배정 방법을 비교 (Q3·Q5) |
+| ⑦ | 같은 시험 자료, 같은 인원으로 순이익을 채점 |
+| ⑧ | 시범 인원을 바꿔 반복: 몇 명이면 판단이 서나 (Q4) |
+| ⑨ | 대기업형·중소기업형으로 반복: 결론이 유지되나 (Q6) |
+| ⑩ | 웹 시뮬레이터: 비용·인원을 바꿔 바로 계산 |
 
 **두 시나리오:** 같은 직원으로 면담 효과 규칙만 다르게 두 번 만들었습니다.
 - **시나리오 A (효과 균일):** 누구에게나 같은 효과. 임원 면담은 언제나 팀장의 2배.
