@@ -15,6 +15,11 @@ export function countFromRatio(n, k) {
   return roundHalfEven(n * k);
 }
 
+/** 비율(%)로 받은 인원을 소수점 버림으로 센다. 부동소수 오차(134.99999…)로 1명 덜 세지 않도록 작은 값을 더한다. */
+export function floorCount(n, pct) {
+  return Math.floor((n * pct) / 100 + 1e-9);
+}
+
 // ---------------------------------------------------------------- 1단계
 
 /**
@@ -107,7 +112,7 @@ function orderDesc(idx, key, tiebreak) {
 export function stage2Plan(s2, method, p) {
   const n = s2.n ?? s2.left.length;
   const m = p.m;
-  if (!Number.isInteger(m) || m < 0 || m > n) throw new RangeError(`임원 슬롯 m=${m}이 0~${n} 범위를 벗어났어요`);
+  if (!Number.isInteger(m) || m < 0 || m > n) throw new RangeError(`임원 슬롯 m=${m}이 0~${n} 범위를 벗어났습니다`);
   const tb = s2.tiebreak;
   const all = Array.from({ length: n }, (_, i) => i);
   let exec;
@@ -123,7 +128,7 @@ export function stage2Plan(s2, method, p) {
     // 팀장은 남은 행 중 팀장 갈등이 없는 사람만(그래서 L보다 적을 수 있음)
     const na = s2.needs_authority;
     const lc = s2.leader_conflict;
-    if (!na || !lc) throw new Error('expert 방법에는 needs_authority·leader_conflict가 필요해요');
+    if (!na || !lc) throw new Error('expert 방법에는 needs_authority·leader_conflict가 필요합니다');
     const ordered = orderDesc(all, s2.risk, tb);
     const need = ordered.filter((i) => na[i] === 1);
     exec = need.slice(0, m);
@@ -182,7 +187,7 @@ export function scorePlan(plan, L, p) {
 export function stage2Allocate(s2, method, p) {
   const plan = stage2Plan(s2, method, p);
   const L = countFromRatio(plan.n, p.k);
-  if (plan.m + L > plan.n) throw new RangeError(`m + L = ${plan.m + L}이 시험 인원 ${plan.n}보다 많아요`);
+  if (plan.m + L > plan.n) throw new RangeError(`m + L = ${plan.m + L}이 시험 인원 ${plan.n}보다 많습니다`);
   const res = scorePlan(plan, L, p);
   const assign = new Uint8Array(plan.n);
   for (const i of plan.exec) assign[i] = 2;
@@ -226,26 +231,26 @@ export function validateInputs(raw, { n1, n2 }) {
     C_exec: num(raw.C_exec),
     r: num(raw.r),
     kPct: num(raw.k),
-    m: num(raw.m),
+    mPct: num(raw.m),
   };
   const need = (key, label) => {
-    if (raw[key] === '' || raw[key] == null) { errors[key] = `${label} 값을 입력해 주세요.`; return false; }
-    if (!Number.isFinite(v[key === 'k' ? 'kPct' : key])) { errors[key] = `${label} 칸에는 숫자를 넣어 주세요.`; return false; }
+    if (raw[key] === '' || raw[key] == null) { errors[key] = `${label} 값을 입력해 주십시오.`; return false; }
+    const vk = key === 'k' ? 'kPct' : key === 'm' ? 'mPct' : key;
+    if (!Number.isFinite(v[vk])) { errors[key] = `${label} 칸에는 숫자를 넣어 주십시오.`; return false; }
     return true;
   };
-  if (need('C_replace', '대체 비용') && !(v.C_replace > 0)) errors.C_replace = '대체 비용은 0보다 커야 해요.';
-  if (need('C_lead', '팀장 면담 비용') && v.C_lead < 0) errors.C_lead = '비용은 0 이상이어야 해요.';
-  if (need('C_exec', '임원 면담 비용') && v.C_exec < 0) errors.C_exec = '비용은 0 이상이어야 해요.';
-  if (need('r', '면담 성공률') && (v.r < 0 || v.r > 1)) errors.r = '성공률은 0~1 사이 값이에요(예: 0.3).';
-  if (need('k', '면담 대상 비율') && (v.kPct < 0 || v.kPct > 100)) errors.k = '비율은 0~100% 사이예요.';
-  if (need('m', '임원 슬롯 수')) {
-    if (!Number.isInteger(v.m) || v.m < 0) errors.m = '임원 슬롯 수는 0 이상의 정수예요.';
-    else if (v.m > n2) errors.m = `임원 슬롯 수는 시험 인원 ${n2}명 이하여야 해요.`;
-  }
+  if (need('C_replace', '대체 비용') && !(v.C_replace > 0)) errors.C_replace = '대체 비용은 0보다 커야 합니다.';
+  if (need('C_lead', '팀장 면담 비용') && v.C_lead < 0) errors.C_lead = '비용은 0 이상이어야 합니다.';
+  if (need('C_exec', '임원 면담 비용') && v.C_exec < 0) errors.C_exec = '비용은 0 이상이어야 합니다.';
+  if (need('r', '면담 성공률') && (v.r < 0 || v.r > 1)) errors.r = '성공률은 0~1 사이 값입니다(예: 0.3).';
+  if (need('k', '면담 대상 비율') && (v.kPct < 0 || v.kPct > 100)) errors.k = '비율은 0~100% 사이입니다.';
+  if (need('m', '임원 면담 비율') && (v.mPct < 0 || v.mPct > 100)) errors.m = '비율은 0~100% 사이입니다.';
   const k = v.kPct / 100;
+  // 임원 면담 인원은 사람 수라서 소수점을 버린다(2026-11-17 사용자 결정). 예: 2,700명 × 5% = 135명
+  const m = !errors.m && n2 != null ? floorCount(n2, v.mPct) : null;
   if (!errors.k && !errors.m && n2 != null) {
     const L = countFromRatio(n2, k);
-    if (v.m + L > n2) errors.m = `임원 ${v.m}명 + 팀장 ${L}명이 시험 인원 ${n2}명보다 많아요. k나 m을 줄여 주세요.`;
+    if (m + L > n2) errors.m = `임원 ${m}명 + 팀장 ${L}명이 시험 인원 ${n2}명보다 많습니다. k나 m을 줄여 주십시오.`;
   }
   const ok = Object.keys(errors).length === 0;
   return {
@@ -257,7 +262,8 @@ export function validateInputs(raw, { n1, n2 }) {
       C_exec: v.C_exec * 10000,
       r: v.r,
       k,
-      m: v.m,
+      m,
+      mPct: v.mPct,
     } : null,
   };
 }

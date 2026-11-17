@@ -101,6 +101,10 @@ def main():
         "brier_raw": rnd(brier_score_loss(y1te, p_raw)), "brier_cal": rnd(brier_score_loss(y1te, p_cal)),
         "capture": {k: rnd(v) for k, v in cap.items()}, "lift": {k: rnd(v) for k, v in lift.items()},
         "cost_top": {"k": a.top, "n": s, "found": found, "unneeded": s - found, "net": rnd(net)},
+        # 11-17 추가: 웹 1단계 카드에 정식 모델로 넣기 위해 사람별 값을 저장한다(시험 대조군 순서 = split.json 순서)
+        "test_rows": [int(i) for i in te1],
+        "prob_cal": rnd(p_cal),
+        "prob_raw": rnd(p_raw),
         "seconds": round(time.time() - t0, 1),
     }
     RESULTS.mkdir(parents=True, exist_ok=True)

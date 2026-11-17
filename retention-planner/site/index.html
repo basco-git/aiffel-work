@@ -4,28 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>리텐션 면담 플래너</title>
-<meta name="description" content="가상 데이터로 퇴사 위험 점수를 면담 예산 결정으로 바꿔 보는 시뮬레이터. 지원 대상 선정용이며 개인 평가에 쓰지 않습니다.">
+<meta name="description" content="가상 데이터로 퇴사 위험 점수를 면담 예산 결정으로 바꿔 보는 시뮬레이터. 면담 대상 선정용이며 개인 평가에 쓰지 않습니다.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="mock-band" id="mock-band" hidden>견본 데이터로 그린 화면이에요 · 실제 분석 결과가 아니에요</div>
+<div class="mock-band" id="mock-band" hidden>견본 데이터로 그린 화면입니다 · 실제 분석 결과가 아닙니다</div>
 
 <div class="wrap">
 <header class="top">
   <span class="kicker">AI 이해하고 사용하기 · 17번 응용 과제</span>
   <h1>리텐션 면담 우선순위 시뮬레이터</h1>
-  <p class="lead">퇴사 위험 점수를 <b>면담 예산이라는 업무 결정</b>으로 바꿔 봐요. 도구는 <b>대기 순서</b>를 정하고, 실제 사유 확인과 판단은 면담하는 사람이 해요.</p>
+  <p class="lead">퇴사 위험 점수를 <b>면담 예산이라는 업무 결정</b>으로 바꿔 봅니다. 도구는 <b>대기 순서</b>를 정하고, 실제 사유 확인과 판단은 면담하는 사람이 합니다.</p>
 </header>
 
 <!-- 1. 고지 -->
 <section class="warn" id="notice" aria-labelledby="notice-h">
-  <h2 id="notice-h">먼저 읽어 주세요</h2>
+  <h2 id="notice-h">먼저 읽어 주십시오</h2>
   <ul>
-    <li><b>가상 데이터로 만든 시뮬레이션이에요.</b> 퇴사 규칙과 면담 효과를 직접 정해 만들었으므로, 모델이 잘 맞히는 것은 그 규칙을 다시 찾은 것일 뿐 실제 회사 성능을 뜻하지 않아요.</li>
-    <li><b>지원 대상 선정용이에요. 개인 평가·징계·해고 근거로 쓰지 않아요.</b> 이름·사번은 다루지 않고, 임원 면담 배정은 "중요한 직원" 표시가 아니에요.</li>
-    <li><b>시나리오 B의 "사유 × 면담자 권한" 궁합은 HR 현업 경험(1인)에 바탕을 둔 가정</b>이에요. 효과가 사람마다 크게 다르도록 일부러 설계했으므로 B의 결과는 실제 조직의 증거가 아니에요.</li>
-    <li><b>사유 데이터 출처 주의:</b> 퇴사 사유 5종은 조직문화 진단(설문) 문항을 가정해요. 익명을 약속한 설문을 개인 단위 선정에 쓰면 신뢰가 깨져요. 실제로는 기명 수집 여부와 동의를 먼저 확인해야 하고, 팀장 갈등 문항은 기명이면 축소 보고되기 쉬워요.</li>
-    <li>요인은 <b>원인이 아니라 상관</b>으로만 읽어요. 모든 금액은 <b>가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않아요.</b></li>
+    <li><b>가상 데이터로 만든 시뮬레이션입니다.</b> 퇴사 규칙과 면담 효과를 직접 정해 만들었으므로, 모델이 잘 맞히는 것은 그 규칙을 다시 찾은 것일 뿐 실제 회사 성능을 뜻하지 않습니다.</li>
+    <li><b>면담 대상 선정용입니다. 개인 평가·징계·해고 근거로 쓰지 않습니다.</b> 이름·사번은 다루지 않고, 임원 면담 배정은 "중요한 직원" 표시가 아닙니다.</li>
+    <li><b>시나리오 B의 "사유 × 면담자 권한" 궁합은 HR 현업 경험에 바탕을 둔 가정</b>입니다. 효과가 사람마다 크게 다르도록 일부러 설계했으므로 B의 결과는 실제 조직의 증거가 아닙니다.</li>
+    <li><b>사유 데이터 출처 주의:</b> 퇴사 사유 5종은 조직문화 진단(설문) 문항을 가정합니다. 익명을 약속한 설문을 개인 단위 선정에 쓰면 신뢰가 깨집니다. 실제로는 기명 수집 여부와 동의를 먼저 확인해야 하고, 팀장 갈등 문항은 기명이면 축소 보고되기 쉽습니다.</li>
+    <li>요인은 <b>원인이 아니라 상관</b>으로만 읽습니다. 모든 금액은 <b>가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않습니다.</b></li>
   </ul>
 </section>
 
@@ -33,7 +33,7 @@
 
 <!-- 2. 입력 -->
 <section class="block" id="inputs" aria-labelledby="inputs-h">
-  <div class="sec-head"><h2 id="inputs-h">입력</h2><span class="mu">값을 바꾸면 아래 결과가 바로 바뀌어요.</span></div>
+  <div class="sec-head"><h2 id="inputs-h">입력</h2><span class="mu">값을 바꾸면 아래 결과가 바로 바뀝니다.</span></div>
   <div class="card">
     <div class="inputs">
       <div class="field">
@@ -44,13 +44,13 @@
       </div>
       <div class="field">
         <label for="in-C_lead">팀장 면담 1건 비용</label>
-        <span class="hint">1단계 면담 비용으로도 써요(만 원)</span>
+        <span class="hint">1단계 면담 비용으로도 씁니다(만 원)</span>
         <input type="number" id="in-C_lead" inputmode="decimal" min="0" step="1" placeholder="예: 30" aria-describedby="err-C_lead">
         <span class="err" id="err-C_lead" aria-live="polite"></span>
       </div>
       <div class="field">
         <label for="in-C_exec">임원 면담 1건 비용</label>
-        <span class="hint">2단계에서만 써요(만 원)</span>
+        <span class="hint">2단계에서만 씁니다(만 원)</span>
         <input type="number" id="in-C_exec" inputmode="decimal" min="0" step="1" placeholder="예: 150" aria-describedby="err-C_exec">
         <span class="err" id="err-C_exec" aria-live="polite"></span>
       </div>
@@ -71,20 +71,21 @@
         <span class="err" id="err-k" aria-live="polite"></span>
       </div>
       <div class="field">
-        <label for="in-m">임원 면담 슬롯 수 m (2단계)</label>
-        <span class="hint" id="m-hint">임원이 면담할 수 있는 인원(명)</span>
+        <label for="in-m">임원 면담 비율 m (2단계)</label>
+        <span class="hint" id="m-hint">임원이 면담할 비율(%)</span>
         <div class="row">
-          <input type="number" id="in-m" inputmode="numeric" min="0" step="1" placeholder="예: 135" aria-describedby="err-m">
-          <span class="unit">명</span>
-          <input type="range" id="rg-m" min="0" max="2700" step="1" value="135" class="unset" aria-label="임원 면담 슬롯 수 m 슬라이더">
+          <input type="number" id="in-m" inputmode="decimal" min="0" max="100" step="0.5" placeholder="예: 5" aria-describedby="err-m m-count">
+          <span class="unit">%</span>
+          <input type="range" id="rg-m" min="0" max="100" step="0.5" value="5" class="unset" aria-label="임원 면담 비율 m 슬라이더">
         </div>
+        <span class="hint" id="m-count" aria-live="polite"></span>
         <span class="err" id="err-m" aria-live="polite"></span>
       </div>
     </div>
     <div class="btns">
       <button type="button" class="btn" id="btn-example">예시값 채우기</button>
       <button type="button" class="btn ghost" id="btn-clear">모두 지우기</button>
-      <span class="example-on" id="example-on" hidden>예시값이에요 · 실제 회사 값이 아니에요 (PRD §7 예시)</span>
+      <span class="example-on" id="example-on" hidden>예시값입니다 · 실제 회사 값이 아닙니다 (PRD §7 예시)</span>
     </div>
   </div>
 </section>
@@ -92,12 +93,12 @@
 <!-- 3. 1단계 -->
 <section class="block" id="stage1" aria-labelledby="s1-h">
   <div class="sec-head"><h2 id="s1-h">1단계 · 위험 점수 상위 몇 %까지 면담할까?</h2><span class="badge">교안 17번 그대로</span></div>
-  <p class="mu" id="s1-intro">시험 자료 중 <b>면담하지 않은 대조군</b>만으로, 모든 방법을 같은 행·같은 k로 비교해요. 면담 성공률 r은 모두 같다고 단순하게 가정해요.</p>
+  <p class="mu" id="s1-intro">시험 자료 중 <b>면담하지 않은 대조군</b>만으로, 모든 방법을 같은 행·같은 k로 비교합니다. 면담 성공률 r은 모두 같다고 단순하게 가정합니다.</p>
   <div id="s1-cards"></div>
   <div class="card">
     <h3>순이익 곡선 · k를 바꾸면</h3>
     <div id="s1-curve"></div>
-    <p class="caption">점은 방법마다 순이익이 가장 큰 지점, 점선 세로줄은 지금의 k예요. 회색 점선은 기준선(무작위·근속 짧은 순)이에요.</p>
+    <p class="caption">점은 방법마다 순이익이 가장 큰 지점, 점선 세로줄은 지금의 k입니다. 회색 점선은 기준선(무작위·근속 짧은 순)입니다.</p>
   </div>
   <div class="card">
     <h3>1단계 비교표</h3>
@@ -111,18 +112,18 @@
   <div class="grid two">
     <div class="card" id="ex-accuracy"><h3>정확도의 함정</h3><div class="body"></div></div>
     <div class="card" id="ex-auc">
-      <h3>AUC는 점수의 순서를 봐요</h3>
-      <p>AUC는 퇴사자 한 명과 재직자 한 명을 골랐을 때 <b>퇴사자에게 더 높은 점수를 주는 정도</b>예요. 1에 가까우면 잘 구별하고, 0.5는 무작위 순서 수준이에요.</p>
-      <div class="note"><span class="example-tag">설명용 가상 예시</span><br>점수가 높은 순서로 퇴사(0.9) · 재직(0.7) · 퇴사(0.6) · 재직(0.2)이라면, 퇴사-재직 짝 4개 중 순서가 맞는 짝이 3개라 AUC = 0.75예요. <b>"전체의 75%를 맞혔다"는 뜻이 아니에요.</b></div>
+      <h3>AUC는 점수의 순서를 봅니다</h3>
+      <p>AUC는 퇴사자 한 명과 재직자 한 명을 골랐을 때 <b>퇴사자에게 더 높은 점수를 주는 정도</b>입니다. 1에 가까우면 잘 구별하고, 0.5는 무작위 순서 수준입니다.</p>
+      <div class="note"><span class="example-tag">설명용 가상 예시</span><br>점수가 높은 순서로 퇴사(0.9) · 재직(0.7) · 퇴사(0.6) · 재직(0.2)이라면, 퇴사-재직 짝 4개 중 순서가 맞는 짝이 3개라 AUC = 0.75입니다. <b>"전체의 75%를 맞혔다"는 뜻이 아닙니다.</b></div>
     </div>
-    <div class="card" id="ex-threshold"><h3>문턱은 사람이 정해요</h3><div class="body"></div></div>
+    <div class="card" id="ex-threshold"><h3>문턱은 사람이 정합니다</h3><div class="body"></div></div>
   </div>
 </section>
 
 <!-- 5. 2단계 -->
 <section class="block" id="stage2" aria-labelledby="s2-h">
   <div class="sec-head"><h2 id="s2-h">2단계 · 누구를, 누가 면담할까?</h2><span class="badge ext">교안 밖 확장</span></div>
-  <p class="mu">떠날 위험이 큰 사람이 면담 효과도 큰 사람이라는 보장은 없어요. 시험 자료 <b>전체 행</b>(대조·팀장·임원 무작위 시범 면담)으로, 한정된 임원 슬롯 m명과 팀장 면담 L명을 방법마다 배분해요. 채점은 모든 방법에 <b>진짜 효과</b>(가상 데이터라서 알 수 있는 값)를 써요.</p>
+  <p class="mu">떠날 위험이 큰 사람이 면담 효과도 큰 사람이라는 보장은 없습니다. 시험 자료 <b>전체 행</b>(대조·팀장·임원 무작위 시범 면담)으로, 한정된 임원 면담 인원(비율 m, 소수점 버림)과 팀장 면담 L명을 방법마다 배분합니다. 채점은 모든 방법에 <b>진짜 효과</b>(가상 데이터라서 알 수 있는 값)를 씁니다.</p>
   <div class="card">
     <div class="sec-head" style="margin-bottom:6px">
       <h3 style="margin:0">시나리오</h3>
@@ -137,7 +138,7 @@
   <div class="card">
     <h3>순이익 곡선 · 팀장 면담 비율 k를 바꾸면 <span class="mu" id="s2-curve-m"></span></h3>
     <div id="s2-curve"></div>
-    <p class="caption">임원 슬롯 m은 고정하고 k를 0~100%에서 5%씩 바꿔 계산했어요(m + 팀장 인원이 시험 인원을 넘는 구간은 비워 둠). 점은 최대 순이익 지점이에요.</p>
+    <p class="caption">임원 면담 비율 m은 고정하고 k를 0~100%에서 5%씩 바꿔 계산했습니다(m + 팀장 인원이 시험 인원을 넘는 구간은 비워 둠). 점은 최대 순이익 지점입니다.</p>
   </div>
   <div class="card">
     <h3>2단계 비교표</h3>
@@ -145,16 +146,16 @@
   </div>
   <div class="card" id="summary-card">
     <h3>요약 문장 <span class="badge gray">P1</span></h3>
-    <p class="mu" style="font-size:.88rem">현재 입력과 결과로 만든 문장이에요. 보고 자료에 붙일 때 "가상 데이터" 문구를 지우지 마세요.</p>
+    <p class="mu" style="font-size:.88rem">현재 입력과 결과로 만든 문장입니다. 보고 자료에 붙일 때 "가상 데이터" 문구를 지우지 마십시오.</p>
     <textarea class="copybox" id="summary-text" readonly aria-label="결과 요약 문장"></textarea>
     <div class="btns"><button type="button" class="btn" id="btn-copy">복사</button><span class="mu" id="copy-msg" aria-live="polite"></span></div>
   </div>
   <div class="grid two">
     <div class="card" id="ex-uplift">
-      <h3>업리프트는 왜 AUC로 채점할 수 없나요?</h3>
-      <p>1단계의 정답은 "퇴사했나"라는 열로 행마다 있어요. 하지만 면담 <b>효과</b>는 한 사람에게 "면담했을 때"와 "안 했을 때"를 동시에 볼 수 없어서 <b>행마다 정답이 없어요.</b> 그래서 사람 단위로 맞았는지 세는 AUC를 쓸 수 없어요.</p>
+      <h3>업리프트는 왜 AUC로 채점할 수 없습니까?</h3>
+      <p>1단계의 정답은 "퇴사했나"라는 열로 행마다 있습니다. 하지만 면담 <b>효과</b>는 한 사람에게 "면담했을 때"와 "안 했을 때"를 동시에 볼 수 없어서 <b>행마다 정답이 없습니다.</b> 그래서 사람 단위로 맞았는지 세는 AUC를 쓸 수 없습니다.</p>
       <p id="uplift-select"></p>
-      <p>대신 무작위로 나눈 대조군과 면담군을 <b>효과 점수 순서대로 묶어 비교</b>하는 Qini 곡선·계수로 채점해요(무작위 순서 = 0). 이 프로젝트는 가상 데이터라 진짜 효과를 알기 때문에, 추정 효과와 진짜 효과의 순위 상관도 함께 볼 수 있어요. <b>실제 자료에서는 이 상관을 알 수 없어요.</b></p>
+      <p>대신 무작위로 나눈 대조군과 면담군을 <b>효과 점수 순서대로 묶어 비교</b>하는 Qini 곡선·계수로 채점합니다(무작위 순서 = 0). 이 프로젝트는 가상 데이터라 진짜 효과를 알기 때문에, 추정 효과와 진짜 효과의 순위 상관도 함께 볼 수 있습니다. <b>실제 자료에서는 이 상관을 알 수 없습니다.</b></p>
     </div>
     <div class="card" id="ex-reason">
       <h3>사유 × 면담자 권한 (시나리오 B의 가정)</h3>
@@ -168,7 +169,7 @@
           <tr><td>⑤ 회사 방향·성장</td><td>약함</td><td>비전 공유 → 큼</td></tr>
         </tbody>
       </table></div>
-      <p class="caption">HR 현업 경험(1인)에 바탕을 둔 가정이에요. 실제 조직에서 같은 구조인지는 검증되지 않았어요. "효과가 작다"는 결과는 <b>지원을 끊는 근거가 아니라</b> 한정된 예산·임원 시간의 우선순위예요.</p>
+      <p class="caption">HR 현업 경험에 바탕을 둔 가정입니다. 실제 조직에서 같은 구조인지는 검증되지 않았습니다. "효과가 작다"는 결과는 <b>지원을 끊는 근거가 아니라</b> 한정된 예산·임원 시간의 우선순위입니다.</p>
     </div>
   </div>
 </section>
@@ -192,7 +193,7 @@
   <div class="sec-head"><h2 id="eth-h">한계와 윤리 체크리스트</h2></div>
   <div class="grid two">
     <div class="card">
-      <h3>실제로 쓰기 전에 확인해요</h3>
+      <h3>실제로 쓰기 전에 확인합니다</h3>
       <ul class="checklist">
         <li><label><input type="checkbox"> 점수와 배정을 평가·징계·해고에 쓰지 않는다는 원칙을 문서로 정했다.</label></li>
         <li><label><input type="checkbox"> 사유 문항이 기명 수집이고 개인 단위 활용에 동의를 받았다(익명 설문은 쓰지 않는다).</label></li>
@@ -206,16 +207,16 @@
     <div class="card">
       <h3>이 시뮬레이션의 한계</h3>
       <ul>
-        <li>가상 데이터라 모델 성능은 생성 규칙을 다시 찾은 결과예요.</li>
-        <li>면담의 질(정석대로 했는가)과 실장·본부장·대표의 차이는 모델에 없어요(팀장 / 임원 2종으로 단순화).</li>
-        <li>진짜 개인별 효과는 실제 자료에서 알 수 없어요. "상한"과 "막은 퇴사 수"는 가상 데이터라 가능한 채점이에요.</li>
+        <li>가상 데이터라 모델 성능은 생성 규칙을 다시 찾은 결과입니다.</li>
+        <li>면담의 질(정석대로 했는가)과 실장·본부장·대표의 차이는 모델에 없습니다(팀장 / 임원 2종으로 단순화).</li>
+        <li>진짜 개인별 효과는 실제 자료에서 알 수 없습니다. "최대치(상한)"와 "면담 후 재직(예상)"은 가상 데이터라 가능한 채점입니다.</li>
       </ul>
       <h3>실제 도입 검증 절차 (요약)</h3>
       <ol class="steps">
-        <li>작게 시작: 일부 조직에서 대조·팀장·임원 면담을 <b>무작위로</b> 배정해 시범 운영해요.</li>
-        <li>같은 절차로 위험 모델과 효과 모델을 다시 학습하고, 떼어 둔 시험 자료로 기준선과 비교해요.</li>
-        <li>Qini로 효과 순 정렬이 무작위보다 나은지 확인하고, 아니면 위험 순 같은 단순한 방법을 써요.</li>
-        <li>집단별 배정을 점검하고 사유는 면담(stay interview)에서 직접 확인해요.</li>
+        <li>작게 시작: 일부 조직에서 대조·팀장·임원 면담을 <b>무작위로</b> 배정해 시범 운영합니다.</li>
+        <li>같은 절차로 위험 모델과 효과 모델을 다시 학습하고, 떼어 둔 시험 자료로 기준선과 비교합니다.</li>
+        <li>Qini로 효과 순 정렬이 무작위보다 나은지 확인하고, 아니면 위험 순 같은 단순한 방법을 씁니다.</li>
+        <li>집단별 배정을 점검하고 사유는 면담(stay interview)에서 직접 확인합니다.</li>
       </ol>
     </div>
   </div>
@@ -229,7 +230,7 @@
       <!-- Pages에는 ../docs/가 배포되지 않으므로 GitHub 저장소의 보고서 주소로 연결 -->
       분석 보고서: <a id="report-link" href="https://github.com/basco-git/aiffel-work/blob/main/retention-planner/docs/REPORT.md" target="_blank" rel="noopener">docs/REPORT.md (GitHub)</a>
     </p>
-    <p>가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않습니다. 지원 대상 선정용이며 개인 평가에 쓰지 않습니다.</p>
+    <p>가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않습니다. 면담 대상 선정용이며 개인 평가에 쓰지 않습니다.</p>
   </div>
 </footer>
 

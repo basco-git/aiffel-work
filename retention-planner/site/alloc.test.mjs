@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  roundHalfEven, countFromRatio, stage1TopK, stage1Threshold, stage1Curve,
+  roundHalfEven, countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2Allocate, stage2All, stage2Curve, validateInputs, fairnessTable, availableMethods,
 } from './alloc.js';
 
@@ -145,14 +145,19 @@ const p2 = { m: 1, k: 0.5, C_replace: 64, C_lead: 1, C_exec: 4 };
 
 // 입력 검사
 {
-  const ok = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '0.3', k: '20', m: '135' }, { n1: 1080, n2: 2700 });
-  check('입력 정상', ok.ok && ok.values.C_replace === 30000000 && ok.values.k === 0.2 && ok.values.m === 135);
+  // 임원 면담은 비율(%)로 받고 인원은 소수점 버림(11-17 변경): 2,700명 × 5% = 135명
+  const ok = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '0.3', k: '20', m: '5' }, { n1: 1080, n2: 2700 });
+  check('입력 정상', ok.ok && ok.values.C_replace === 30000000 && ok.values.k === 0.2 && ok.values.m === 135 && ok.values.mPct === 5);
   const empty = validateInputs({ C_replace: '', C_lead: '', C_exec: '', r: '', k: '', m: '' }, { n1: 1080, n2: 2700 });
   check('빈 입력은 오류', !empty.ok && Object.keys(empty.errors).length === 6);
-  const over = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '0.3', k: '99', m: '135' }, { n1: 1080, n2: 2700 });
-  check('m + L > n 안내', !over.ok && /많아요/.test(over.errors.m));
-  const badR = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '1.5', k: '20', m: '1.5' }, { n1: 1080, n2: 2700 });
-  check('r 범위·m 정수 검사', !badR.ok && badR.errors.r && badR.errors.m);
+  const over = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '0.3', k: '99', m: '5' }, { n1: 1080, n2: 2700 });
+  check('m + L > n 안내', !over.ok && /많습니다/.test(over.errors.m));
+  const badR = validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '1.5', k: '20', m: '150' }, { n1: 1080, n2: 2700 });
+  check('r 범위·m 비율 범위 검사', !badR.ok && badR.errors.r && badR.errors.m);
+  // 소수점 버림: 4.99% → 134.73명 → 134명, 0.04% → 1.08명 → 1명, 7.3% → 197.1명 → 197명
+  const fl = (p) => validateInputs({ C_replace: '3000', C_lead: '30', C_exec: '150', r: '0.3', k: '20', m: p }, { n1: 1080, n2: 2700 }).values.m;
+  check('임원 인원 소수점 버림', fl('4.99') === 134 && fl('0.04') === 1 && fl('7.3') === 197 && fl('5') === 135 && fl('0') === 0);
+  check('floorCount 부동소수 오차 방지', floorCount(2700, 5) === 135 && floorCount(100, 7) === 7 && floorCount(3, 33.3333) === 0);
 }
 
 // ---------------------------------------------------------------- reference.json 대조

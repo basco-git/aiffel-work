@@ -17,7 +17,7 @@ RES = ROOT / "results"
 REPORT = ROOT / "docs" / "REPORT.md"  # README.md도 함께 채움
 
 NAME1 = {"random": "무작위", "tenure": "근속 짧은 순", "logit": "로지스틱 회귀", "rf": "랜덤 포레스트",
-         "hgb": "히스토그램 부스팅(HistGradientBoosting)", "gb": "그래디언트 부스팅"}
+         "hgb": "히스토그램 부스팅(HistGradientBoosting)", "gb": "그래디언트 부스팅", "tabicl": "TabICL(사전학습)"}
 NAME2 = {"random": "무작위", "risk": "위험 순", "expert": "HR 전문가 규칙",
          "uplift": "효과 순(추정)", "oracle": "진짜 효과 순(상한)"}
 UPLIFT = {"t_hgb": "두 모델 비교법 · 부스팅 (T-learner, HistGB)",
@@ -89,14 +89,16 @@ def build():
     c = case(ref, "A")
     inp = c["inputs"]
     rows = []
-    for mid in ("random", "tenure", "logit", "rf", "hgb", "gb"):
+    for mid in [m for m in ("random", "tenure", "logit", "rf", "hgb", "gb", "tabicl") if m in c["stage1"]]:
         x = c["stage1"][mid]
-        rows.append([NAME1[mid], f"{x['S']}명", f"{x['TP']}명", f"{x['unneeded']}명", eok(x["net"])])
+        rows.append([NAME1[mid], f"{x['S']}명", f"{x['TP']}명", f"{x['TP'] * inp['r']:.1f}명", f"{x['unneeded']}명", eok(x["net"])])
         if "threshold" in x and mid == meta["best_stage1_model"]:
             th = x["threshold"]
-            rows.append([f"{NAME1[mid]} · 기대이익 문턱", f"{th['S']}명", f"{th['TP']}명", f"{th['S'] - th['TP']}명", eok(th["net"])])
-    t["1단계비용"] = (table(["방법", "면담 인원", "찾은 퇴사자", "불필요한 면담", "순이익"], rows)
-                    + f"\n\n입력: 상위 {inp['k'] * 100:.0f}%, 면담 성공률 {inp['r']}, 대체 비용 {inp['C_replace'] / 1e4:,.0f}만 원, 면담 비용 {inp['C_lead'] / 1e4:,.0f}만 원.")
+            rows.append([f"{NAME1[mid]} · 비용 기준 선택", f"{th['S']}명", f"{th['TP']}명", f"{th['TP'] * inp['r']:.1f}명", f"{th['S'] - th['TP']}명", eok(th["net"])])
+    # 11-17 표현 변경(사용자 요청): 찾은 퇴사자 → 면담 안 하면 떠났을 사람, 불필요한 면담 → 면담 없이도 재직했을 사람
+    t["1단계비용"] = (table(["방법", "면담 인원", "면담 안 하면 떠났을 사람", "면담 후 재직(예상)", "면담 없이도 재직했을 사람", "순이익"], rows)
+                    + f"\n\n입력: 상위 {inp['k'] * 100:.0f}%, 면담 성공률 {inp['r']}, 대체 비용 {inp['C_replace'] / 1e4:,.0f}만 원, 면담 비용 {inp['C_lead'] / 1e4:,.0f}만 원. "
+                    "면담 후 재직(예상) = 떠났을 사람 × 성공률. 순이익 = 면담 후 재직 × 대체 비용 − 면담 인원 전체 × 면담 비용.")
 
     # 업리프트 추정기 선택
     rows = []
@@ -113,10 +115,10 @@ def build():
         rows.append([NAME2[mid], eok(a["net"]), f"{a['saved']:.1f}명", eok(b["net"]), f"{b['saved']:.1f}명", f"{b['backfire']}명",
                      f"{b['net'] / cb['stage2']['oracle']['net'] * 100:.0f}%"])
     inp = cb["inputs"]
-    t["2단계"] = (table(["방법", "A 순이익", "A 막은 퇴사", "B 순이익", "B 막은 퇴사", "B 역효과 배정", "B 상한 대비"], rows)
-                 + f"\n\n입력: 팀장 면담 {inp['k'] * 100:.0f}%, 임원 슬롯 {inp['m']}명, 대체 비용 {inp['C_replace'] / 1e4:,.0f}만 원, "
-                 f"팀장 {inp['C_lead'] / 1e4:,.0f}만 원, 임원 {inp['C_exec'] / 1e4:,.0f}만 원. 막은 퇴사와 순이익은 진짜 효과로 채점. "
-                 "역효과 배정 = 팀장 면담을 받으면 오히려 퇴사 확률이 오르는 사람에게 팀장 면담을 배정한 수.")
+    t["2단계"] = (table(["방법", "A 순이익", "A 면담 후 재직(예상)", "B 순이익", "B 면담 후 재직(예상)", "B 역효과 우려", "B 최대치 대비"], rows)
+                 + f"\n\n입력: 팀장 면담 {inp['k'] * 100:.0f}%, 임원 면담 {inp['m']}명(시험 인원의 5%), 대체 비용 {inp['C_replace'] / 1e4:,.0f}만 원, "
+                 f"팀장 {inp['C_lead'] / 1e4:,.0f}만 원, 임원 {inp['C_exec'] / 1e4:,.0f}만 원. 면담 후 재직(예상)과 순이익은 진짜 효과로 채점(사람별 확률의 합이라 소수가 나옴). "
+                 "역효과 우려 = 팀장 면담을 받으면 오히려 퇴사 확률이 오르는 사람(팀장 갈등)에게 팀장 면담을 배정한 수. 최대치 = 진짜 효과를 알 때의 순이익.")
 
     # 2단계 Qini·상관
     rows = []
@@ -177,6 +179,9 @@ def build():
 def fill(text: str, tables: dict) -> tuple[str, list]:
     missing = []
     for name, body in tables.items():
+        # GitHub은 한 줄에 물결표가 두 번 나오면 그 사이를 취소선으로 그린다("0.81~0.90 … 0.97~1.00").
+        # 범위 표시는 하이픈(-)으로 통일한다(11-17 사용자 결정).
+        body = body.replace("~", "-")
         pat = re.compile(rf"(<!-- 표:{re.escape(name)} -->\n)(.*?)(<!-- /표:{re.escape(name)} -->)", re.S)
         if not pat.search(text):
             missing.append(name)

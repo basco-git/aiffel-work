@@ -1,7 +1,7 @@
 // 리텐션 면담 우선순위 시뮬레이터 — 화면 동작
 // 계산은 모두 alloc.js(DATA_CONTRACT "웹 계산 규칙")를 쓴다. 외부 라이브러리 없음.
 import {
-  countFromRatio, stage1TopK, stage1Threshold, stage1Curve,
+  countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2All, stage2Curve, validateInputs, fairnessTable, STAGE2_METHODS, availableMethods,
 } from './alloc.js';
 
@@ -27,6 +27,7 @@ function shortWon(x) {
 const fmtPct = (x, d = 1) => (x == null || !Number.isFinite(x) ? '—' : `${(x * 100).toFixed(d)}%`);
 const fmtN = (x, d = 3) => (x == null || !Number.isFinite(x) ? '—' : x.toFixed(d).replace('-', MINUS));
 const fmtInt = (x) => (x == null ? '—' : Number(x).toLocaleString('ko-KR'));
+const fmtPpl = (x) => (x == null || !Number.isFinite(x) ? '—' : (Math.abs(x - Math.round(x)) < 0.05 ? Math.round(x).toLocaleString('ko-KR') : x.toFixed(1)));
 const negCls = (x) => (x != null && x < 0 ? ' class="neg"' : '');
 
 // ---------------------------------------------------------------- 계열 모양(색 + 선 무늬)
@@ -37,6 +38,7 @@ const S1_STYLE = {
   rf: { color: 'var(--s-aqua)' },
   hgb: { color: 'var(--s-purple)' },
   gb: { color: 'var(--s-orange)' },
+  tabicl: { color: 'var(--s-ink)', dash: '8 3', cls: 'dash' },  // 11-17 추가: 별도 환경에서 미리 계산한 사전학습 모델
 };
 const S2_STYLE = {
   random: { color: 'var(--s-base)', dash: '6 4', cls: 'dash' },
@@ -46,7 +48,7 @@ const S2_STYLE = {
   expert: { color: 'var(--s-aqua)' },
 };
 const S2_LABEL = { random: '무작위', risk: '위험 순', expert: 'HR 전문가 규칙', uplift: '효과 순(T-learner)', oracle: '진짜 효과 순(상한)' };
-const EXPERT_NOTE = '모델 없이 현업 지식만 쓴 기준선이에요. 시나리오 B와 같은 경험으로 만들어 앞서는 게 당연하며, 실제로 맞다는 증거는 아니에요.';
+const EXPERT_NOTE = '모델 없이 현업 지식만 쓴 기준선입니다. 시나리오 B와 같은 경험으로 만들어 앞서는 게 당연하며, 실제로 맞다는 증거는 아닙니다.';
 const styleOf = (map, id) => map[id] ?? { color: 'var(--s-ink)', dash: '1 3', cls: 'dot' };
 const swatch = (st) => `<span class="swatch ${st.cls ?? ''}" style="color:${st.color}" aria-hidden="true"></span>`;
 
@@ -226,7 +228,8 @@ const exampleValues = () => {
   return {
     C_replace: won(di.C_replace, 3000), C_lead: won(di.C_lead, 30), C_exec: won(di.C_exec, 150),
     r: String(di.r ?? 0.3), k: String(di.k != null ? Math.round(di.k * 100) : 20),
-    m: String(di.m ?? Math.round(state.data.A.scores.stage2.n * 0.05)),
+    // 임원 면담은 비율(%)로 입력한다. meta의 예시값이 인원이면 시험 인원 대비 비율로 바꾼다(135명 ÷ 2,700명 = 5%).
+    m: String(di.m != null ? Math.round((di.m / state.data.A.scores.stage2.n) * 1000) / 10 : 5),
   };
 };
 
@@ -251,7 +254,7 @@ function update() {
   const v = validateInputs(raw, { n1, n2 });
   const anyFilled = FIELDS.some((f) => raw[f] !== '');
   for (const f of FIELDS) {
-    // 아무것도 안 넣은 처음 화면에서는 "입력해 주세요"를 띄우지 않는다
+    // 아무것도 안 넣은 처음 화면에서는 "입력해 주십시오"를 띄우지 않는다
     const msg = anyFilled ? (v.errors[f] ?? '') : '';
     $(`err-${f}`).textContent = msg;
     $(`in-${f}`).setAttribute('aria-invalid', msg ? 'true' : 'false');
@@ -261,6 +264,10 @@ function update() {
     const rg = $(`rg-${f}`);
     if (raw[f] !== '' && Number.isFinite(Number(raw[f]))) { rg.value = raw[f]; rg.classList.remove('unset'); } else rg.classList.add('unset');
   }
+  // 임원 면담 비율 → 인원(소수점 버림)을 칸 아래에 바로 보여 준다
+  const mPct = Number(raw.m);
+  $('m-count').textContent = raw.m !== '' && Number.isFinite(mPct) && mPct >= 0 && mPct <= 100
+    ? `= ${fmtInt(floorCount(n2, mPct))}명 (소수점 버림)` : '';
   const ex = exampleValues();
   $('example-on').hidden = !FIELDS.every((f) => Number(raw[f]) === Number(ex[f]) && raw[f] !== '');
 
@@ -272,7 +279,7 @@ function update() {
   renderSummary();
 }
 
-const placeholder = (msg = '위 입력을 모두 채우면 계산해요. "예시값 채우기"로 시작해 볼 수 있어요.') => `<div class="placeholder">${esc(msg)}</div>`;
+const placeholder = (msg = '위 입력을 모두 채우면 계산합니다. "예시값 채우기"로 시작해 볼 수 있습니다.') => `<div class="placeholder">${esc(msg)}</div>`;
 
 // ---------------------------------------------------------------- 1단계
 function renderStage1() {
@@ -299,11 +306,15 @@ function renderStage1() {
       const best = m.id === s1.best;
       html += `<article class="mcard${best ? ' best' : ''}">
         <h3>${swatch(st)}${esc(m.label)} ${best ? '<span class="badge">대표 모델</span>' : `<span class="badge gray">${m.kind === 'model' ? '모델' : '기준선'}</span>`}</h3>
-        <div class="kv"><span>찾은 퇴사 위험자</span><b>${fmtInt(top.TP)}명 <span class="mu">(${fmtPct(top.capture, 0)})</span></b></div>
-        <div class="kv"><span>불필요한 면담</span><b>${fmtInt(top.unneeded)}명</b></div>
+        <div class="kv"><span>면담 안 하면 떠났을 사람</span><b>${fmtInt(top.TP)}명 <span class="mu">(퇴사자의 ${fmtPct(top.capture, 0)})</span></b></div>
+        <div class="kv kv-sub"><span>├ 면담 후 재직(예상)</span><b>${fmtPpl(top.TP * vals.r)}명</b></div>
+        <div class="kv kv-sub"><span>└ 면담 후에도 퇴사(예상)</span><b>${fmtPpl(top.TP * (1 - vals.r))}명</b></div>
+        <div class="kv"><span>면담 없이도 재직했을 사람</span><b>${fmtInt(top.unneeded)}명</b></div>
         <div class="kv"><span>예상 순이익</span><b${negCls(top.net)}>${fmtWon(top.net)}</b></div>
-        ${thr ? `<div class="sub">기대이익 문턱으로 고르면: <b>${fmtInt(thr.S)}명</b> 면담 · 퇴사자 <b>${fmtInt(thr.TP)}명</b> · 순이익 <b>${fmtWon(thr.net)}</b></div>`
-    : '<div class="sub mu">확률이 없는 순서 규칙이라 기대이익 문턱을 쓸 수 없어요.</div>'}
+        <div class="formula">= 면담 후 재직 ${fmtPpl(top.TP * vals.r)}명 × ${fmtWon(vals.C_replace)} − 면담 ${fmtInt(top.S)}명 × ${fmtWon(vals.C_lead)}</div>
+        ${thr ? `<div class="sub">비용 기준으로 고르면: <b>${fmtInt(thr.S)}명</b> 면담 · 면담 후 재직(예상) <b>${fmtPpl(thr.TP * vals.r)}명</b> · 순이익 <b>${fmtWon(thr.net)}</b></div>`
+    : '<div class="sub mu">확률이 없는 순서 규칙이라 비용 기준 선택을 쓸 수 없습니다.</div>'}
+        ${m.id === 'tabicl' ? '<div class="sub mu">교안 17번의 사전학습 표 모델입니다. 브라우저에서 돌릴 수 없어 별도 환경(Python 3.13, CPU 약 17분)에서 미리 계산한 점수를 씁니다. 대표 모델 선택에는 넣지 않았습니다.</div>' : ''}
       </article>`;
     }
     html += '</div>';
@@ -339,7 +350,7 @@ function renderStage1() {
       <td class="n">${fmtN(x.lift?.['10'], 2)}</td><td class="n">${fmtN(x.lift?.['20'], 2)}</td>
       <td class="n">${vals ? fmtWon(results[m.id].top.net) : '—'}</td></tr>`;
   }
-  t += `</tbody></table></div><p class="caption">전원 재직 정확도(모두 "남는다"고만 답할 때) <b>${fmtN(m1.all_stay_accuracy)}</b> · 시험 대조군 ${fmtInt(m1.n_test)}명 · 실제 퇴사 비율 ${fmtPct(m1.leave_rate)}. 정확도는 문턱 0.5 기준이며 점수가 없는 기준선은 "—"예요. 순이익 열만 화면에서 계산하고 나머지는 metrics.json 값이에요.</p>`;
+  t += `</tbody></table></div><p class="caption">전원 재직 정확도(모두 "남는다"고만 답할 때) <b>${fmtN(m1.all_stay_accuracy)}</b> · 시험 대조군 ${fmtInt(m1.n_test)}명 · 실제 퇴사 비율 ${fmtPct(m1.leave_rate)}. 정확도는 문턱 0.5 기준이며 점수가 없는 기준선은 "—"입니다. 순이익 열만 화면에서 계산하고 나머지는 metrics.json 값입니다.</p>`;
   $('s1-table').innerHTML = t;
 }
 
@@ -349,15 +360,15 @@ function renderExplain() {
   const m1 = d.A.metrics.stage1;
   const best = m1.methods.find((m) => m.id === d.A.scores.stage1.best) ?? m1.methods[0];
   $('ex-accuracy').querySelector('.body').innerHTML = `
-    <p>퇴사는 드문 일이라 "모두 남는다"고만 답해도 정확도가 높게 나와요. 이 시험 대조군에서는 그 답의 정확도가 <b>${fmtN(m1.all_stay_accuracy)}</b>예요. 대표 모델(${esc(best.label)})의 정확도는 <b>${fmtN(best.accuracy)}</b>예요.</p>
-    <p>"모두 남는다"는 답은 퇴사자를 <b>한 명도 찾지 못해요.</b> 그래서 정확도만 보지 않고, 상위 k%에 퇴사자가 얼마나 들어오는지(포착률)와 순이익을 함께 봐요.</p>`;
+    <p>퇴사는 드문 일이라 "모두 남는다"고만 답해도 정확도가 높게 나옵니다. 이 시험 대조군에서는 그 답의 정확도가 <b>${fmtN(m1.all_stay_accuracy)}</b>입니다. 대표 모델(${esc(best.label)})의 정확도는 <b>${fmtN(best.accuracy)}</b>입니다.</p>
+    <p>"모두 남는다"는 답은 퇴사자를 <b>한 명도 찾지 못합니다.</b> 그래서 정확도만 보지 않고, 상위 k%에 퇴사자가 얼마나 들어오는지(포착률)와 순이익을 함께 봅니다.</p>`;
   const v = state.vals;
   const cut = v && v.r > 0 ? v.C_lead / (v.r * v.C_replace) : null;
   $('ex-threshold').querySelector('.body').innerHTML = `
-    <p>AUC가 높아도 <b>몇 명까지 면담할지</b>는 정해지지 않아요. 면담 대상 비율 k는 예산과 면담 가능 인원을 보고 사람이 정해요.</p>
-    <p><b>기대이익 문턱</b>은 보정된 위험 확률 p로 "p × 성공률 r × 대체 비용 > 면담 비용"인 사람만 고르는 방법이에요.
-    ${cut != null ? `지금 입력이면 <b>p &gt; ${fmtN(cut, 3)}</b>인 사람이에요.` : '입력을 채우면 지금 기준의 문턱 확률을 보여 드려요.'}
-    확률이 실제와 맞아야(보정) 이 계산이 의미가 있어요.</p>`;
+    <p>AUC가 높아도 <b>몇 명까지 면담할지</b>는 정해지지 않습니다. 면담 대상 비율 k는 예산과 면담 가능 인원을 보고 사람이 정합니다.</p>
+    <p><b>비용 기준 선택(기대이익 문턱)</b>은 보정된 위험 확률 p로 "p × 성공률 r × 대체 비용 > 면담 비용"인 사람만 고르는 방법입니다.
+    ${cut != null ? `지금 입력이면 <b>p &gt; ${fmtN(cut, 3)}</b>인 사람입니다.` : '입력을 채우면 지금 기준의 문턱 확률을 보여 드립니다.'}
+    확률이 실제와 맞아야(보정) 이 계산이 의미가 있습니다.</p>`;
 }
 
 // ---------------------------------------------------------------- 2단계
@@ -371,8 +382,8 @@ function renderStage2() {
   const meta = d.meta.scenarios?.[scn];
   document.querySelectorAll('.seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scn === scn)));
   $('scn-desc').innerHTML = scn === 'A'
-    ? '<b>A · 효과 균일:</b> 누구에게나 팀장 면담 효과가 같고 임원 면담은 언제나 약 2배예요. 이때는 위험 순 배분이 거의 최선일 것으로 예상해요. 효과 순이 이기지 않아도 그대로 보여 줘요.'
-    : `<b>B · 사유 × 권한 궁합:</b> 퇴사 사유를 해결할 권한이 있는 면담자일 때 효과가 커요. 팀장 갈등이 사유면 팀장 면담은 역효과일 수 있어요. 이미 마음을 굳힌 사람(관측되지 않는 숨은 변수)은 어떤 면담에도 반응하지 않아요${meta?.decided_rate != null ? `(이 데이터에서 ${fmtPct(meta.decided_rate)})` : ''}. 효과가 사람마다 크게 다르도록 <b>설계한 가정</b>이라 진짜 효과 순(상한)은 크게 앞서지만, 그 효과를 시범 기록으로 <b>추정해</b> 배분한 효과 순이 위험 순보다 낫다는 보장은 없어요.`;
+    ? '<b>A · 효과 균일:</b> 누구에게나 팀장 면담 효과가 같고 임원 면담은 언제나 약 2배입니다. 이때는 위험 순 배분이 거의 최선일 것으로 예상합니다. 효과 순이 이기지 않아도 그대로 보여 줍니다.'
+    : `<b>B · 사유 × 권한 궁합:</b> 퇴사 사유를 해결할 권한이 있는 면담자일 때 효과가 큽니다. 팀장 갈등이 사유면 팀장 면담은 역효과일 수 있습니다. 이미 마음을 굳힌 사람(관측되지 않는 숨은 변수)은 어떤 면담에도 반응하지 않습니다${meta?.decided_rate != null ? `(이 데이터에서 ${fmtPct(meta.decided_rate)})` : ''}. 효과가 사람마다 크게 다르도록 <b>설계한 가정</b>이라 진짜 효과 순(상한)은 크게 앞서지만, 그 효과를 시범 기록으로 <b>추정해</b> 배분한 효과 순이 위험 순보다 낫다는 보장은 없습니다.`;
   $('p1-scn').textContent = `시나리오 ${scn} 기준`;
 
   const labelOf = (id) => m2.methods.find((m) => m.id === id)?.label ?? S2_LABEL[id] ?? id;
@@ -387,27 +398,28 @@ function renderStage2() {
     const L = all.risk.lead;
     const nonOracle = methods.filter((id) => id !== 'oracle');
     const winner = nonOracle.reduce((a, b) => (all[b].net > all[a].net ? b : a));
-    let html = `<p class="headline">시험 전체 <b>${fmtInt(s2.n)}명</b> 중 임원 면담 <b>${fmtInt(vals.m)}명</b> · 팀장 면담 <b>${fmtInt(L)}명</b>(${fmtPct(vals.k, 0)})을 배분할 때</p><div class="grid">`;
+    let html = `<p class="headline">시험 전체 <b>${fmtInt(s2.n)}명</b> 중 임원 면담 <b>${fmtInt(vals.m)}명</b>(${vals.mPct}%) · 팀장 면담 <b>${fmtInt(L)}명</b>(${fmtPct(vals.k, 0)})을 배분할 때</p><div class="grid">`;
     for (const id of methods) {
       const r = all[id];
       const st = styleOf(S2_STYLE, id);
       html += `<article class="mcard${id === winner ? ' best' : ''}">
         <h3>${swatch(st)}${esc(labelOf(id))} ${id === 'oracle' ? '<span class="badge gray">가상 데이터라서만 가능</span>' : ''}${id === winner ? '<span class="badge">상한 제외 최고</span>' : ''}</h3>
-        <div class="kv"><span>임원 · 팀장 배정</span><b>${fmtInt(r.exec)}명 · ${fmtInt(r.lead)}명</b></div>
-        <div class="kv"><span>막은 퇴사(진짜 효과 합)</span><b>${fmtN(r.saved, 1)}명</b></div>
+        <div class="kv"><span>면담 인원 (임원 · 팀장)</span><b>${fmtInt(r.exec)}명 · ${fmtInt(r.lead)}명</b></div>
+        <div class="kv"><span>면담 후 재직(예상)</span><b>${fmtN(r.saved, 1)}명</b></div>
         <div class="kv"><span>예상 순이익</span><b${negCls(r.net)}>${fmtWon(r.net)}</b></div>
-        <div class="kv"><span>역효과 배정</span><b>${fmtInt(r.backfire)}명</b></div>
-        <div class="kv"><span>상한 대비</span><b>${r.pct == null ? '—' : `${r.pct.toFixed(1)}%`}</b></div>
-        ${id === 'expert' ? `<div class="sub">위험 순서에서 권한이 필요한 사람(팀장 갈등, 또는 연봉·업무·회사 방향 만족이 낮음)을 먼저 임원에게 배정하고, 팀장 갈등이 있는 사람은 팀장 면담에서 빼요.${r.lead < all.risk.lead ? ` 갈등자를 빼서 팀장 배정이 ${fmtInt(all.risk.lead - r.lead)}명 적어요.` : ''}</div>` : ''}
+        <div class="formula">= ${fmtN(r.saved, 1)}명 × ${fmtWon(vals.C_replace)} − (임원 ${fmtInt(r.exec)}명 × ${fmtWon(vals.C_exec)} + 팀장 ${fmtInt(r.lead)}명 × ${fmtWon(vals.C_lead)})</div>
+        <div class="kv"><span>역효과 우려 (팀장 갈등자에게 팀장 면담)</span><b>${fmtInt(r.backfire)}명</b></div>
+        <div class="kv"><span>최대치 대비</span><b>${r.pct == null ? '—' : `${r.pct.toFixed(1)}%`}</b></div>
+        ${id === 'expert' ? `<div class="sub">위험 순서에서 권한이 필요한 사람(팀장 갈등, 또는 연봉·업무·회사 방향 만족이 낮음)을 먼저 임원에게 배정하고, 팀장 갈등이 있는 사람은 팀장 면담에서 뺍니다.${r.lead < all.risk.lead ? ` 갈등자를 빼서 팀장 배정이 ${fmtInt(all.risk.lead - r.lead)}명 적습니다.` : ''}</div>` : ''}
       </article>`;
     }
     const gap = all.oracle.net > 0 && all.uplift.pct != null && all.risk.pct != null
-      ? `<div class="note" style="margin-top:12px">지금 입력에서 효과 순(추정 효과로 배분)의 순이익은 위험 순보다 <b>${all.uplift.net >= all.risk.net ? '높아요' : '낮아요'}</b>(상한 대비 효과 순 ${all.uplift.pct.toFixed(1)}%, 위험 순 ${all.risk.pct.toFixed(1)}%). 진짜 효과를 알면(상한) ${fmtWon(all.oracle.net)}까지 가능해요. ${all.uplift.net >= all.risk.net
-        ? '<b>추정한 효과로도 위험 순을 넘었지만, 상한과의 격차만큼 개인별 추정 오차가 남아 있어요.</b> 이 결과는 효과 추정 방법 선택에 크게 좌우돼요(아래 민감도 표).'
-        : '<b>이 조건에서는 추정한 효과가 위험 순보다 못해요.</b> 효과가 모두 비슷하면 위험 순이 이미 최선에 가깝고, 효과 차이가 있어도 추정 오차가 크면 이득이 사라져요.'}</div>`
+      ? `<div class="note" style="margin-top:12px">지금 입력에서 효과 순(추정 효과로 배분)의 순이익은 위험 순보다 <b>${all.uplift.net >= all.risk.net ? '높습니다' : '낮습니다'}</b>(최대치 대비 효과 순 ${all.uplift.pct.toFixed(1)}%, 위험 순 ${all.risk.pct.toFixed(1)}%). 진짜 효과를 알면(상한) ${fmtWon(all.oracle.net)}까지 가능합니다. ${all.uplift.net >= all.risk.net
+        ? '<b>추정한 효과로도 위험 순을 넘었지만, 상한과의 격차만큼 개인별 추정 오차가 남아 있습니다.</b> 이 결과는 효과 추정 방법 선택에 크게 좌우됩니다(아래 민감도 표).'
+        : '<b>이 조건에서는 추정한 효과가 위험 순보다 못합니다.</b> 효과가 모두 비슷하면 위험 순이 이미 최선에 가깝고, 효과 차이가 있어도 추정 오차가 크면 이득이 사라집니다.'}</div>`
       : '';
     const expertNote = all.expert ? `<div class="note"><b>HR 전문가 규칙:</b> ${esc(EXPERT_NOTE)}</div>` : '';
-    html += `</div>${gap}${expertNote}<p class="caption">역효과 배정 = 팀장 면담에 배정됐지만 진짜 팀장 면담 효과가 음수인 사람(예: 팀장 갈등이 사유). 막은 퇴사 수와 순이익은 진짜 효과로 채점한 값이며, 실제 자료에서는 알 수 없어요.</p>`;
+    html += `</div>${gap}${expertNote}<p class="caption">면담 후 재직(예상) = 면담 덕분에 남는 사람 수입니다. 사람마다 "면담으로 줄어드는 퇴사 확률"을 더한 값이라 소수가 나옵니다. 역효과 우려 = 팀장 면담을 받으면 오히려 퇴사 확률이 오르는 사람(예: 팀장 갈등이 사유)에게 팀장 면담을 배정한 수입니다. 최대치 = 진짜 면담 효과를 알 때의 순이익입니다. 이 값들은 진짜 효과로 채점한 것이라 실제 자료에서는 알 수 없습니다.</p>`;
     $('s2-cards').innerHTML = html;
   }
 
@@ -432,7 +444,7 @@ function renderStage2() {
   // 비교표(§9.3)
   const mById = Object.fromEntries(m2.methods.map((m) => [m.id, m]));
   let t = `<div class="tw"><table><thead><tr><th>방법</th><th class="n">Qini 팀장</th><th class="n">Qini 임원</th><th class="n">진짜 효과 상관 팀장</th><th class="n">진짜 효과 상관 임원</th>
-    <th class="n">막은 퇴사</th><th class="n">역효과 배정</th><th class="n">순이익</th><th class="n">상한 대비</th></tr></thead><tbody>`;
+    <th class="n">면담 후 재직(예상)</th><th class="n">역효과 우려</th><th class="n">순이익</th><th class="n">최대치 대비</th></tr></thead><tbody>`;
   for (const id of methods) {
     const x = mById[id] ?? {};
     const r = all?.[id];
@@ -442,7 +454,7 @@ function renderStage2() {
       <td class="n">${r ? fmtN(r.saved, 1) : '—'}</td><td class="n">${r ? fmtInt(r.backfire) : '—'}</td>
       <td class="n">${r ? fmtWon(r.net) : '—'}</td><td class="n">${r?.pct == null ? '—' : `${r.pct.toFixed(1)}%`}</td></tr>`;
   }
-  t += `</tbody></table></div><p class="caption">시나리오 ${scn} · 시험 전체 ${fmtInt(m2.n_test)}명(대조 ${fmtInt(m2.arms?.none)} · 팀장 ${fmtInt(m2.arms?.lead)} · 임원 ${fmtInt(m2.arms?.exec)}). Qini·상관은 metrics.json 값, 나머지 열은 현재 입력으로 계산해요. 진짜 효과 상관과 상한은 <b>가상 데이터라서 가능한 검증</b>이에요.</p>`;
+  t += `</tbody></table></div><p class="caption">시나리오 ${scn} · 시험 전체 ${fmtInt(m2.n_test)}명(대조 ${fmtInt(m2.arms?.none)} · 팀장 ${fmtInt(m2.arms?.lead)} · 임원 ${fmtInt(m2.arms?.exec)}). Qini·상관은 metrics.json 값, 나머지 열은 현재 입력으로 계산합니다. 진짜 효과 상관과 상한은 <b>가상 데이터라서 가능한 검증</b>입니다.</p>`;
   $('s2-table').innerHTML = t;
 
   // 효과 추정 방법 선택(metrics.json stage2.uplift_selection, 있을 때만)
@@ -453,12 +465,12 @@ function renderStage2() {
     us.hidden = false;
     const cands = Object.entries(sel.cv_qini ?? {}).sort((a, b) => b[1] - a[1])
       .map(([id, q]) => `${id === sel.chosen ? '<b>' : ''}${esc(sel.labels?.[id] ?? id)} ${fmtN(q, 4)}${id === sel.chosen ? '</b>' : ''}`).join(' · ');
-    us.innerHTML = `효과 추정 방법은 시험 자료가 아니라 <b>훈련 자료 교차 검증 Qini</b>로 골랐어요(시나리오 ${scn}: <b>${esc(sel.label ?? sel.chosen)}</b>). 후보별 교차 검증 Qini: ${cands}.${sel.rule ? ` <span class="mu">규칙: ${esc(sel.rule)}</span>` : ''}`;
+    us.innerHTML = `효과 추정 방법은 시험 자료가 아니라 <b>훈련 자료 교차 검증 Qini</b>로 골랐습니다(시나리오 ${scn}: <b>${esc(sel.label ?? sel.chosen)}</b>). 후보별 교차 검증 Qini: ${cands}.${sel.rule ? ` <span class="mu">규칙: ${esc(sel.rule)}</span>` : ''}`;
   }
 }
 
 // ---------------------------------------------------------------- P1
-const notReady = (what) => `<div class="placeholder">준비 중이에요 · ${esc(what)} 결과 파일이 아직 없어요.</div>`;
+const notReady = (what) => `<div class="placeholder">준비 중입니다 · ${esc(what)} 결과 파일이 아직 없습니다.</div>`;
 
 function renderP1() {
   const d = state.data;
@@ -472,7 +484,7 @@ function renderP1() {
   else {
     const ids = STAGE2_METHODS.filter((id) => qc[id]).concat(Object.keys(qc).filter((id) => !STAGE2_METHODS.includes(id)));
     const labelOf = (id) => D.metrics.stage2.methods.find((m) => m.id === id)?.label ?? S2_LABEL[id] ?? id;
-    qBody.innerHTML = '<h3 style="font-size:.92rem;margin:4px 0 0">팀장 면담</h3><div id="qini-lead"></div><h3 style="font-size:.92rem;margin:10px 0 0">임원 면담</h3><div id="qini-exec"></div><p class="caption">가로: 점수 높은 순으로 고른 대상 비율 · 세로: 누적으로 막은 퇴사 수(대조군과 면담군의 관측 결과로 계산). 무작위 선보다 위로 볼록할수록 효과 순으로 잘 줄 세운 거예요. 행마다 정답이 없어서 AUC 대신 이 곡선으로 채점해요.</p>';
+    qBody.innerHTML = '<h3 style="font-size:.92rem;margin:4px 0 0">팀장 면담</h3><div id="qini-lead"></div><h3 style="font-size:.92rem;margin:10px 0 0">임원 면담</h3><div id="qini-exec"></div><p class="caption">가로: 점수 높은 순으로 고른 대상 비율 · 세로: 누적 면담 후 재직 인원(대조군과 면담군의 관측 결과로 계산). 무작위 선보다 위로 볼록할수록 효과 순으로 잘 줄 세운 것입니다. 행마다 정답이 없어서 AUC 대신 이 곡선으로 채점합니다.</p>';
     for (const arm of ['lead', 'exec']) {
       lineChart($(`qini-${arm}`), {
         series: ids.filter((id) => qc[id]?.[arm]).map((id) => ({
@@ -505,7 +517,7 @@ function renderP1() {
     };
     iBody.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))">${list(imp.risk, '위험(1단계 대표 모델)')}${list(imp.uplift_exec, '임원 면담 추정 효과')}</div>
       ${imp.note ? `<p class="caption">측정값: ${esc(imp.note)}</p>` : ''}
-      <p class="caption"><b>원인이 아니라 상관이에요.</b> 순열 중요도(그 열을 섞었을 때 값이 변하는 정도, 막대 위 짧은 선은 ± 표준편차)로, "이 요인 때문에 떠난다"는 뜻이 아니에요. 서로 상관이 높은 열(근속·나이·승진 후 기간)은 중요도가 나뉘어 보일 수 있어요.</p>`;
+      <p class="caption"><b>원인이 아니라 상관입니다.</b> 순열 중요도(그 열을 섞었을 때 값이 변하는 정도, 막대 위 짧은 선은 ± 표준편차)로, "이 요인 때문에 떠난다"는 뜻이 아닙니다. 서로 상관이 높은 열(근속·나이·승진 후 기간)은 중요도가 나뉘어 보일 수 있습니다.</p>`;
   }
 
   // F8 공정성 — scores.json의 집단 열로 현재 입력 기준 직접 계산
@@ -513,7 +525,7 @@ function renderP1() {
   const s2 = D.scores.stage2;
   const all = state.last?.all;
   if (!s2.age_band || !s2.gender) fBody.innerHTML = notReady('집단 열');
-  else if (!state.vals || !all) fBody.innerHTML = placeholder('입력을 채우면 지금 배분 기준으로 집단별 비율을 계산해요.');
+  else if (!state.vals || !all) fBody.innerHTML = placeholder('입력을 채우면 지금 배분 기준으로 집단별 비율을 계산합니다.');
   else {
     const fm = [['risk', '위험 순'], ['expert', '규칙'], ['uplift', '효과 순']].filter(([id]) => all[id]);
     const rows = fairnessTable(s2, Object.fromEntries(fm.map(([id]) => [id, all[id].assign])));
@@ -521,7 +533,7 @@ function renderP1() {
       ${rows.map((g) => `<tr><td>${esc(g.group)}</td><td class="n">${fmtPct(g.share)} <span class="mu">(${fmtInt(g.count)})</span></td>
         ${fm.map(([id]) => `<td class="n">${fmtPct(g[id].exec_rate)}</td>`).join('')}${fm.map(([id]) => `<td class="n">${fmtPct(g[id].lead_rate)}</td>`).join('')}<td class="n">${fmtPct(g.risk.capture)}</td></tr>`).join('')}
       </tbody></table></div>
-      <p class="caption">현재 입력(임원 ${fmtInt(state.vals.m)}명, 팀장 ${fmtPct(state.vals.k, 0)})과 시나리오 ${scn} 기준이에요. 포착률은 그 집단 퇴사자 중 면담(팀장·임원)에 배정된 비율이에요. 나이·성별은 모델 입력에서 뺐지만, 나이는 생성 규칙에 약하게 넣어 다른 열을 통해 점수에 스며드는지 보도록 설계했어요. 비율 차이가 곧 차별을 뜻하지는 않지만, 차이가 크면 이유를 확인해야 해요. 작은 집단은 우연에 따라 크게 흔들려요.</p>`;
+      <p class="caption">현재 입력(임원 ${fmtInt(state.vals.m)}명, 팀장 ${fmtPct(state.vals.k, 0)})과 시나리오 ${scn} 기준입니다. 포착률은 그 집단 퇴사자 중 면담(팀장·임원)에 배정된 비율입니다. 나이·성별은 모델 입력에서 뺐지만, 나이는 생성 규칙에 약하게 넣어 다른 열을 통해 점수에 스며드는지 보도록 설계했습니다. 비율 차이가 곧 차별을 뜻하지는 않지만, 차이가 크면 이유를 확인해야 합니다. 작은 집단은 우연에 따라 크게 흔들립니다.</p>`;
   }
 
   // F14 신뢰도 곡선
@@ -544,14 +556,14 @@ function renderP1() {
       ariaLabel: '확률 보정 전후 신뢰도 곡선',
       axisNote: '가로: 예측 확률 평균(10구간) · 세로: 실제 퇴사 비율',
     });
-    cBody.insertAdjacentHTML('beforeend', `<p class="caption">${esc(mm?.label ?? cal.model)} 모델. 점선 대각선에 가까울수록 "확률 0.3이면 실제로 10명 중 3명"에 가까워요. Brier 점수(낮을수록 좋음): 보정 전 ${fmtN(mm?.brier_raw)} → 보정 후 ${fmtN(mm?.brier_cal)}.</p>`);
+    cBody.insertAdjacentHTML('beforeend', `<p class="caption">${esc(mm?.label ?? cal.model)} 모델. 점선 대각선에 가까울수록 "확률 0.3이면 실제로 10명 중 3명"에 가깝습니다. Brier 점수(낮을수록 좋음): 보정 전 ${fmtN(mm?.brier_raw)} → 보정 후 ${fmtN(mm?.brier_cal)}.</p>`);
   }
 
   // F16 민감도 — 시범 인원 n × 궁합 강도 (2026-11-16 21:30 형식)
   const sens = d.sensitivity;
   const sBody = $('card-sensitivity').querySelector('.body');
   if (!sens) sBody.innerHTML = notReady('민감도 분석');
-  else if (!Array.isArray(sens.n) || !Array.isArray(sens.cells)) sBody.innerHTML = '<div class="placeholder">민감도 파일 형식이 약속(시범 인원 n × 궁합 강도)과 달라 표시하지 않았어요.</div>';
+  else if (!Array.isArray(sens.n) || !Array.isArray(sens.cells)) sBody.innerHTML = '<div class="placeholder">민감도 파일 형식이 약속(시범 인원 n × 궁합 강도)과 달라 표시하지 않았습니다.</div>';
   else {
     const reps = sens.repeats ?? 3;
     const cell = (n, st) => sens.cells.find((c) => c.n === n && c.strength === st);
@@ -572,7 +584,7 @@ function renderP1() {
     };
     const inp = sens.inputs ?? {};
     sBody.innerHTML = `${table('benefit_ratio', '효과 순 ÷ 위험 순 (순이익 비율)', 'uplift_wins')}${table('expert_ratio', 'HR 전문가 규칙 ÷ 위험 순 (순이익 비율)', null)}
-      <p class="caption">칸 = 시드 ${reps}개 평균(위), 최소~최대(아래). 1보다 크면 위험 순보다 순이익이 커요(연보라 칸). "이긴 횟수"는 시드 중 효과 순이 위험 순을 이긴 횟수예요. 시나리오 B 생성 규칙에서 시범 인원과 궁합 강도만 바꿔 다시 생성·학습했어요(시험 30%, 임원 ${esc(inp.m_rule ?? '시험 인원의 5%')}, 팀장 ${fmtPct(inp.k, 0)}, 대체 비용 ${fmtWon(inp.C_replace)}, 팀장 ${fmtWon(inp.C_lead)}, 임원 ${fmtWon(inp.C_exec)}). 위험 순 순이익이 0 이하인 시드는 비율에서 빼요.</p>
+      <p class="caption">칸 = 시드 ${reps}개 평균(위), 최소~최대(아래). 1보다 크면 위험 순보다 순이익이 큽니다(연보라 칸). "이긴 횟수"는 시드 중 효과 순이 위험 순을 이긴 횟수입니다. 시나리오 B 생성 규칙에서 시범 인원과 궁합 강도만 바꿔 다시 생성·학습했습니다(시험 30%, 임원 ${esc(inp.m_rule ?? '시험 인원의 5%')}, 팀장 ${fmtPct(inp.k, 0)}, 대체 비용 ${fmtWon(inp.C_replace)}, 팀장 ${fmtWon(inp.C_lead)}, 임원 ${fmtWon(inp.C_exec)}). 위험 순 순이익이 0 이하인 시드는 비율에서 뺍니다.</p>
       <p class="caption">전문가 규칙 표: ${esc(EXPERT_NOTE)}</p>
       ${sens.note ? `<p class="caption">${esc(sens.note)}</p>` : ''}`;
   }
@@ -584,7 +596,7 @@ function renderSummary() {
   const v = state.vals;
   const btn = $('btn-copy');
   if (!v || !state.last?.all) {
-    $('summary-text').value = '입력을 모두 채우면 요약 문장을 만들어요.';
+    $('summary-text').value = '입력을 모두 채우면 요약 문장을 만듭니다.';
     btn.disabled = true;
     return;
   }
@@ -597,9 +609,9 @@ function renderSummary() {
   const all = state.last.all;
   const scn = state.scenario;
   const text = [
-    `[가상 데이터 시뮬레이션${d.meta.mock ? ' · 견본 데이터' : ''}] 시험 대조군 ${fmtInt(s1.n)}명 중 위험 점수 상위 ${fmtPct(v.k, 0)}(${fmtInt(b.S)}명)를 면담하면, 대표 모델(${best.label})은 퇴사자 ${fmtInt(b.TP)}명을 찾아 예상 순이익 ${fmtWon(b.net)}${r ? `, 무작위 순서는 ${fmtInt(r.TP)}명·${fmtWon(r.net)}` : ''}이에요.`,
-    `2단계 시나리오 ${scn}(${scn === 'A' ? '효과 균일' : '사유 × 권한 궁합'})에서 임원 ${fmtInt(v.m)}명·팀장 ${fmtInt(all.risk.lead)}명을 배분하면 순이익은 위험 순 ${fmtWon(all.risk.net)}, 효과 순 ${fmtWon(all.uplift.net)}${all.uplift.pct != null ? `(상한 대비 ${all.uplift.pct.toFixed(1)}%)` : ''}${all.expert ? `, HR 전문가 규칙 ${fmtWon(all.expert.net)}(현업 가정 기준선)` : ''}이고, 팀장 면담 역효과 배정은 위험 순 ${fmtInt(all.risk.backfire)}명, 효과 순 ${fmtInt(all.uplift.backfire)}명이에요.`,
-    `가정: 대체 비용 ${fmtWon(v.C_replace)}, 팀장 면담 ${fmtWon(v.C_lead)}, 임원 면담 ${fmtWon(v.C_exec)}, 면담 성공률(1단계) ${v.r}. 가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않습니다. 지원 대상 선정용이며 개인 평가에 쓰지 않습니다.`,
+    `[가상 데이터 시뮬레이션${d.meta.mock ? ' · 견본 데이터' : ''}] 시험 대조군 ${fmtInt(s1.n)}명 중 위험 점수 상위 ${fmtPct(v.k, 0)}(${fmtInt(b.S)}명)를 면담하면, 대표 모델(${best.label})은 면담 안 하면 떠났을 사람 ${fmtInt(b.TP)}명을 찾아 면담 후 재직(예상) ${fmtPpl(b.TP * v.r)}명, 예상 순이익 ${fmtWon(b.net)}${r ? `, 무작위 순서는 ${fmtInt(r.TP)}명·${fmtWon(r.net)}` : ''}입니다.`,
+    `2단계 시나리오 ${scn}(${scn === 'A' ? '효과 균일' : '사유 × 권한 궁합'})에서 임원 ${fmtInt(v.m)}명·팀장 ${fmtInt(all.risk.lead)}명을 배분하면 순이익은 위험 순 ${fmtWon(all.risk.net)}, 효과 순 ${fmtWon(all.uplift.net)}${all.uplift.pct != null ? `(최대치 대비 ${all.uplift.pct.toFixed(1)}%)` : ''}${all.expert ? `, HR 전문가 규칙 ${fmtWon(all.expert.net)}(현업 가정 기준선)` : ''}이고, 팀장 면담 역효과 우려는 위험 순 ${fmtInt(all.risk.backfire)}명, 효과 순 ${fmtInt(all.uplift.backfire)}명입니다.`,
+    `가정: 대체 비용 ${fmtWon(v.C_replace)}, 팀장 면담 ${fmtWon(v.C_lead)}, 임원 면담 ${fmtWon(v.C_exec)}, 면담 성공률(1단계) ${v.r}. 가정에 따른 시뮬레이션이며 실제 이득을 보장하지 않습니다. 면담 대상 선정용이며 개인 평가에 쓰지 않습니다.`,
   ].join(' ');
   $('summary-text').value = text;
 }
@@ -608,10 +620,10 @@ async function copySummary() {
   const ta = $('summary-text');
   try {
     await navigator.clipboard.writeText(ta.value);
-    $('copy-msg').textContent = '복사했어요.';
+    $('copy-msg').textContent = '복사했습니다.';
   } catch {
     ta.select();
-    $('copy-msg').textContent = '자동 복사가 막혀 있어요. 선택된 글을 Ctrl+C로 복사해 주세요.';
+    $('copy-msg').textContent = '자동 복사가 막혀 있습니다. 선택된 글을 Ctrl+C로 복사해 주십시오.';
   }
 }
 
@@ -640,18 +652,14 @@ async function main() {
   } catch (err) {
     const box = $('load-error');
     box.hidden = false;
-    box.innerHTML = `<h3>데이터를 읽지 못했어요</h3><p>${esc(err.message)}</p><p class="mu">파일을 직접 열면(file://) 브라우저가 읽기를 막아요. <code>python -m http.server -d site</code>로 연 주소에서 확인해 주세요.</p>`;
+    box.innerHTML = `<h3>데이터를 읽지 못했습니다</h3><p>${esc(err.message)}</p><p class="mu">파일을 직접 열면(file://) 브라우저가 읽기를 막습니다. <code>python -m http.server -d site</code>로 연 주소에서 확인해 주십시오.</p>`;
     for (const id of ['inputs', 'stage1', 'explain1', 'stage2', 'p1']) $(id).hidden = true;
     return;
   }
   const d = state.data;
   $('mock-band').hidden = !d.meta.mock;
   const n2 = d.A.scores.stage2.n;
-  $('rg-m').max = String(n2);
-  $('in-m').max = String(n2);
-  $('m-hint').textContent = `임원이 면담할 수 있는 인원(명). 시험 전체 ${fmtInt(n2)}명 기준`;
-  $('in-m').placeholder = `예: ${Math.round(n2 * 0.05)}`;
-  $('rg-m').value = String(Math.round(n2 * 0.05));
+  $('m-hint').textContent = `시험 전체 ${fmtInt(n2)}명 중 임원이 면담할 비율(%)`;
 
   for (const f of FIELDS) $(`in-${f}`).addEventListener('input', schedule);
   for (const f of ['k', 'm']) {
