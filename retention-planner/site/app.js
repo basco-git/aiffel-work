@@ -3,7 +3,7 @@
 import {
   countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2All, stage2Curve, validateInputs, fairnessTable, STAGE2_METHODS, availableMethods,
-} from './alloc.js';
+} from './alloc.js?v=20261117c';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
