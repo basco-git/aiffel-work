@@ -3,7 +3,7 @@
 import {
   countFromRatio, floorCount, stage1TopK, stage1Threshold, stage1Curve,
   stage2All, stage2Curve, validateInputs, fairnessTable, STAGE2_METHODS, availableMethods,
-} from './alloc.js?v=20261117d';
+} from './alloc.js?v=20261117e';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -246,6 +246,17 @@ function schedule() {
   requestAnimationFrame(() => { pending = false; update(); });
 }
 
+// 빠른 입력 막대(11-17): 위쪽 입력의 현재 값을 막대에 보여 준다. 사용자가 막대 칸에 입력 중이면 덮어쓰지 않는다.
+function syncQuickbar(raw, n2) {
+  const k = Number(raw.k), m = Number(raw.m);
+  const okK = raw.k !== '' && Number.isFinite(k), okM = raw.m !== '' && Number.isFinite(m) && m >= 0 && m <= 100;
+  if (okK) $('qb-k').value = raw.k;
+  if (okM) $('qb-m').value = raw.m;
+  $('qb-k-v').textContent = okK ? `${k}%` : '—';
+  $('qb-m-v').textContent = okM ? `${m}% = ${fmtInt(floorCount(n2, m))}명` : '—';
+  if (document.activeElement !== $('qb-C_replace')) $('qb-C_replace').value = raw.C_replace;
+}
+
 function update() {
   const d = state.data;
   const raw = readRaw();
@@ -268,6 +279,7 @@ function update() {
   const mPct = Number(raw.m);
   $('m-count').textContent = raw.m !== '' && Number.isFinite(mPct) && mPct >= 0 && mPct <= 100
     ? `= ${fmtInt(floorCount(n2, mPct))}명 (소수점 버림)` : '';
+  syncQuickbar(raw, n2);
   const ex = exampleValues();
   $('example-on').hidden = !FIELDS.every((f) => Number(raw[f]) === Number(ex[f]) && raw[f] !== '');
 
@@ -676,6 +688,27 @@ async function main() {
   });
   document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { state.scenario = b.dataset.scn; schedule(); }));
   $('btn-copy').addEventListener('click', copySummary);
+
+  // 빠른 입력 막대: 막대에서 바꾸면 위쪽 입력칸에 넣고 다시 계산한다
+  const qbLink = (qid, field) => $(qid).addEventListener('input', (e) => { $(`in-${field}`).value = e.target.value; schedule(); });
+  qbLink('qb-k', 'k');
+  qbLink('qb-m', 'm');
+  qbLink('qb-C_replace', 'C_replace');
+  $('qb-all').addEventListener('click', () => $('inputs').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  $('qb-toggle').addEventListener('click', () => {
+    const bar = $('quickbar');
+    const collapsed = bar.classList.toggle('collapsed');
+    $('qb-toggle').textContent = collapsed ? '펼치기' : '접기';
+    $('qb-toggle').setAttribute('aria-expanded', String(!collapsed));
+  });
+  // 위쪽 입력칸이 화면 위로 지나가면 막대를 보여 주고, 다시 보이면 숨긴다
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => {
+      const show = !en.isIntersecting && en.boundingClientRect.top < 0;
+      $('quickbar').hidden = !show;
+      document.body.classList.toggle('qb-on', show);
+    }).observe($('inputs'));
+  }
 
   // 주소 옵션: ?example=1 → 예시값을 채운 상태로 열기, ?scenario=B → 시나리오 B로 열기 (제출 문서 링크·화면 캡처용)
   const qs = new URLSearchParams(location.search);

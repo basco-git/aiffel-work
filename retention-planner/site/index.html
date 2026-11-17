@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>리텐션 면담 플래너</title>
 <meta name="description" content="가상 데이터로 퇴사 위험 점수를 면담 예산 결정으로 바꿔 보는 시뮬레이터. 면담 대상 선정용이며 개인 평가에 쓰지 않습니다.">
-<link rel="stylesheet" href="style.css?v=20261117d">
+<link rel="stylesheet" href="style.css?v=20261117e">
 </head>
 <body>
 <div class="mock-band" id="mock-band" hidden>견본 데이터로 그린 화면입니다 · 실제 분석 결과가 아닙니다</div>
@@ -223,6 +223,22 @@
 </section>
 </div>
 
+<!-- 빠른 입력 막대(11-17 사용자 요청): 위쪽 입력칸이 화면 밖으로 올라가면 화면 아래에 고정되어, 2단계를 보면서도 입력을 바꿀 수 있다. 위쪽 입력과 서로 연동된다. -->
+<div class="quickbar" id="quickbar" hidden>
+  <div class="qb-row" role="group" aria-label="빠른 입력">
+    <span class="qb-title">빠른 입력</span>
+    <label class="qb-f">면담 대상 비율 k <input type="range" id="qb-k" min="0" max="100" step="1" value="20"> <b id="qb-k-v">—</b></label>
+    <label class="qb-f">임원 면담 비율 m <input type="range" id="qb-m" min="0" max="100" step="0.5" value="5"> <b id="qb-m-v">—</b></label>
+    <label class="qb-f">퇴사 1건 비용 <input type="number" id="qb-C_replace" inputmode="decimal" min="0" step="100"> 만 원</label>
+    <div class="seg" role="group" aria-label="시나리오 선택(빠른 입력)">
+      <button type="button" data-scn="A" aria-pressed="true">A 효과 균일</button>
+      <button type="button" data-scn="B" aria-pressed="false">B 사유×권한</button>
+    </div>
+    <button type="button" class="btn ghost qb-all" id="qb-all">전체 입력 ↑</button>
+    <button type="button" class="qb-toggle" id="qb-toggle" aria-expanded="true" aria-controls="quickbar">접기</button>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
     <dl id="meta-dl"></dl>
@@ -235,6 +251,6 @@
 </footer>
 
 <!-- 화면 파일을 고쳐 배포할 때는 ?v= 값을 바꾼다(app.js의 alloc.js 가져오기 줄 포함). 브라우저가 예전 파일을 캐시로 쓰지 않게 하기 위함(11-17). -->
-<script type="module" src="app.js?v=20261117d"></script>
+<script type="module" src="app.js?v=20261117e"></script>
 </body>
 </html>
