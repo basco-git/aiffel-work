@@ -89,6 +89,20 @@ class TestGenerate(unittest.TestCase):
         _, t0, _ = generate("B", 42, N, strength=0.0)
         np.testing.assert_allclose(t0["tau_exec"], self.a[1]["tau_exec"])
 
+    def test_회사유형_기준은_이전과_같고_연봉복지_만족이_낮을수록_퇴사가_많다(self):
+        # 11-17 추가: 회사 유형 옵션의 기본값은 이전 데이터와 같아야 하고,
+        # 연봉·복지 만족을 내린 중소기업형일수록 면담 없음 퇴사율이 높아야 한다.
+        obs, truth, _ = generate("B", 42, N, company="기준")
+        pd.testing.assert_frame_equal(self.b[0], obs)
+        pd.testing.assert_frame_equal(self.b[1], truth)
+        info = {c: generate("A", 42, N, company=c) for c in ("대기업형", "기준", "중소기업형")}
+        pay = [info[c][0]["sat_pay"].mean() for c in ("대기업형", "기준", "중소기업형")]
+        rate = [info[c][2]["leave_rate"]["none"] for c in ("대기업형", "기준", "중소기업형")]
+        self.assertTrue(pay[0] > pay[1] > pay[2])
+        self.assertTrue(rate[0] < rate[1] < rate[2])
+        # 연봉·복지 외 열은 바뀌지 않는다
+        pd.testing.assert_series_equal(info["대기업형"][0]["sat_job_fit"], info["기준"][0]["sat_job_fit"])
+
 
 if __name__ == "__main__":
     unittest.main()
