@@ -6,6 +6,7 @@
 > HR 15년 경력에서 출발한 불편 — 면접 한 건을 잡으려고 메일·메신저를 여러 번 오가고, 시간이 바뀌면 처음부터 다시 조율하고, 같은 시간에 두 후보자가 겹치는 일 — 을 줄이는 서비스예요.
 
 - 배포 주소: [https://basco-git.github.io/aiffel-work/interview-booking/](https://basco-git.github.io/aiffel-work/interview-booking/)
+  - **현재 시연 중지(2026-11-19):** 데이터베이스(Supabase) 연결이 끊겨 로그인·예약이 되지 않아요. 동작 모습은 아래 상황별 캡처에서 볼 수 있어요.
 - 기획 문서: [PRD.md](PRD.md) · 설계 이유: [docs/design.md](docs/design.md) · API: [docs/api.md](docs/api.md)
 - 회고: [retrospective.md](retrospective.md) · 진행 기록: [docs/progress.md](docs/progress.md)
 - 시연: 3분 영상 대신 [상황별 캡처 8장](#시연-상황별-캡처)
